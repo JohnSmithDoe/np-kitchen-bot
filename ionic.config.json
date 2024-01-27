@@ -1,0 +1,7 @@
+{
+  "name": "np-kitchen-bot",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
