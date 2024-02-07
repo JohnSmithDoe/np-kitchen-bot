@@ -13,7 +13,11 @@
     <ion-list-header>
       Aktuell
     </ion-list-header>
+
+    <!-- Casting $event to $any is a temporary fix for this bug https://github.com/ionic-team/ionic-framework/issues/24245 -->
+    <ion-reorder-group [disabled]="false" (ionItemReorder)="handleReorder($any($event))">
     @for (cartitem of cart?.items; track cartitem.item.ean) {
+
       <ion-item-sliding (ionDrag)="deleteOnDrag($event, cartitem, ionList)">
         <ion-item>
           <ion-label>{{ cartitem.item.name }}</ion-label>
@@ -22,6 +26,7 @@
             <ion-button (click)="cartitem.quantity = cartitem.quantity -1"><ion-icon name="remove"></ion-icon></ion-button>
             <ion-label>{{cartitem.quantity}}</ion-label>
           </ion-buttons>
+          <ion-reorder slot="end"></ion-reorder>
         </ion-item>
         <ion-item-options>
           <ion-item-option color="danger" expandable>Delete</ion-item-option>
@@ -33,6 +38,7 @@
         Empty list of users
       </ion-item>
     }
+    </ion-reorder-group>
   </ion-list>
 
 </ion-content>
