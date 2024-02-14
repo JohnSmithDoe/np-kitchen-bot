@@ -60,24 +60,60 @@
   "fileMap": {
     "nonProjectFiles": [
       {
-        "file": "src/app/components/np-list/np-list.component.ts",
-        "hash": "3088581223333425739"
-      },
-      {
-        "file": "src/app/components/np-list/np-list.component.html",
-        "hash": "12276658490724210733"
+        "file": "src/app/pages/tab2/shoppinglist.page.scss",
+        "hash": "3244421341483603138"
       },
       {
         "file": "src/app/pages/shoppinglist/shoppinglist.page.html",
         "hash": "11536067578505773036"
       },
       {
+        "file": "src/app/pages/inventory/inventory.page.spec.ts",
+        "hash": "5716711619360723878"
+      },
+      {
+        "file": "src/app/pages/inventory/inventory.page.html",
+        "hash": "4252185592038975088"
+      },
+      {
+        "file": "src/app/components/np-list/np-list.component.html",
+        "hash": "12276658490724210733"
+      },
+      {
+        "file": "src/app/pages/tab2/shoppinglist.page.spec.ts",
+        "hash": "11198308954363467356"
+      },
+      {
+        "file": "src/app/pages/inventory/inventory.page.scss",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "src/app/pages/shoppinglist/shoppinglist.page.ts",
+        "hash": "18361603332546892895"
+      },
+      {
+        "file": "src/app/pages/inventory/inventory.page.ts",
+        "hash": "5843063681851840296"
+      },
+      {
         "file": "src/app/@types/types.d.ts",
         "hash": "3881573642445136323"
       },
       {
-        "file": "src/app/pages/shoppinglist/shoppinglist.page.ts",
-        "hash": "7161396769651127481"
+        "file": "src/app/pages/home/home.routes.ts",
+        "hash": "7126062318924801478"
+      },
+      {
+        "file": "src/app/components/np-list/np-list.component.ts",
+        "hash": "3088581223333425739"
+      },
+      {
+        "file": "src/app/pages/tab2/shoppinglist.page.ts",
+        "hash": "18361603332546892895"
+      },
+      {
+        "file": "src/app/pages/tab2/shoppinglist.page.html",
+        "hash": "11536067578505773036"
       }
     ],
     "projectFileMap": {

@@ -1,0 +1,14 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      Inventar
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content [fullscreen]="true">
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+    <ion-fab-button  size="small" (click)="addItem()"><ion-icon name="add"></ion-icon></ion-fab-button>
+  </ion-fab>
+  <app-list [items]="items"></app-list>
+
+</ion-content>

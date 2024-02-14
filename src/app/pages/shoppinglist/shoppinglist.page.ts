@@ -6,7 +6,7 @@ import {ListItem} from "../../@types/types";
 import {NpListComponent} from "../../components/np-list/np-list.component";
 
 @Component({
-  selector: 'app-tab1',
+  selector: 'app-page-shopping-list',
   templateUrl: 'shoppinglist.page.html',
   styleUrls: ['shoppinglist.page.scss'],
   standalone: true,
