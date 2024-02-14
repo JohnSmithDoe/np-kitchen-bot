@@ -16,3 +16,9 @@ export interface ShoppingCart {
 }
 
 export type NPIonDragEvent = CustomEvent<{amount: number, ratio: number}>
+
+export interface ListItem {
+  id: string,
+  name: string,
+  quantity: number
+}

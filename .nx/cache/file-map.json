@@ -60,16 +60,24 @@
   "fileMap": {
     "nonProjectFiles": [
       {
-        "file": "src/app/pages/shoppinglist/shoppinglist.page.ts",
-        "hash": "5531643508397621912"
+        "file": "src/app/components/np-list/np-list.component.ts",
+        "hash": "3088581223333425739"
+      },
+      {
+        "file": "src/app/components/np-list/np-list.component.html",
+        "hash": "12276658490724210733"
       },
       {
         "file": "src/app/pages/shoppinglist/shoppinglist.page.html",
-        "hash": "8234421956081752733"
+        "hash": "11536067578505773036"
       },
       {
-        "file": "nx.json",
-        "hash": "3802961875764705682"
+        "file": "src/app/@types/types.d.ts",
+        "hash": "3881573642445136323"
+      },
+      {
+        "file": "src/app/pages/shoppinglist/shoppinglist.page.ts",
+        "hash": "7161396769651127481"
       }
     ],
     "projectFileMap": {
@@ -88,11 +96,15 @@
         },
         {
           "file": ".gitignore",
-          "hash": "91109559695469517"
+          "hash": "14980810553656048548"
         },
         {
           "file": ".vscode/extensions.json",
           "hash": "5637724820903828992"
+        },
+        {
+          "file": "README.md",
+          "hash": "14898561675382494713"
         },
         {
           "file": "capacitor.config.ts",
@@ -137,7 +149,7 @@
         },
         {
           "file": "nx.json",
-          "hash": "1675166599390707359"
+          "hash": "3802961875764705682"
         },
         {
           "file": "package-lock.json",
@@ -241,6 +253,30 @@
           ]
         },
         {
+          "file": "src/app/components/np-list/np-list.component.html",
+          "hash": "15767006942040836976"
+        },
+        {
+          "file": "src/app/components/np-list/np-list.component.scss",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "src/app/components/np-list/np-list.component.spec.ts",
+          "hash": "4389574006218378037",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "src/app/components/np-list/np-list.component.ts",
+          "hash": "3181072752793758317",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@ionic/angular",
+            "npm:ionicons"
+          ]
+        },
+        {
           "file": "src/app/pages/home/home.page.html",
           "hash": "14851004770855718135"
         },
@@ -273,7 +309,7 @@
         },
         {
           "file": "src/app/pages/shoppinglist/shoppinglist.page.html",
-          "hash": "13651156019607245806"
+          "hash": "7262418333123620843"
         },
         {
           "file": "src/app/pages/shoppinglist/shoppinglist.page.scss",
@@ -288,7 +324,7 @@
         },
         {
           "file": "src/app/pages/shoppinglist/shoppinglist.page.ts",
-          "hash": "10115490497019992593",
+          "hash": "11244155551061793500",
           "deps": [
             "npm:@angular/core",
             "npm:@ionic/angular",
