@@ -29,7 +29,15 @@ export class InventoryPage implements OnInit{
 
   addItem(item?: StorageItem) {
     this.isAdding = false;
-    console.log(item);
-    //this.items.push({id: this.items.length.toString(10), name: 'new', quantity: 1})
+    if (item) {
+      // check duplicates
+      const foundItem = this.items.find(aItem => aItem === item);
+      if (foundItem) {
+        foundItem.quantity++;
+      } else {
+        item.quantity = 1;
+        this.items.push(item)
+      }
+    }
   }
 }

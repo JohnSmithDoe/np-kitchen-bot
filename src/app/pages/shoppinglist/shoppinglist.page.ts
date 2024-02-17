@@ -10,7 +10,7 @@ import {NpListComponent} from "../../components/np-list/np-list.component";
   templateUrl: 'shoppinglist.page.html',
   styleUrls: ['shoppinglist.page.scss'],
   standalone: true,
-  imports: [NpListComponent, IonHeader, IonToolbar, IonContent, IonFab, IonFabButton, IonIcon, IonTitle],
+    imports: [NpListComponent, IonHeader, IonToolbar, IonContent, IonFab, IonFabButton, IonIcon, IonTitle],
 })
 export class ShoppinglistPage implements OnInit{
 

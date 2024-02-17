@@ -4,25 +4,41 @@
       <ion-toolbar>
         <ion-title>Modal</ion-title>
         <ion-buttons slot="end">
+          <ion-button (click)="setDisplayMode('alphabetical')">A-Z</ion-button>
+          <ion-button (click)="setDisplayMode('categories')">Categories</ion-button>
           <ion-button (click)="close()">Close</ion-button>
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
     <ion-content>
-        <ion-searchbar (ionInput)="searchItem($event)">
-
+        <ion-searchbar (ionInput)="searchItem($event)" [debounce]="250">
         </ion-searchbar>
-      <ion-toolbar>
-        <ion-buttons slot="end">
-          <ion-button (click)="close()">Close</ion-button>
-        </ion-buttons>
-      </ion-toolbar>
-      @for (category of categories; track category.id) {
-        <ion-button class="item-category" (click)="chooseCategory(category)">
-         {{category.name}}
-        </ion-button>
+      @if(mode === 'alphabetical') {
+        <ng-container *ngTemplateOutlet="listMode"></ng-container>
       }
-      <app-new-item-dialog [isOpen]="isCreating"></app-new-item-dialog>
+      @else {
+        <ng-container *ngTemplateOutlet="categoryMode"></ng-container>
+      }
+
+      <app-new-item-dialog [isOpen]="isCreating" (createItem)="createItem($event)"></app-new-item-dialog>
     </ion-content>
   </ng-template>
 </ion-modal>
+
+<ng-template #categoryMode>
+  @for (category of categories; track category.name) {
+    <ion-button class="item-category" (click)="chooseCategory(category)">
+      {{category.name}}
+    </ion-button>
+  }
+</ng-template>
+
+<ng-template #listMode>
+  <ion-list>
+    @for (item of items; track item.id) {
+      <ion-item [button]="true" (click)="selectItem(item)">
+        <ion-label>{{  item.name }}</ion-label>
+      </ion-item>
+    }
+  </ion-list>
+</ng-template>

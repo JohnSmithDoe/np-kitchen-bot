@@ -17,7 +17,7 @@ bootstrapApplication(AppComponent, {
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     provideIonicAngular({animated: true}),
-    importProvidersFrom(IonicStorageModule.forRoot()),
+    importProvidersFrom(IonicStorageModule.forRoot({name: 'np-kitchen-helper', dbKey: 'npKitchenHelper', description: 'np-kitchen-helper storage', storeName:'npKitchenHelper'})),
     provideRouter(routes),
     {
       provide: APP_INITIALIZER,

@@ -61,40 +61,120 @@
   "fileMap": {
     "nonProjectFiles": [
       {
+        "file": "src/app/pages/home/home.page.ts",
+        "hash": "15501521569817623143"
+      },
+      {
+        "file": "src/app/dialogs/new-item-dialog/new-item-dialog.component.html",
+        "hash": "6674637768627160062"
+      },
+      {
+        "file": "src/global.scss",
+        "hash": "13507125257279900410"
+      },
+      {
+        "file": "src/app/pages/inventory/inventory.page.ts",
+        "hash": "4944975939070736522"
+      },
+      {
+        "file": "src/app/pages/home/home.routes.ts",
+        "hash": "14751798838478486233"
+      },
+      {
+        "file": "README.md",
+        "hash": "13896570133217552333"
+      },
+      {
+        "file": "src/app/utils.ts",
+        "hash": "4885058908162930958"
+      },
+      {
+        "file": "src/app/pages/actions/actions.page.spec.ts",
+        "hash": "11778041394754419653"
+      },
+      {
+        "file": "src/app/services/database.service.spec.ts",
+        "hash": "18287776273428557394"
+      },
+      {
+        "file": "src/app/pages/shoppinglist/shoppinglist.page.ts",
+        "hash": "14312082366122149412"
+      },
+      {
+        "file": "src/app/pages/shoppinglist/shoppinglist.page.html",
+        "hash": "1926321641526491452"
+      },
+      {
         "file": "src/app/@types/types.d.ts",
         "hash": "7207481881375236022"
       },
       {
-        "file": "src/main.ts",
-        "hash": "12895333014550576560"
+        "file": "src/app/pages/tasks/tasks.page.ts",
+        "hash": "5390366564568718075"
       },
       {
-        "file": "src/app/pages/inventory/inventory.page.ts",
-        "hash": "16411705074294236310"
+        "file": "src/app/pages/tasks/tasks.page.spec.ts",
+        "hash": "1596537825271088217"
+      },
+      {
+        "file": "src/app/pages/inventory/inventory.page.html",
+        "hash": "4167319693753355232"
       },
       {
         "file": "src/app/services/database.service.ts",
-        "hash": "17645015258219067990"
+        "hash": "5896297039865174837"
+      },
+      {
+        "file": "src/app/pages/actions/actions.page.scss",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "src/app/pages/actions/actions.page.ts",
+        "hash": "16580578752847769178"
+      },
+      {
+        "file": "src/app/pages/tasks/tasks.page.scss",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "src/app/pages/tasks/tasks.page.html",
+        "hash": "5108442569649033770"
+      },
+      {
+        "file": "src/app/pages/home/home.page.scss",
+        "hash": "14686704791156129742"
+      },
+      {
+        "file": "src/app/dialogs/add-item-dialog/add-item.dialog.html",
+        "hash": "3692693457408512503"
+      },
+      {
+        "file": "src/app/pages/home/home.page.html",
+        "hash": "811652574218394004"
+      },
+      {
+        "file": "src/app/components/np-list/np-list.component.html",
+        "hash": "9656126486513757306"
       },
       {
         "file": "src/app/dialogs/add-item-dialog/add-item.dialog.ts",
-        "hash": "13532981301037206825"
+        "hash": "3993657067458928619"
+      },
+      {
+        "file": "src/app/pages/actions/actions.page.html",
+        "hash": "7756838058773281954"
       },
       {
         "file": "src/app/dialogs/new-item-dialog/new-item-dialog.component.ts",
-        "hash": "4240254156303229216"
-      },
-      {
-        "file": "src/app/pages/shoppinglist/shoppinglist.page.ts",
-        "hash": "4053928096999415248"
+        "hash": "12303834495210895395"
       },
       {
         "file": "src/app/components/np-list/np-list.component.ts",
         "hash": "12738805100306811497"
       },
       {
-        "file": "src/app/services/database.service.spec.ts",
-        "hash": "18287776273428557394"
+        "file": "src/main.ts",
+        "hash": "14104020421480052678"
       }
     ],
     "projectFileMap": {

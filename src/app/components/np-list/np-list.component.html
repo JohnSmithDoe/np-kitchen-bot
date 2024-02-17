@@ -11,7 +11,7 @@
 
       <ion-item-sliding (ionDrag)="deleteOnDrag($event, item, ionList)">
         <ion-item>
-          <ion-label>{{ item.name }}</ion-label>
+          <ion-label>{{ item.quantity }} x {{ item.name }}</ion-label>
           <ion-buttons slot="end">
             <ion-button (click)="item.quantity = item.quantity +1">
               <ion-icon name="add"></ion-icon>
@@ -19,7 +19,6 @@
             <ion-button (click)="item.quantity = item.quantity -1">
               <ion-icon name="remove"></ion-icon>
             </ion-button>
-            <ion-label>{{ item.quantity }}</ion-label>
           </ion-buttons>
           <ion-reorder slot="start"></ion-reorder>
         </ion-item>

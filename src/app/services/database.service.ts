@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Storage} from "@ionic/storage-angular";
 import {StorageItem} from "../@types/types";
+import {uuidv4} from "../utils";
 
 interface NPDatabase {
   items: StorageItem[];
@@ -27,8 +28,28 @@ export class DatabaseService {
 
   async initialize() {
     await this.storageService.create();
-    this.#store = await this.storageService.get(DatabaseService.CNP_STORAGE_KEY);
-    console.log('jo ho');
+    const stored = await this.storageService.get(DatabaseService.CNP_STORAGE_KEY);
+    if (stored) this.#store = stored;
+    console.log('jo ho', stored, this.#store);
+  }
+
+  async save() {
+    this.updateDatabase();
+    await this.storageService.set(DatabaseService.CNP_STORAGE_KEY, this.#store);
+
+  }
+
+  private updateDatabase() {
+    this.#store.categories = [];
+    this.items.forEach(item => {
+      let cat = this.categories.find(category => category.name === item.category);
+      if (!cat && item.category) {
+        cat = {items: [item], name: item.category}
+        this.categories.push(cat);
+      } else {
+        cat?.items.push(item);
+      }
+    });
   }
 
   get items() {
@@ -45,5 +66,14 @@ export class DatabaseService {
 
   get categories() {
     return this.#store.categories;
+  }
+
+  createNewStorageItem(name = '', quantity = 0): StorageItem {
+    return {id: uuidv4(), name, quantity};
+  }
+
+  saveItem(item: StorageItem) {
+    this.#store.items.push(item);
+    return this.save();
   }
 }

@@ -1,19 +1,31 @@
 <ion-tabs>
   <ion-tab-bar slot="bottom">
-
     <ion-tab-button tab="shoppinglist" href="/home/shoppinglist">
       <ion-icon aria-hidden="true" name="triangle"></ion-icon>
-      <ion-label>Tab 1</ion-label>
+      <ion-label>Shopping</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button tab="tab2" href="/home/tab2">
+    <ion-tab-button tab="inventory" href="/home/inventory">
       <ion-icon aria-hidden="true" name="ellipse"></ion-icon>
-      <ion-label>Tab 2</ion-label>
+      <ion-label>Inventory</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button tab="tab3" href="/home/tab3">
+    <ion-tab-button tab="tasks" href="/home/tasks">
       <ion-icon aria-hidden="true" name="square"></ion-icon>
-      <ion-label>Tab 3</ion-label>
+      <ion-label>Tasks</ion-label>
+    </ion-tab-button>
+    <ion-tab-button id="open-action-sheet">
+      <ion-icon aria-hidden="true" name="square"></ion-icon>
+      <ion-label>Actions</ion-label>
     </ion-tab-button>
   </ion-tab-bar>
 </ion-tabs>
+
+
+<ion-action-sheet
+  trigger="open-action-sheet"
+  class="my-custom-class"
+  header="Example header"
+  subHeader="Example subheader"
+  [buttons]="actionSheetButtons"
+></ion-action-sheet>

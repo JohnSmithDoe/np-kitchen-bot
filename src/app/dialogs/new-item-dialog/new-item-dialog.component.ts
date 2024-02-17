@@ -1,8 +1,9 @@
 import {JsonPipe} from "@angular/common";
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {Component, EventEmitter, inject, Input, OnInit, Output} from '@angular/core';
 import {FormsModule} from "@angular/forms";
 import {IonicModule} from "@ionic/angular";
 import {StorageItem} from "../../@types/types";
+import {DatabaseService} from "../../services/database.service";
 
 @Component({
   selector: 'app-new-item-dialog',
@@ -16,14 +17,21 @@ import {StorageItem} from "../../@types/types";
   templateUrl: './new-item-dialog.component.html',
   styleUrl: './new-item-dialog.component.scss'
 })
-export class NewItemDialogComponent {
+export class NewItemDialogComponent implements OnInit {
+  readonly #database = inject(DatabaseService);
   @Input() isOpen = false;
   @Output() createItem: EventEmitter<StorageItem> = new EventEmitter<StorageItem>();
-  inputVal = {name:'Hello World'};
+  @Input() value!: StorageItem;
+
+  ngOnInit(): void {
+    if (!this.value) {
+      this.value = this.#database.createNewStorageItem()
+    }
+  }
 
   close() {
     this.isOpen = false;
-    this.createItem.emit();
+    this.createItem.emit(this.value);
   }
 
 }

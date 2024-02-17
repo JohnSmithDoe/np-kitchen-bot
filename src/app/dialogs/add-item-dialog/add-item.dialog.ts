@@ -1,6 +1,8 @@
-import {Component, EventEmitter, Input, OnChanges, Output, SimpleChanges} from '@angular/core';
-import {IonicModule} from "@ionic/angular";
+import {NgTemplateOutlet} from "@angular/common";
+import {Component, EventEmitter, inject, Input, OnChanges, Output, SimpleChanges} from '@angular/core';
+import {IonicModule, SearchbarCustomEvent} from "@ionic/angular";
 import {StorageItem} from "../../@types/types";
+import {DatabaseService} from "../../services/database.service";
 import {NewItemDialogComponent} from "../new-item-dialog/new-item-dialog.component";
 
 @Component({
@@ -8,26 +10,26 @@ import {NewItemDialogComponent} from "../new-item-dialog/new-item-dialog.compone
   standalone: true,
   imports: [
     IonicModule,
-    NewItemDialogComponent
+    NewItemDialogComponent,
+    NgTemplateOutlet
   ],
   templateUrl: './add-item.dialog.html',
   styleUrl: './add-item.dialog.scss'
 })
 export class AddItemDialog implements OnChanges {
+  readonly #database = inject(DatabaseService);
   @Input() isOpen = false;
   @Output() addItem: EventEmitter<StorageItem> = new EventEmitter<StorageItem>();
-  categories: { id: string; name: string }[] = [];
+  categories: { items: StorageItem[]; name: string }[] = [];
+  items: StorageItem[] = [];
   isCreating = false;
+  mode: 'alphabetical' | 'categories' = 'alphabetical';
 
   ngOnChanges(changes: SimpleChanges): void {
     if(changes.hasOwnProperty('isOpen') && this.isOpen) {
       this.isCreating = false;
-      this.categories = [
-        {id: '1', name: 'Gemüse'},
-        {id: '2', name: 'Obst'},
-        {id: '3', name: 'Fleisch'},
-        {id: '4', name: 'Käse'},
-      ]
+      this.categories = this.#database.categories;
+      this.items = this.#database.items;
     }
   }
 
@@ -36,14 +38,37 @@ export class AddItemDialog implements OnChanges {
     this.addItem.emit();
   }
 
-  chooseCategory(category: { id: string; name: string }) {
-    this.categories = [
-      {id: '5', name:'Birnen'}
-    ]
+  chooseCategory(category: { items: StorageItem[]; name: string } ) {
+    this.items = category.items;
+    this.mode = 'alphabetical';
   }
 
-  searchItem($event: any) {
-    console.log($event);
-    this.isCreating = true;
+  searchItem($event: SearchbarCustomEvent) {
+    if ($event.detail.value) {
+      const searchFor = $event.detail.value.toLowerCase();
+      this.items = this.#database.items.filter(item => item.name.toLowerCase().indexOf(searchFor) >= 0);
+    } else {
+      this.items = this.#database.items;
+    }
+    if (!this.items.length) {
+      this.isCreating = true;
+    }
+  }
+
+  async createItem(item: StorageItem) {
+    if (item.name.length) {
+      await this.#database.saveItem(item);
+      this.categories = this.#database.categories;
+    }
+  }
+
+  setDisplayMode(mode: 'alphabetical' | 'categories') {
+    this.items = this.#database.items;
+    this.mode = mode;
+  }
+
+  selectItem(item: StorageItem) {
+    this.addItem.emit(item);
+    this.isOpen = false;
   }
 }

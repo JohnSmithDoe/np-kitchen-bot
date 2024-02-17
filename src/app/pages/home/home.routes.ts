@@ -17,20 +17,20 @@ export const routes: Routes = [
           import('../inventory/inventory.page').then((m) => m.InventoryPage),
       },
       {
-        path: 'tab3',
+        path: 'tasks',
         loadComponent: () =>
-          import('../tab3/tab3.page').then((m) => m.Tab3Page),
+          import('../tasks/tasks.page').then((m) => m.TasksPage),
       },
       {
         path: '',
-        redirectTo: '/home/shoppinglist',
+        redirectTo: '/home/inventory',
         pathMatch: 'full',
       },
     ],
   },
   {
     path: '',
-    redirectTo: '/home/shoppinglist',
+    redirectTo: '/home/inventory',
     pathMatch: 'full',
   },
 ];
