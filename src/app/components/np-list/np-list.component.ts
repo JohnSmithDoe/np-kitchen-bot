@@ -20,7 +20,7 @@ import {
 } from '@ionic/angular/standalone';
 import {addIcons} from "ionicons";
 import {add, remove} from "ionicons/icons";
-import {ListItem, NPIonDragEvent} from "../../@types/types";
+import {NPIonDragEvent, StorageItem} from "../../@types/types";
 
 @Component({
   selector: 'app-list',
@@ -31,7 +31,7 @@ import {ListItem, NPIonDragEvent} from "../../@types/types";
 })
 export class NpListComponent implements OnInit{
   @Input() header?: string;
-  @Input() items: ListItem[] = [];
+  @Input() items: StorageItem[] = [];
 
   constructor() {
     addIcons({add, remove})
@@ -41,7 +41,7 @@ export class NpListComponent implements OnInit{
 //
   }
 
-  async deleteOnDrag($event: NPIonDragEvent, item: ListItem, list: IonList) {
+  async deleteOnDrag($event: NPIonDragEvent, item: StorageItem, list: IonList) {
     console.log($event.detail);
     if ($event.detail.amount > 250) {
       await list.closeSlidingItems();

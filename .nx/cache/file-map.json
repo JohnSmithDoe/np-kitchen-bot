@@ -17,6 +17,7 @@
     "@capacitor/status-bar": "5.0.6",
     "@ionic/angular": "^7.5.0",
     "@ionic/storage-angular": "^4.0.0",
+    "dayjs": "^1.11.10",
     "ionicons": "^7.2.1",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
@@ -60,60 +61,40 @@
   "fileMap": {
     "nonProjectFiles": [
       {
-        "file": "src/app/pages/tab2/shoppinglist.page.scss",
-        "hash": "3244421341483603138"
+        "file": "src/app/@types/types.d.ts",
+        "hash": "7207481881375236022"
       },
       {
-        "file": "src/app/pages/shoppinglist/shoppinglist.page.html",
-        "hash": "11536067578505773036"
-      },
-      {
-        "file": "src/app/pages/inventory/inventory.page.spec.ts",
-        "hash": "5716711619360723878"
-      },
-      {
-        "file": "src/app/pages/inventory/inventory.page.html",
-        "hash": "4252185592038975088"
-      },
-      {
-        "file": "src/app/components/np-list/np-list.component.html",
-        "hash": "12276658490724210733"
-      },
-      {
-        "file": "src/app/pages/tab2/shoppinglist.page.spec.ts",
-        "hash": "11198308954363467356"
-      },
-      {
-        "file": "src/app/pages/inventory/inventory.page.scss",
-        "hash": "3244421341483603138"
-      },
-      {
-        "file": "src/app/pages/shoppinglist/shoppinglist.page.ts",
-        "hash": "18361603332546892895"
+        "file": "src/main.ts",
+        "hash": "12895333014550576560"
       },
       {
         "file": "src/app/pages/inventory/inventory.page.ts",
-        "hash": "5843063681851840296"
+        "hash": "16411705074294236310"
       },
       {
-        "file": "src/app/@types/types.d.ts",
-        "hash": "3881573642445136323"
+        "file": "src/app/services/database.service.ts",
+        "hash": "17645015258219067990"
       },
       {
-        "file": "src/app/pages/home/home.routes.ts",
-        "hash": "7126062318924801478"
+        "file": "src/app/dialogs/add-item-dialog/add-item.dialog.ts",
+        "hash": "13532981301037206825"
+      },
+      {
+        "file": "src/app/dialogs/new-item-dialog/new-item-dialog.component.ts",
+        "hash": "4240254156303229216"
+      },
+      {
+        "file": "src/app/pages/shoppinglist/shoppinglist.page.ts",
+        "hash": "4053928096999415248"
       },
       {
         "file": "src/app/components/np-list/np-list.component.ts",
-        "hash": "3088581223333425739"
+        "hash": "12738805100306811497"
       },
       {
-        "file": "src/app/pages/tab2/shoppinglist.page.ts",
-        "hash": "18361603332546892895"
-      },
-      {
-        "file": "src/app/pages/tab2/shoppinglist.page.html",
-        "hash": "11536067578505773036"
+        "file": "src/app/services/database.service.spec.ts",
+        "hash": "18287776273428557394"
       }
     ],
     "projectFileMap": {
@@ -189,11 +170,11 @@
         },
         {
           "file": "package-lock.json",
-          "hash": "11165117144815011603"
+          "hash": "5429566190028177744"
         },
         {
           "file": "package.json",
-          "hash": "13912965474716924520",
+          "hash": "17872934218979907627",
           "deps": [
             "npm:@angular/animations",
             "npm:@angular/common",
@@ -210,6 +191,7 @@
             "npm:@capacitor/status-bar",
             "npm:@ionic/angular",
             "npm:@ionic/storage-angular",
+            "npm:dayjs",
             "npm:ionicons",
             "npm:rxjs",
             "npm:tslib",
@@ -255,7 +237,7 @@
         },
         {
           "file": "src/app/@types/types.d.ts",
-          "hash": "13189944156294211805"
+          "hash": "6339022554620372251"
         },
         {
           "file": "src/app/app.component.html",
@@ -290,7 +272,7 @@
         },
         {
           "file": "src/app/components/np-list/np-list.component.html",
-          "hash": "15767006942040836976"
+          "hash": "12276658490724210733"
         },
         {
           "file": "src/app/components/np-list/np-list.component.scss",
@@ -305,11 +287,59 @@
         },
         {
           "file": "src/app/components/np-list/np-list.component.ts",
-          "hash": "3181072752793758317",
+          "hash": "3088581223333425739",
           "deps": [
             "npm:@angular/core",
             "npm:@ionic/angular",
             "npm:ionicons"
+          ]
+        },
+        {
+          "file": "src/app/dialogs/add-item-dialog/add-item.dialog.html",
+          "hash": "11059072351624934272"
+        },
+        {
+          "file": "src/app/dialogs/add-item-dialog/add-item.dialog.scss",
+          "hash": "9639950322198319416"
+        },
+        {
+          "file": "src/app/dialogs/add-item-dialog/add-item.dialog.spec.ts",
+          "hash": "2624138591402683579",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "src/app/dialogs/add-item-dialog/add-item.dialog.ts",
+          "hash": "9665745205346290993",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@ionic/angular"
+          ]
+        },
+        {
+          "file": "src/app/dialogs/new-item-dialog/new-item-dialog.component.html",
+          "hash": "10378458386331556224"
+        },
+        {
+          "file": "src/app/dialogs/new-item-dialog/new-item-dialog.component.scss",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "src/app/dialogs/new-item-dialog/new-item-dialog.component.spec.ts",
+          "hash": "16499446679527397841",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "src/app/dialogs/new-item-dialog/new-item-dialog.component.ts",
+          "hash": "5219872203989408975",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "npm:@ionic/angular"
           ]
         },
         {
@@ -338,14 +368,38 @@
         },
         {
           "file": "src/app/pages/home/home.routes.ts",
-          "hash": "16961860812291833602",
+          "hash": "7126062318924801478",
           "deps": [
             "npm:@angular/router"
           ]
         },
         {
+          "file": "src/app/pages/inventory/inventory.page.html",
+          "hash": "10579651275073251156"
+        },
+        {
+          "file": "src/app/pages/inventory/inventory.page.scss",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "src/app/pages/inventory/inventory.page.spec.ts",
+          "hash": "5716711619360723878",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "src/app/pages/inventory/inventory.page.ts",
+          "hash": "16053580426130787919",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@ionic/angular",
+            "npm:ionicons"
+          ]
+        },
+        {
           "file": "src/app/pages/shoppinglist/shoppinglist.page.html",
-          "hash": "7262418333123620843"
+          "hash": "11536067578505773036"
         },
         {
           "file": "src/app/pages/shoppinglist/shoppinglist.page.scss",
@@ -360,34 +414,11 @@
         },
         {
           "file": "src/app/pages/shoppinglist/shoppinglist.page.ts",
-          "hash": "11244155551061793500",
+          "hash": "18361603332546892895",
           "deps": [
             "npm:@angular/core",
             "npm:@ionic/angular",
             "npm:ionicons"
-          ]
-        },
-        {
-          "file": "src/app/pages/tab2/tab2.page.html",
-          "hash": "15460999026553621721"
-        },
-        {
-          "file": "src/app/pages/tab2/tab2.page.scss",
-          "hash": "3244421341483603138"
-        },
-        {
-          "file": "src/app/pages/tab2/tab2.page.spec.ts",
-          "hash": "10330460238115220644",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "src/app/pages/tab2/tab2.page.ts",
-          "hash": "8226105817425560750",
-          "deps": [
-            "npm:@angular/core",
-            "npm:@ionic/angular"
           ]
         },
         {

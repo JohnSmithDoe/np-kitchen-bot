@@ -1,24 +1,14 @@
-export interface Item {
-  ean: string;
+type NPTimestamp = string;
+export interface StorageItem {
+  id: string;
   name: string;
+  quantity: number;
 
+  category?: string;
   price?: number;
   desc?: string;
-}
+  mdh?: NPTimestamp;
 
-export interface ShoppingCartItem {
-  item: Item;
-  quantity: number;
 }
-
-export interface ShoppingCart {
-  items: ShoppingCartItem[];
-}
-
 export type NPIonDragEvent = CustomEvent<{amount: number, ratio: number}>
 
-export interface ListItem {
-  id: string,
-  name: string,
-  quantity: number
-}

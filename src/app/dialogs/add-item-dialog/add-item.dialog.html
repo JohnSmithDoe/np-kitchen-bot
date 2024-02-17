@@ -1,0 +1,28 @@
+<ion-modal [isOpen]="isOpen">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Modal</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="close()">Close</ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+        <ion-searchbar (ionInput)="searchItem($event)">
+
+        </ion-searchbar>
+      <ion-toolbar>
+        <ion-buttons slot="end">
+          <ion-button (click)="close()">Close</ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+      @for (category of categories; track category.id) {
+        <ion-button class="item-category" (click)="chooseCategory(category)">
+         {{category.name}}
+        </ion-button>
+      }
+      <app-new-item-dialog [isOpen]="isCreating"></app-new-item-dialog>
+    </ion-content>
+  </ng-template>
+</ion-modal>

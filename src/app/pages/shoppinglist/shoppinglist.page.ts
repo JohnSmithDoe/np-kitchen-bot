@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {IonContent, IonFab, IonFabButton, IonHeader, IonIcon, IonTitle, IonToolbar} from '@ionic/angular/standalone';
 import {addIcons} from "ionicons";
 import {add, remove} from "ionicons/icons";
-import {ListItem} from "../../@types/types";
+import {StorageItem} from "../../@types/types";
 import {NpListComponent} from "../../components/np-list/np-list.component";
 
 @Component({
@@ -14,7 +14,7 @@ import {NpListComponent} from "../../components/np-list/np-list.component";
 })
 export class ShoppinglistPage implements OnInit{
 
-  items: ListItem[] = [];
+  items: StorageItem[] = [];
 
   constructor() {
     addIcons({add, remove})
