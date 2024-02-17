@@ -14,37 +14,16 @@ import {
 } from '@ionic/angular/standalone';
 import {addIcons} from "ionicons";
 import {ellipse, square, triangle} from "ionicons/icons";
+import {CommonActionsSheetComponent} from "../../dialogs/common-actions-sheet/common-actions-sheet.component";
 
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
   standalone: true,
-  imports: [IonHeader, IonToolbar, IonTitle, IonContent, IonIcon, IonLabel, IonTabBar, IonTabButton, IonTabs, IonActionSheet, IonButton],
+  imports: [IonHeader, IonToolbar, IonTitle, IonContent, IonIcon, IonLabel, IonTabBar, IonTabButton, IonTabs, IonActionSheet, IonButton, CommonActionsSheetComponent],
 })
 export class HomePage {
-  actionSheetButtons = [
-    {
-      text: 'Delete',
-      role: 'destructive',
-      data: {
-        action: 'delete',
-      },
-    },
-    {
-      text: 'Share',
-      data: {
-        action: 'share',
-      },
-    },
-    {
-      text: 'Cancel',
-      role: 'cancel',
-      data: {
-        action: 'cancel',
-      },
-    },
-  ];
 
   constructor() {
     addIcons({ triangle, ellipse, square });
