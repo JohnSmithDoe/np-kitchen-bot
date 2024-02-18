@@ -1,4 +1,9 @@
 type NPTimestamp = string;
+// Todo
+export interface StorageLocation {}
+export interface StorageUnit {}
+export interface Recipe {}
+//
 export interface StorageItem {
   id: string;
   name: string;
@@ -8,6 +13,7 @@ export interface StorageItem {
   price?: number;
   desc?: string;
   mdh?: NPTimestamp;
+  location?: string;
 
 }
 export type NPIonDragEvent = CustomEvent<{amount: number, ratio: number}>

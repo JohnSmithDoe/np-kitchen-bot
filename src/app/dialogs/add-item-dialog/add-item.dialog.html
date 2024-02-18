@@ -20,7 +20,7 @@
         <ng-container *ngTemplateOutlet="categoryMode"></ng-container>
       }
 
-      <app-new-item-dialog [isOpen]="isCreating" (createItem)="createItem($event)"></app-new-item-dialog>
+      <app-new-item-dialog [isOpen]="isCreating" [itemName]="searchTerm" (createItem)="createItem($event)"></app-new-item-dialog>
     </ion-content>
   </ng-template>
 </ion-modal>
@@ -38,6 +38,10 @@
     @for (item of items; track item.id) {
       <ion-item [button]="true" (click)="selectItem(item)">
         <ion-label>{{  item.name }}</ion-label>
+      </ion-item>
+    } @empty {
+      <ion-item [button]="true" (click)="openNewDialog()">
+        <ion-label>Not found. Create NEW</ion-label>
       </ion-item>
     }
   </ion-list>

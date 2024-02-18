@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {ItemReorderEventDetail} from "@ionic/angular";
 import {
   IonButton,
@@ -32,7 +32,7 @@ import {NPIonDragEvent, StorageItem} from "../../@types/types";
 export class NpListComponent implements OnInit{
   @Input() header?: string;
   @Input() items: StorageItem[] = [];
-
+  @Output() deleteItem = new EventEmitter<StorageItem>();
   constructor() {
     addIcons({add, remove})
   }
@@ -43,9 +43,11 @@ export class NpListComponent implements OnInit{
 
   async deleteOnDrag($event: NPIonDragEvent, item: StorageItem, list: IonList) {
     console.log($event.detail);
+    // TODO: percent instead pixel
     if ($event.detail.amount > 250) {
       await list.closeSlidingItems();
       this.items.splice(this.items.indexOf(item), 1);
+      this.deleteItem.emit(item);
     }
   }
 

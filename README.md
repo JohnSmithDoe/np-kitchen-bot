@@ -4,7 +4,8 @@
 * Units: 3 x Kartoffeln, 3 x Spaghetti, 3 x Mehl ...
   * Besser? 500 g Kartoffeln ..., 3 Packungen Spaghetti, 2 kg Mehl ...
   * Alt UI: Bestandsregler (viel - wenig) mit min max ...
-
+* save all the stuff all the time
+* 
 ## Barcode scanning
 https://ionic.io/blog/how-to-build-an-ionic-barcode-scanner-with-capacitor
 

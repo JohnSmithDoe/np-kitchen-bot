@@ -24,12 +24,14 @@ export class AddItemDialog implements OnChanges {
   items: StorageItem[] = [];
   isCreating = false;
   mode: 'alphabetical' | 'categories' = 'alphabetical';
+  searchTerm?: string|null;
 
   ngOnChanges(changes: SimpleChanges): void {
     if(changes.hasOwnProperty('isOpen') && this.isOpen) {
       this.isCreating = false;
       this.categories = this.#database.categories;
       this.items = this.#database.items;
+      this.searchTerm = undefined;
     }
   }
 
@@ -44,22 +46,25 @@ export class AddItemDialog implements OnChanges {
   }
 
   searchItem($event: SearchbarCustomEvent) {
-    if ($event.detail.value) {
-      const searchFor = $event.detail.value.toLowerCase();
+    this.searchTerm = $event.detail.value;
+    if (this.searchTerm) {
+      const searchFor = this.searchTerm.toLowerCase();
       this.items = this.#database.items.filter(item => item.name.toLowerCase().indexOf(searchFor) >= 0);
     } else {
       this.items = this.#database.items;
     }
-    if (!this.items.length) {
-      this.isCreating = true;
-    }
   }
 
-  async createItem(item: StorageItem) {
-    if (item.name.length) {
+  openNewDialog() {
+      this.isCreating = true;
+  }
+
+  async createItem(item?: StorageItem) {
+    if (item?.name.length) {
       await this.#database.saveItem(item);
       this.categories = this.#database.categories;
     }
+    this.isCreating = false;
   }
 
   setDisplayMode(mode: 'alphabetical' | 'categories') {
