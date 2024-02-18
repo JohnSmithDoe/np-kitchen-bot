@@ -19,7 +19,7 @@ import {
   IonToolbar
 } from '@ionic/angular/standalone';
 import {addIcons} from "ionicons";
-import {add, remove} from "ionicons/icons";
+import {add, cart, remove} from "ionicons/icons";
 import {NPIonDragEvent, StorageItem} from "../../@types/types";
 
 @Component({
@@ -32,15 +32,22 @@ import {NPIonDragEvent, StorageItem} from "../../@types/types";
 export class NpListComponent implements OnInit{
   @Input() header?: string;
   @Input() items: StorageItem[] = [];
+
   @Output() deleteItem = new EventEmitter<StorageItem>();
+  @Output() moveItem = new EventEmitter<StorageItem>();
+
   constructor() {
-    addIcons({add, remove})
+    addIcons({add, remove, cart})
   }
 
   ngOnInit(): void {
 //
   }
 
+  moveTo(item: StorageItem) {
+    item.quantity--;
+    this.moveItem.emit(item);
+  }
   async deleteOnDrag($event: NPIonDragEvent, item: StorageItem, list: IonList) {
     console.log($event.detail);
     // TODO: percent instead pixel
@@ -61,4 +68,5 @@ export class NpListComponent implements OnInit{
     // by the reorder group
     ev.detail.complete();
   }
-}
+  }
+

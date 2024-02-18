@@ -13,6 +13,9 @@
         <ion-item>
           <ion-label>{{ item.quantity }} x {{ item.name }}</ion-label>
           <ion-buttons slot="end">
+            <ion-button (click)="moveTo(item)">
+              <ion-icon name="cart"></ion-icon>
+            </ion-button>
             <ion-button (click)="item.quantity = item.quantity +1">
               <ion-icon name="add"></ion-icon>
             </ion-button>

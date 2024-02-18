@@ -32,7 +32,7 @@ export class InventoryPage implements OnInit{
     this.isAdding = false;
     if (item) {
       // check duplicates
-      const foundItem = this.items.find(aItem => aItem === item);
+      const foundItem = this.items.find(aItem => aItem.id === item.id);
       if (foundItem) {
         foundItem.quantity++;
       } else {
@@ -45,5 +45,22 @@ export class InventoryPage implements OnInit{
 
   deleteItem(item: StorageItem) {
     return this.#database.save();
+  }
+
+  async moveToShoppingList(item: StorageItem) {
+    this.isAdding = false;
+    if (item) {
+      // check duplicates
+      const foundItem = this.#database.shoppinglist.find(aItem => aItem.id === item.id);
+      if (foundItem) {
+        foundItem.quantity++;
+      } else {
+        const newItem = {...item};
+        newItem.quantity = 1;
+        this.#database.shoppinglist.push(newItem)
+        await this.#database.save();
+      }
+    }
+
   }
 }

@@ -16,5 +16,13 @@ export interface StorageItem {
   location?: string;
 
 }
+export interface StorageItemList {
+  id: string;
+  title: string;
+  items: StorageItem[];
+}
+
+
+
 export type NPIonDragEvent = CustomEvent<{amount: number, ratio: number}>
 

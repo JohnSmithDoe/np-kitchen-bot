@@ -40,8 +40,8 @@
         <ion-label>{{  item.name }}</ion-label>
       </ion-item>
     } @empty {
-      <ion-item [button]="true" (click)="openNewDialog()">
-        <ion-label>Not found. Create NEW</ion-label>
+      <ion-item [button]="true" (click)="openNewDialog()" [color]="'primary'">
+        <ion-label>{{searchTerm}} not found! Click here to create ...</ion-label>
       </ion-item>
     }
   </ion-list>
