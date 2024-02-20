@@ -86,7 +86,12 @@ export class StorageListComponent implements OnInit {
     this.searchTerm = $event.detail.value;
     if (this.searchTerm) {
       const searchFor = this.searchTerm.toLowerCase();
-      this.items = this.itemList.items.filter(item => item.name.toLowerCase().indexOf(searchFor) >= 0);
+      this.items = this.itemList.items.filter(item => {
+        let foundByName = item.name.toLowerCase().indexOf(searchFor) >= 0;
+        // or by category
+        foundByName ||= (item.category?.toLowerCase().indexOf(searchFor) ?? -1) >= 0;
+        return foundByName;
+      });
     } else {
       this.items = this.itemList.items;
     }

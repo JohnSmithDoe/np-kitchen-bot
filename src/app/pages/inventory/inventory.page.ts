@@ -1,5 +1,15 @@
 import {Component, inject, OnInit} from '@angular/core';
-import {IonContent, IonFab, IonFabButton, IonHeader, IonIcon, IonTitle, IonToolbar} from '@ionic/angular/standalone';
+import {
+  IonButtons,
+  IonContent,
+  IonFab,
+  IonFabButton,
+  IonHeader,
+  IonIcon,
+  IonMenuButton,
+  IonTitle,
+  IonToolbar
+} from '@ionic/angular/standalone';
 import {addIcons} from "ionicons";
 import {add, remove} from "ionicons/icons";
 import {StorageItem, StorageItemList} from "../../@types/types";
@@ -12,7 +22,7 @@ import {DatabaseService} from "../../services/database.service";
   templateUrl: 'inventory.page.html',
   styleUrls: ['inventory.page.scss'],
   standalone: true,
-  imports: [StorageListComponent, IonHeader, IonToolbar, IonContent, IonFab, IonFabButton, IonIcon, IonTitle, AddItemDialog],
+  imports: [StorageListComponent, IonHeader, IonToolbar, IonContent, IonFab, IonFabButton, IonIcon, IonTitle, AddItemDialog, IonButtons, IonMenuButton],
 })
 export class InventoryPage implements OnInit{
   readonly #database = inject(DatabaseService);

@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Storage} from "@ionic/storage-angular";
-import {Datastore, StorageItem} from "../@types/types";
+import {Datastore, StorageItem, StorageItemList} from "../@types/types";
 import {uuidv4} from "../utils";
 
 
@@ -113,5 +113,27 @@ export class DatabaseService {
   saveItem(item: StorageItem) {
     this.#store.all.items.push(item);
     return this.save();
+  }
+
+  async addItem(item: StorageItem | undefined, list: StorageItemList) {
+    if (item) {
+      // check duplicates
+      const foundItem = list.items.find(aItem => aItem.id === item.id);
+      if (foundItem) {
+        foundItem.quantity++;
+      } else {
+        item.quantity = 1;
+        list.items.push(item)
+      }
+      this.#addToAllItems(item);
+      return this.save();
+    }
+  }
+
+  #addToAllItems(item: StorageItem) {
+    const gItem = this.#store.all.items.find(aItem => aItem.id === item.id);
+    if(!gItem) {
+      this.#store.all.items.push(this.createNewStorageItem(item.name));
+    }
   }
 }
