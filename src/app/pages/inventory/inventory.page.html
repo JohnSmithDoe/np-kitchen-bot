@@ -3,10 +3,16 @@
     <ion-title>Inventory</ion-title>
   </ion-toolbar>
 </ion-header>
+
 <ion-content [fullscreen]="true">
   <ion-fab slot="fixed" vertical="bottom" horizontal="end">
     <ion-fab-button  size="small" (click)="isAdding = true"><ion-icon name="add"></ion-icon></ion-fab-button>
   </ion-fab>
-  <app-list [items]="items" (deleteItem)="deleteItem($event)" (moveItem)="moveToShoppingList($event)"></app-list>
-  <app-add-item-dialog [isOpen]="isAdding" (addItem)="addItem($event)"></app-add-item-dialog>
+  <app-storage-list [itemList]="inventory"
+                    type="extended"
+                    (deleteItem)="deleteItem($event)"
+                    (moveItem)="moveToShoppingList($event)"
+  ></app-storage-list>
 </ion-content>
+
+<app-add-item-dialog [isOpen]="isAdding" (addItem)="addItem($event)"></app-add-item-dialog>

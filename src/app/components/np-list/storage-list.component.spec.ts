@@ -1,13 +1,13 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {NpListComponent} from './np-list.component';
+import {StorageListComponent} from './storage-list.component';
 
 describe('Tab2Page', () => {
-  let component: NpListComponent;
-  let fixture: ComponentFixture<NpListComponent>;
+  let component: StorageListComponent;
+  let fixture: ComponentFixture<StorageListComponent>;
 
   beforeEach(async () => {
-    fixture = TestBed.createComponent(NpListComponent);
+    fixture = TestBed.createComponent(StorageListComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

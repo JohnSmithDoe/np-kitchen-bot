@@ -1,7 +1,8 @@
 import {NgTemplateOutlet} from "@angular/common";
 import {Component, EventEmitter, inject, Input, OnChanges, Output, SimpleChanges} from '@angular/core';
-import {IonicModule, SearchbarCustomEvent} from "@ionic/angular";
-import {StorageItem} from "../../@types/types";
+import {IonicModule} from "@ionic/angular";
+import {StorageItem, StorageItemList} from "../../@types/types";
+import {StorageListComponent} from "../../components/np-list/storage-list.component";
 import {DatabaseService} from "../../services/database.service";
 import {NewItemDialogComponent} from "../new-item-dialog/new-item-dialog.component";
 
@@ -11,7 +12,8 @@ import {NewItemDialogComponent} from "../new-item-dialog/new-item-dialog.compone
   imports: [
     IonicModule,
     NewItemDialogComponent,
-    NgTemplateOutlet
+    NgTemplateOutlet,
+    StorageListComponent
   ],
   templateUrl: './add-item.dialog.html',
   styleUrl: './add-item.dialog.scss'
@@ -20,39 +22,20 @@ export class AddItemDialog implements OnChanges {
   readonly #database = inject(DatabaseService);
   @Input() isOpen = false;
   @Output() addItem: EventEmitter<StorageItem> = new EventEmitter<StorageItem>();
-  categories: { items: StorageItem[]; name: string }[] = [];
-  items: StorageItem[] = [];
+  @Input() list!: StorageItemList;
   isCreating = false;
-  mode: 'alphabetical' | 'categories' = 'alphabetical';
   searchTerm?: string|null;
 
   ngOnChanges(changes: SimpleChanges): void {
     if(changes.hasOwnProperty('isOpen') && this.isOpen) {
       this.isCreating = false;
-      this.categories = this.#database.categories;
-      this.items = this.#database.items;
-      this.searchTerm = undefined;
+      this.list = this.#database.all;
     }
   }
 
   close() {
     this.isOpen = false;
     this.addItem.emit();
-  }
-
-  chooseCategory(category: { items: StorageItem[]; name: string } ) {
-    this.items = category.items;
-    this.mode = 'alphabetical';
-  }
-
-  searchItem($event: SearchbarCustomEvent) {
-    this.searchTerm = $event.detail.value;
-    if (this.searchTerm) {
-      const searchFor = this.searchTerm.toLowerCase();
-      this.items = this.#database.items.filter(item => item.name.toLowerCase().indexOf(searchFor) >= 0);
-    } else {
-      this.items = this.#database.items;
-    }
   }
 
   openNewDialog() {
@@ -62,14 +45,8 @@ export class AddItemDialog implements OnChanges {
   async createItem(item?: StorageItem) {
     if (item?.name.length) {
       await this.#database.saveItem(item);
-      this.categories = this.#database.categories;
     }
     this.isCreating = false;
-  }
-
-  setDisplayMode(mode: 'alphabetical' | 'categories') {
-    this.items = this.#database.items;
-    this.mode = mode;
   }
 
   selectItem(item: StorageItem) {

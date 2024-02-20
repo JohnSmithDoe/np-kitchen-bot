@@ -26,9 +26,7 @@ export class NewItemDialogComponent implements OnChanges {
   @Output() createItem: EventEmitter<StorageItem> = new EventEmitter<StorageItem>();
 
   ngOnChanges(changes: SimpleChanges): void {
-    console.log('ngOnChanges-', this.itemName, changes);
     if(changes.hasOwnProperty('isOpen') && this.isOpen) {
-        console.log('create -', this.itemName);
         this.value = this.#database.createNewStorageItem(this.itemName ?? '')
     }
   }

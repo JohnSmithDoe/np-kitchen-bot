@@ -1,12 +1,15 @@
-<ion-header [translucent]="true">
+<ion-header [translucent]="true" [collapse]="true">
   <ion-toolbar>
     <ion-title>Shoppinglist</ion-title>
   </ion-toolbar>
 </ion-header>
-<ion-content [fullscreen]="true">
+<ion-content [fullscreen]="false">
   <ion-fab slot="fixed" vertical="bottom" horizontal="end">
     <ion-fab-button  size="small"><ion-icon name="add"></ion-icon></ion-fab-button>
   </ion-fab>
-  <app-list [items]="items"></app-list>
+  <app-storage-list [itemList]="items" type="extended"
+  (moveItem)="buyItem($event)"
+
+  ></app-storage-list>
 
 </ion-content>
