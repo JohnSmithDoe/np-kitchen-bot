@@ -9,8 +9,11 @@
       </ion-toolbar>
     </ion-header>
     <ion-content>
-      <app-storage-list [itemList]="list"></app-storage-list>
-      <app-new-item-dialog [isOpen]="isCreating" [itemName]="searchTerm" (createItem)="createItem($event)"></app-new-item-dialog>
+      <app-storage-list [itemList]="itemList"
+                        (selectItem)="selectItem($event)"
+                        (createItem)="openNewDialog($event)"
+      ></app-storage-list>
+      <app-new-item-dialog [isOpen]="isCreating" [itemName]="newItemName" (createItem)="createItem($event)"></app-new-item-dialog>
     </ion-content>
   </ng-template>
 </ion-modal>

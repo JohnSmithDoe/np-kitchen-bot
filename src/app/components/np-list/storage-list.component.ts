@@ -56,13 +56,15 @@ export class StorageListComponent implements OnInit {
   @Input() header?: string;
   @Input() itemList!: StorageItemList;
   @Input() type: 'simple' | 'extended' = 'simple';
+  @Input() search: 'full' | 'name-only' = 'full';
 
+  @Output() createItem = new EventEmitter<string>();
+  @Output() selectItem = new EventEmitter<StorageItem>();
   @Output() deleteItem = new EventEmitter<StorageItem>();
   @Output() moveItem = new EventEmitter<StorageItem>();
 
   categories: { items: StorageItem[]; name: string }[] = [];
   items: StorageItem[] = [];
-  isCreating = false;
   mode: 'alphabetical' | 'categories' = 'alphabetical';
   searchTerm?: string | null;
 
@@ -71,7 +73,6 @@ export class StorageListComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.isCreating = false;
     this.items = this.itemList.items;
     this.categories = getCategoriesFromList(this.itemList);
     this.searchTerm = undefined;
@@ -89,7 +90,7 @@ export class StorageListComponent implements OnInit {
       this.items = this.itemList.items.filter(item => {
         let foundByName = item.name.toLowerCase().indexOf(searchFor) >= 0;
         // or by category
-        foundByName ||= (item.category?.toLowerCase().indexOf(searchFor) ?? -1) >= 0;
+        foundByName ||= this.search === 'full' && (item.category?.toLowerCase().indexOf(searchFor) ?? -1) >= 0;
         return foundByName;
       });
     } else {
@@ -103,46 +104,27 @@ export class StorageListComponent implements OnInit {
     this.mode = mode;
   }
 
-  selectItem(item: StorageItem) {
-    // this.addItem.emit(item);
-    // this.isOpen = false;
-  }
-
-  moveTo(item: StorageItem) {
-    this.moveItem.emit(item);
-  }
   async deleteOnDrag($event: NPIonDragEvent, item: StorageItem, list: IonList) {
-    console.log($event.detail);
-    // TODO: percent instead pixel
-    if ($event.detail.amount > 250) {
-      await list.closeSlidingItems();
-      this.itemList.items.splice(this.itemList.items.indexOf(item), 1);
-      this.deleteItem.emit(item);
+    // doubble the length or 250px
+    if ($event.detail.ratio > 2 || $event.detail.amount > 250) {
+      await this.deleteFromList(list, item);
     }
   }
 
-  handleReorder(ev: CustomEvent<ItemReorderEventDetail>) {
+  async deleteFromList(list: IonList, item: StorageItem) {
+    await list.closeSlidingItems();
+    this.deleteItem.emit(item);
+  }
+
+  async handleReorder(ev: CustomEvent<ItemReorderEventDetail>) {
     // The `from` and `to` properties contain the index of the item
     // when the drag started and ended, respectively
     console.log('Dragged from index', ev.detail.from, 'to', ev.detail.to);
-
+    await this.#database.reorder(this.itemList, ev.detail.from, ev.detail.to);
     // Finish the reorder and position the item in the DOM based on
     // where the gesture ended. This method can also be called directly
     // by the reorder group
     ev.detail.complete();
   }
-
-  openNewDialog() {
-    this.isCreating = true;
-  }
-
-  async createItem(item?: StorageItem) {
-    if (item?.name.length) {
-      await this.#database.saveItem(item);
-      this.categories = getCategoriesFromList(this.itemList);
-    }
-    this.isCreating = false;
-  }
-
 }
 

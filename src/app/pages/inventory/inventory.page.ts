@@ -53,10 +53,6 @@ export class InventoryPage implements OnInit{
     }
   }
 
-  deleteItem(item: StorageItem) {
-    return this.#database.save();
-  }
-
   async moveToShoppingList(item: StorageItem) {
     this.isAdding = false;
     if (item) {

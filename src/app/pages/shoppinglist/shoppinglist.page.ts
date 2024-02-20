@@ -44,7 +44,12 @@ export class ShoppinglistPage implements OnInit{
   }
   // what should happen if we buy an item?
   // some kind of state for now
-  buyItem(item: StorageItem) {
+  async buyItem(item: StorageItem) {
     item.state = 'bought'
+    await this.#database.save();
+  }
+
+  async deleteItem(item: StorageItem) {
+    await this.#database.deleteItem(item, this.shoppingList);
   }
 }

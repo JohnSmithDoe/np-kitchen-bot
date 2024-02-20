@@ -136,4 +136,15 @@ export class DatabaseService {
       this.#store.all.items.push(this.createNewStorageItem(item.name));
     }
   }
+
+  async deleteItem(item: StorageItem, list: StorageItemList) {
+    list.items.splice(list.items.indexOf(item), 1);
+    return this.save();
+  }
+
+  async reorder(list: StorageItemList, from: number, to: number) {
+    const item = list.items.splice(from, 1);
+    list.items.splice(to,0, ...item)
+    return this.save();
+  }
 }

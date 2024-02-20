@@ -16,7 +16,7 @@ if (environment.production) {
 bootstrapApplication(AppComponent, {
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
-    provideIonicAngular({animated: true}),
+    provideIonicAngular({animated: true, mode: "md"}),
     importProvidersFrom(IonicStorageModule.forRoot({name: 'np-kitchen-helper', dbKey: 'npKitchenHelper', description: 'np-kitchen-helper storage', storeName:'npKitchenHelper'})),
     provideRouter(routes),
     {

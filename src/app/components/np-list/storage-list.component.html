@@ -5,7 +5,7 @@
     <ion-button (click)="setDisplayMode('categories')">Categories</ion-button>
   </ion-buttons>
 </ion-toolbar>
-<ion-content class="ion-padding">
+<div class="ion-padding storage-list-body">
 
   @if (mode === 'alphabetical') {
     @if (type === 'simple') {
@@ -16,7 +16,7 @@
   } @else {
     <ng-container *ngTemplateOutlet="categoryMode"></ng-container>
   }
-</ion-content>
+</div>
 
 <ng-template #categoryMode>
   @for (category of categories; track category.name) {
@@ -36,11 +36,11 @@
     }
 
     @for (item of items; track item.id) {
-      <ion-item [button]="true" (click)="selectItem(item)">
+      <ion-item [button]="true" (click)="selectItem.emit(item)">
         <ion-label>{{ item.name }} <small>({{item.category??'na'}})</small></ion-label>
       </ion-item>
     } @empty {
-      <ion-item [button]="true" (click)="openNewDialog()" [color]="'primary'">
+      <ion-item [button]="true" (click)="createItem.emit(searchTerm ?? undefined)" [color]="'primary'">
         <ion-label>{{ searchTerm }} not found! Click here to create ...</ion-label>
       </ion-item>
     }
@@ -58,7 +58,7 @@
             <ion-label [class.bought]="item.state === 'bought'">
              {{ item.quantity }} x {{ item.name }}</ion-label>
             <ion-buttons slot="end">
-              <ion-button (click)="moveTo(item)">
+              <ion-button (click)="moveItem.emit(item)">
                 <ion-icon name="cart"></ion-icon>
               </ion-button>
               <ion-button (click)="item.quantity = item.quantity +1">
@@ -71,12 +71,12 @@
             <ion-reorder slot="start"></ion-reorder>
           </ion-item>
           <ion-item-options>
-            <ion-item-option color="danger" expandable>Delete</ion-item-option>
+            <ion-item-option color="danger" expandable (click)="deleteFromList(ionList, item)">Delete</ion-item-option>
           </ion-item-options>
         </ion-item-sliding>
       } @empty {
         <ion-item>
-          Empty list of users
+          {{!!searchTerm ? 'Not found' : 'Empty list' }}
         </ion-item>
       }
     </ion-reorder-group>

@@ -22,14 +22,15 @@ export class AddItemDialog implements OnChanges {
   readonly #database = inject(DatabaseService);
   @Input() isOpen = false;
   @Output() addItem: EventEmitter<StorageItem> = new EventEmitter<StorageItem>();
-  @Input() list!: StorageItemList;
+  @Input() itemList!: StorageItemList;
   isCreating = false;
-  searchTerm?: string|null;
+  newItemName?: string | null;
 
   ngOnChanges(changes: SimpleChanges): void {
     if(changes.hasOwnProperty('isOpen') && this.isOpen) {
       this.isCreating = false;
-      this.list = this.#database.all;
+      this.newItemName = null;
+      this.itemList = this.#database.all;
     }
   }
 
@@ -38,8 +39,9 @@ export class AddItemDialog implements OnChanges {
     this.addItem.emit();
   }
 
-  openNewDialog() {
-      this.isCreating = true;
+  openNewDialog(newItemName: string) {
+    this.newItemName = newItemName;
+    this.isCreating = true;
   }
 
   async createItem(item?: StorageItem) {
@@ -47,9 +49,12 @@ export class AddItemDialog implements OnChanges {
       await this.#database.saveItem(item);
     }
     this.isCreating = false;
+    this.newItemName = null;
+    this.selectItem(item)
+
   }
 
-  selectItem(item: StorageItem) {
+  selectItem(item?: StorageItem) {
     this.addItem.emit(item);
     this.isOpen = false;
   }

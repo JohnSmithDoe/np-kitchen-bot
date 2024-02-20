@@ -1,3 +1,13 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  max-height: 100%;
+}
+
 .bought {
   text-decoration: line-through;
+}
+
+.storage-list-body{
+  overflow: auto;
 }
