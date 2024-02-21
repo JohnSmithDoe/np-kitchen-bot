@@ -46,11 +46,12 @@ export class AddItemDialog implements OnChanges {
 
   async createItem(item?: StorageItem) {
     if (item?.name.length) {
-      await this.#database.saveItem(item);
+      this.#database.addToAllItems(item);
+      await this.#database.save();
     }
     this.isCreating = false;
     this.newItemName = null;
-    this.selectItem(item)
+    this.selectItem(item);
 
   }
 

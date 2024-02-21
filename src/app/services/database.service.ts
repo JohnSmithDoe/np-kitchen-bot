@@ -110,11 +110,6 @@ export class DatabaseService {
     return {id: uuidv4(), name, quantity};
   }
 
-  saveItem(item: StorageItem) {
-    this.#store.all.items.push(item);
-    return this.save();
-  }
-
   async addItem(item: StorageItem | undefined, list: StorageItemList) {
     if (item) {
       // check duplicates
@@ -123,14 +118,13 @@ export class DatabaseService {
         foundItem.quantity++;
       } else {
         item.quantity = 1;
-        list.items.push(item)
+        list.items.push({...item})
       }
-      this.#addToAllItems(item);
       return this.save();
     }
   }
 
-  #addToAllItems(item: StorageItem) {
+  addToAllItems(item: StorageItem) {
     const gItem = this.#store.all.items.find(aItem => aItem.id === item.id);
     if(!gItem) {
       this.#store.all.items.push(this.createNewStorageItem(item.name));
