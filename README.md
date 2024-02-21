@@ -39,3 +39,26 @@ https://ionicframework.com/docs/angular/your-first-app/saving-photos
 ### Shopping
 * Rezept-Inhalte (fehlende) oder Artikel hinzufügen
 * Übertragen, anzeigen, abhaken
+
+
+
+Android
+=======
+
+Build
+----
+
+"buildOptimizer": false, in production.. modals not showing
+https://github.com/ionic-team/ionic-framework/issues/28385
+> ionic serve --prod
+
+
+
+>ionic capacitor build android
+
+Run
+---
+Install Android Studio and open it once
+Open the android folder as a new project
+Enable SVM Mode in Bios (on AMD ryzen)
+Build signed apk from menu

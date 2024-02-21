@@ -1,5 +1,5 @@
 {
-  "name": "np-kitchen-bot",
+  "name": "kitchen-bot",
   "integrations": {
     "capacitor": {}
   },

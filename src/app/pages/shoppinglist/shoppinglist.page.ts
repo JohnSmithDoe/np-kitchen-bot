@@ -1,3 +1,4 @@
+import {JsonPipe} from "@angular/common";
 import {Component, inject, OnInit} from '@angular/core';
 import {
   IonButton,
@@ -23,7 +24,7 @@ import {DatabaseService} from "../../services/database.service";
   templateUrl: 'shoppinglist.page.html',
   styleUrls: ['shoppinglist.page.scss'],
   standalone: true,
-  imports: [StorageListComponent, IonHeader, IonToolbar, IonContent, IonFab, IonFabButton, IonIcon, IonTitle, AddItemDialog, IonMenuButton, IonButtons, IonButton],
+  imports: [StorageListComponent, IonHeader, IonToolbar, IonContent, IonFab, IonFabButton, IonIcon, IonTitle, AddItemDialog, IonMenuButton, IonButtons, IonButton, JsonPipe],
 })
 export class ShoppinglistPage implements OnInit{
 

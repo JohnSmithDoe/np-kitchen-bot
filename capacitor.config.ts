@@ -2,7 +2,7 @@ import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'io.ionic.starter',
-  appName: 'np-kitchen-bot',
+  appName: 'kitchen-bot',
   webDir: 'www',
   server: {
     androidScheme: 'https'

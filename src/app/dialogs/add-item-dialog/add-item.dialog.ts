@@ -1,4 +1,4 @@
-import {NgTemplateOutlet} from "@angular/common";
+import {JsonPipe, NgTemplateOutlet} from "@angular/common";
 import {Component, EventEmitter, inject, Input, OnChanges, Output, SimpleChanges} from '@angular/core';
 import {IonicModule} from "@ionic/angular";
 import {StorageItem, StorageItemList} from "../../@types/types";
@@ -13,7 +13,8 @@ import {NewItemDialogComponent} from "../new-item-dialog/new-item-dialog.compone
     IonicModule,
     NewItemDialogComponent,
     NgTemplateOutlet,
-    StorageListComponent
+    StorageListComponent,
+    JsonPipe
   ],
   templateUrl: './add-item.dialog.html',
   styleUrl: './add-item.dialog.scss'
