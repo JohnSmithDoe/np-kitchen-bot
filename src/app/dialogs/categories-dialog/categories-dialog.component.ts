@@ -13,6 +13,7 @@ import {
   IonTitle,
   IonToolbar
 } from "@ionic/angular/standalone";
+import {TranslateModule} from "@ngx-translate/core";
 import {StorageCategory, StorageItem} from "../../@types/types";
 import {DatabaseService} from "../../services/database.service";
 
@@ -33,7 +34,8 @@ import {DatabaseService} from "../../services/database.service";
     IonList,
     IonItem,
     IonCheckbox,
-    FormsModule
+    FormsModule,
+    TranslateModule
 
   ]
 })

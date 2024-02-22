@@ -1,0 +1,14 @@
+{
+	"shoppinglist.page.title": "",
+	"inventory.page.title": "Lagerung",
+	"home.page.title.shopping": "",
+	"home.page.title.inventory": "",
+	"new.item.dialog.button.close": "Abbrechen",
+	"new.item.dialog.title": "Neuer Eintrag",
+	"new.item.dialog.button.create": "Anlegen",
+	"new.item.dialog.name": "Name",
+	"new.item.dialog.name.placeholder": "Gib einen Namen ein",
+	"new.item.dialog.categories": "Kategorien:",
+	"new.item.dialog.categories.empty": "Klicke hier zum hinzufügen...",
+	"categories": "XXXXXXXXX"
+}

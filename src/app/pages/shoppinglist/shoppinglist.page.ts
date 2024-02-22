@@ -8,10 +8,12 @@ import {
   IonFabButton,
   IonHeader,
   IonIcon,
+  IonLabel,
   IonMenuButton,
   IonTitle,
   IonToolbar
 } from '@ionic/angular/standalone';
+import {TranslateModule} from "@ngx-translate/core";
 import {addIcons} from "ionicons";
 import {add, remove} from "ionicons/icons";
 import {StorageItem, StorageItemList} from "../../@types/types";
@@ -24,7 +26,7 @@ import {DatabaseService} from "../../services/database.service";
   templateUrl: 'shoppinglist.page.html',
   styleUrls: ['shoppinglist.page.scss'],
   standalone: true,
-  imports: [StorageListComponent, IonHeader, IonToolbar, IonContent, IonFab, IonFabButton, IonIcon, IonTitle, AddItemDialog, IonMenuButton, IonButtons, IonButton, JsonPipe],
+  imports: [StorageListComponent, IonHeader, IonToolbar, IonContent, IonFab, IonFabButton, IonIcon, IonTitle, AddItemDialog, IonMenuButton, IonButtons, IonButton, JsonPipe, IonLabel, TranslateModule],
 })
 export class ShoppinglistPage implements OnInit{
 

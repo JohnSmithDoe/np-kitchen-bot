@@ -11,6 +11,7 @@ import {
   IonTitle,
   IonToolbar
 } from '@ionic/angular/standalone';
+import {TranslateModule} from "@ngx-translate/core";
 import {addIcons} from "ionicons";
 import {add, remove} from "ionicons/icons";
 import {StorageItem, StorageItemList} from "../../@types/types";
@@ -23,7 +24,7 @@ import {DatabaseService} from "../../services/database.service";
   templateUrl: 'inventory.page.html',
   styleUrls: ['inventory.page.scss'],
   standalone: true,
-  imports: [StorageListComponent, IonHeader, IonToolbar, IonContent, IonFab, IonFabButton, IonIcon, IonTitle, AddItemDialog, IonButtons, IonMenuButton, IonButton],
+  imports: [StorageListComponent, IonHeader, IonToolbar, IonContent, IonFab, IonFabButton, IonIcon, IonTitle, AddItemDialog, IonButtons, IonMenuButton, IonButton, TranslateModule],
 })
 export class InventoryPage implements OnInit{
   readonly #database = inject(DatabaseService);

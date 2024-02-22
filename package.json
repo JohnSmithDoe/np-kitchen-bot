@@ -11,7 +11,9 @@
     "test": "ng test",
     "lint": "ng lint",
     "serve:prod": "ionic serve --prod",
-    "build:android": "ionic capacitor build android"
+    "build:android": "ionic capacitor build android",
+    "i18n:init": "ngx-translate-extract --input ./src --output ./src/assets/i18n/template.json --key-as-default-value --replace --format json",
+    "i18n:extract": "ngx-translate-extract --input ./src --output src/assets/i18n/de.json --clean --format json"
   },
   "private": false,
   "dependencies": {
@@ -32,6 +34,8 @@
     "@capacitor/status-bar": "5.0.7",
     "@ionic/angular": "^7.5.0",
     "@ionic/storage-angular": "^4.0.0",
+    "@ngx-translate/core": "^15.0.0",
+    "@ngx-translate/http-loader": "^8.0.0",
     "dayjs": "^1.11.10",
     "ionicons": "^7.2.1",
     "rxjs": "~7.8.0",
@@ -53,6 +57,7 @@
     "@types/jasmine": "~5.1.0",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
+    "@vendure/ngx-translate-extract": "^9.1.0",
     "eslint": "^7.26.0",
     "eslint-plugin-import": "2.22.1",
     "eslint-plugin-jsdoc": "30.7.6",

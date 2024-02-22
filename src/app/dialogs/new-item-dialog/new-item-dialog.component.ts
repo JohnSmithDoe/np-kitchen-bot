@@ -16,6 +16,7 @@ import {
   IonTitle,
   IonToolbar
 } from "@ionic/angular/standalone";
+import {TranslateModule} from "@ngx-translate/core";
 import {addIcons} from "ionicons";
 import {closeCircle} from "ionicons/icons";
 import {StorageItem} from "../../@types/types";
@@ -42,6 +43,7 @@ import {CategoriesDialogComponent} from "../categories-dialog/categories-dialog.
     IonLabel,
     IonIcon,
     CategoriesDialogComponent,
+    TranslateModule,
   ],
   templateUrl: './new-item-dialog.component.html',
   styleUrl: './new-item-dialog.component.scss'

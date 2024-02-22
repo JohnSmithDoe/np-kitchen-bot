@@ -12,6 +12,7 @@ import {
   IonTitle,
   IonToolbar
 } from '@ionic/angular/standalone';
+import {TranslateModule} from "@ngx-translate/core";
 import {addIcons} from "ionicons";
 import {ellipse, square, triangle} from "ionicons/icons";
 import {CommonActionsSheetComponent} from "../../dialogs/common-actions-sheet/common-actions-sheet.component";
@@ -21,7 +22,7 @@ import {CommonActionsSheetComponent} from "../../dialogs/common-actions-sheet/co
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
   standalone: true,
-  imports: [IonHeader, IonToolbar, IonTitle, IonContent, IonIcon, IonLabel, IonTabBar, IonTabButton, IonTabs, IonActionSheet, IonButton, CommonActionsSheetComponent],
+  imports: [IonHeader, IonToolbar, IonTitle, IonContent, IonIcon, IonLabel, IonTabBar, IonTabButton, IonTabs, IonActionSheet, IonButton, CommonActionsSheetComponent, TranslateModule],
 })
 export class HomePage {
 
