@@ -3,18 +3,21 @@
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
-    <ion-title>Storage</ion-title>
+    <ion-title>Inventory</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="isAdding = true">
+        <ion-icon name="add" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-fab slot="fixed" vertical="bottom" horizontal="end">
-    <ion-fab-button  size="small" (click)="isAdding = true"><ion-icon name="add"></ion-icon></ion-fab-button>
-  </ion-fab>
-  <app-storage-list [itemList]="inventory"
+<ion-content>
+  <app-storage-list #storageList
+                    [itemList]="inventory"
                     type="extended"
                     (moveItem)="moveToShoppingList($event)"
   ></app-storage-list>
 </ion-content>
 
-<app-add-item-dialog [isOpen]="isAdding" (addItem)="addItem($event)"></app-add-item-dialog>
+<app-add-item-dialog [isOpen]="isAdding" (addItem)="storageList.addItem($event); isAdding = false;"></app-add-item-dialog>

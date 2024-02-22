@@ -31,7 +31,7 @@ export class AddItemDialog implements OnChanges {
     if(changes.hasOwnProperty('isOpen') && this.isOpen) {
       this.isCreating = false;
       this.newItemName = null;
-      this.itemList = this.#database.all;
+      this.itemList ??= this.#database.all;
     }
   }
 

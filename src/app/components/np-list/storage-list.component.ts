@@ -21,7 +21,7 @@ import {
 } from '@ionic/angular/standalone';
 import {addIcons} from "ionicons";
 import {add, cart, remove} from "ionicons/icons";
-import {NPIonDragEvent, StorageItem, StorageItemList} from "../../@types/types";
+import {NPIonDragEvent, StorageCategory, StorageItem, StorageItemList} from "../../@types/types";
 import {DatabaseService} from "../../services/database.service";
 import {getCategoriesFromList} from "../../utils";
 
@@ -47,7 +47,7 @@ import {getCategoriesFromList} from "../../utils";
     IonListHeader,
     NgTemplateOutlet,
     IonContent,
-    IonText
+    IonText,
   ]
 })
 export class StorageListComponent implements OnInit {
@@ -60,13 +60,13 @@ export class StorageListComponent implements OnInit {
 
   @Output() createItem = new EventEmitter<string>();
   @Output() selectItem = new EventEmitter<StorageItem>();
-  @Output() deleteItem = new EventEmitter<StorageItem>();
   @Output() moveItem = new EventEmitter<StorageItem>();
 
   categories: { items: StorageItem[]; name: string }[] = [];
   items: StorageItem[] = [];
   mode: 'alphabetical' | 'categories' = 'alphabetical';
   searchTerm?: string | null;
+  currentCategory?: StorageCategory;
 
   constructor() {
     addIcons({add, remove, cart})
@@ -74,11 +74,22 @@ export class StorageListComponent implements OnInit {
 
   ngOnInit(): void {
     this.items = this.itemList.items;
-    this.categories = getCategoriesFromList(this.itemList);
+    this.updateCategories();
     this.searchTerm = undefined;
   }
 
-  chooseCategory(category: { items: StorageItem[]; name: string }) {
+  // needs to be called on changes inside the itemList
+  updateCategories() {
+    this.categories = getCategoriesFromList(this.itemList);
+    if(this.currentCategory) {
+      this.currentCategory =
+        this.categories.find(cat => cat.name === this.currentCategory?.name);
+      this.items = this.currentCategory?.items ?? this.itemList.items;
+    }
+  }
+
+  chooseCategory(category: StorageCategory) {
+    this.currentCategory = category;
     this.items = category.items;
     this.mode = 'alphabetical';
   }
@@ -102,25 +113,36 @@ export class StorageListComponent implements OnInit {
   setDisplayMode(mode: 'alphabetical' | 'categories') {
     this.items = this.itemList.items;
     this.mode = mode;
+    this.currentCategory = undefined;
   }
 
-  async deleteOnDrag($event: NPIonDragEvent, item: StorageItem, list: IonList) {
+  async deleteItemOnDrag($event: NPIonDragEvent, item: StorageItem, list: IonList) {
     // doubble the length or 250px
     if ($event.detail.ratio > 2 || $event.detail.amount > 250) {
-      await this.deleteFromList(list, item);
+      await this.deleteItem(list, item);
     }
   }
 
-  async deleteFromList(list: IonList, item: StorageItem) {
+  async deleteItem(list: IonList, item: StorageItem) {
     await list.closeSlidingItems();
-    this.deleteItem.emit(item);
+    await this.#database.deleteItem(item, this.itemList);
+    this.updateCategories();
   }
+
+  async addItem(item?: StorageItem) {
+    await this.#database.addItem(item, this.itemList);
+    this.updateCategories();
+  }
+
 
   async handleReorder(ev: CustomEvent<ItemReorderEventDetail>) {
     // The `from` and `to` properties contain the index of the item
     // when the drag started and ended, respectively
-    console.log('Dragged from index', ev.detail.from, 'to', ev.detail.to);
-    await this.#database.reorder(this.itemList, ev.detail.from, ev.detail.to);
+    console.log('Dragged from index', ev.detail.from, 'to', ev.detail.to, this.currentCategory);
+    if(!this.currentCategory) {
+      console.log('reordering index', ev.detail.from, 'to', ev.detail.to);
+      await this.#database.reorder(this.itemList, ev.detail.from, ev.detail.to);
+    }
     // Finish the reorder and position the item in the DOM based on
     // where the gesture ended. This method can also be called directly
     // by the reorder group

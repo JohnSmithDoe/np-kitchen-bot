@@ -26,7 +26,6 @@
   }
 </ng-template>
 
-
 <ng-template #listSimple>
   <ion-list>
     @if (!!header) {
@@ -50,10 +49,10 @@
 <ng-template #listComplex>
   <ion-list #ionList>
     <!-- Casting $event to $any is a temporary fix for this bug https://github.com/ionic-team/ionic-framework/issues/24245 -->
-    <ion-reorder-group [disabled]="false" (ionItemReorder)="handleReorder($any($event))">
+    <ion-reorder-group [disabled]="!!currentCategory" (ionItemReorder)="handleReorder($any($event))">
       @for (item of items; track item.id) {
 
-        <ion-item-sliding (ionDrag)="deleteOnDrag($event, item, ionList)">
+        <ion-item-sliding (ionDrag)="deleteItemOnDrag($event, item, ionList)">
           <ion-item>
             <ion-label [class.bought]="item.state === 'bought'">
              {{ item.quantity }} x {{ item.name }}</ion-label>
@@ -71,7 +70,7 @@
             <ion-reorder slot="start"></ion-reorder>
           </ion-item>
           <ion-item-options>
-            <ion-item-option color="danger" expandable (click)="deleteFromList(ionList, item)">Delete</ion-item-option>
+            <ion-item-option color="danger" expandable (click)="deleteItem(ionList, item)">Delete</ion-item-option>
           </ion-item-options>
         </ion-item-sliding>
       } @empty {

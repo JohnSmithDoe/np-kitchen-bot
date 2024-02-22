@@ -9,7 +9,9 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "lint": "ng lint"
+    "lint": "ng lint",
+    "serve:prod": "ionic serve --prod",
+    "build:android": "ionic capacitor build android"
   },
   "private": false,
   "dependencies": {
@@ -64,5 +66,5 @@
     "karma-jasmine-html-reporter": "~2.1.0",
     "typescript": "~5.2.2"
   },
-  "description": "An Ionic project"
+  "description": "np-kitchen-bot helps to control storage, shopping and recopies for the kitchen"
 }

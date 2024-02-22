@@ -1,5 +1,6 @@
 import {Component, inject, OnInit} from '@angular/core';
 import {
+  IonButton,
   IonButtons,
   IonContent,
   IonFab,
@@ -22,7 +23,7 @@ import {DatabaseService} from "../../services/database.service";
   templateUrl: 'inventory.page.html',
   styleUrls: ['inventory.page.scss'],
   standalone: true,
-  imports: [StorageListComponent, IonHeader, IonToolbar, IonContent, IonFab, IonFabButton, IonIcon, IonTitle, AddItemDialog, IonButtons, IonMenuButton],
+  imports: [StorageListComponent, IonHeader, IonToolbar, IonContent, IonFab, IonFabButton, IonIcon, IonTitle, AddItemDialog, IonButtons, IonMenuButton, IonButton],
 })
 export class InventoryPage implements OnInit{
   readonly #database = inject(DatabaseService);
@@ -37,20 +38,9 @@ export class InventoryPage implements OnInit{
     this.inventory = this.#database.storage;
   }
 
-
-  async addItem(item?: StorageItem) {
+  async addItem(storageList: StorageListComponent, item?: StorageItem) {
     this.isAdding = false;
-    if (item) {
-      // check duplicates
-      const foundItem = this.inventory.items.find(aItem => aItem.id === item.id);
-      if (foundItem) {
-        foundItem.quantity++;
-      } else {
-        item.quantity = 1;
-        this.inventory.items.push(item)
-        await this.#database.save();
-      }
-    }
+    await storageList.addItem(item);
   }
 
   async moveToShoppingList(item: StorageItem) {

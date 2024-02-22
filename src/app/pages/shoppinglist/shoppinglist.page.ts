@@ -50,7 +50,4 @@ export class ShoppinglistPage implements OnInit{
     await this.#database.save();
   }
 
-  async deleteItem(item: StorageItem) {
-    await this.#database.deleteItem(item, this.shoppingList);
-  }
 }

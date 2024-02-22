@@ -132,7 +132,7 @@ export class DatabaseService {
   }
 
   async deleteItem(item: StorageItem, list: StorageItemList) {
-    list.items.splice(list.items.indexOf(item), 1);
+    list.items.splice(list.items.findIndex(aItem => aItem.id === item.id ), 1);
     return this.save();
   }
 
