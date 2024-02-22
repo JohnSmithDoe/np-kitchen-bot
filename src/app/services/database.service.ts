@@ -5,37 +5,37 @@ import {uuidv4} from "../utils";
 
 
 const INITIAL_DATA = [
-  {id:'1', quantity: 0, name: "Apfel", category: "Obst" },
-  {id:'2', quantity: 0, name: "Banane", category: "Obst" },
-  {id:'3', quantity: 0, name: "Karotte", category: "Gemüse" },
-  {id:'4', quantity: 0, name: "Ei", category: "Protein" },
-  {id:'5', quantity: 0, name: "Milch", category: "Milchprodukte" },
-  {id:'6', quantity: 0, name: "Brot", category: "Getreideprodukte" },
-  {id:'7', quantity: 0, name: "Lachs", category: "Fisch" },
-  {id:'8', quantity: 0, name: "Spinat", category: "Gemüse" },
-  {id:'9', quantity: 0, name: "Huhn", category: "Fleisch" },
-  {id:'10', quantity: 0, name: "Joghurt", category: "Milchprodukte" },
-  {id:'11', quantity: 0, name: "Reis", category: "Getreideprodukte" },
-  {id:'12', quantity: 0, name: "Tomate", category: "Gemüse" },
-  {id:'13', quantity: 0, name: "Rindfleisch", category: "Fleisch" },
-  {id:'14', quantity: 0, name: "Käse", category: "Milchprodukte" },
-  {id:'15', quantity: 0, name: "Haferflocken", category: "Getreideprodukte" },
-  {id:'16', quantity: 0, name: "Thunfisch", category: "Fisch" },
-  {id:'17', quantity: 0, name: "Brokkoli", category: "Gemüse" },
-  {id:'18', quantity: 0, name: "Schweinefleisch", category: "Fleisch" },
-  {id:'19', quantity: 0, name: "Quark", category: "Milchprodukte" },
-  {id:'20', quantity: 0, name: "Nudeln", category: "Getreideprodukte" },
-  {id:'21', quantity: 0, name: "Heilbutt", category: "Fisch" },
-  {id:'22', quantity: 0, name: "Paprika", category: "Gemüse" },
-  {id:'23', quantity: 0, name: "Lammfleisch", category: "Fleisch" },
-  {id:'24', quantity: 0, name: "Butter", category: "Milchprodukte" },
-  {id:'25', quantity: 0, name: "Müsli", category: "Getreideprodukte" },
-  {id:'26', quantity: 0, name: "Garnelen", category: "Fisch" },
-  {id:'27', quantity: 0, name: "Zucchini", category: "Gemüse" },
-  {id:'28', quantity: 0, name: "Pute", category: "Fleisch" },
-  {id:'29', quantity: 0, name: "Milchreis", category: "Milchprodukte" },
-  {id:'30', quantity: 0, name: "Quinoa", category: "Getreideprodukte" },
-  {id:'31', quantity: 0, name: "Forelle", category: "Fisch" }
+  {id: '1', quantity: 0, name: "Apfel", category: ["Obst"]},
+  {id: '2', quantity: 0, name: "Banane", category: ["Obst"]},
+  {id: '3', quantity: 0, name: "Karotte", category: ["Gemüse"]},
+  {id: '4', quantity: 0, name: "Ei", category: ["Protein"]},
+  {id: '5', quantity: 0, name: "Milch", category: ["Milchprodukte"]},
+  {id: '6', quantity: 0, name: "Brot", category: ["Getreideprodukte"]},
+  {id: '7', quantity: 0, name: "Lachs", category: ["Fisch"]},
+  {id: '8', quantity: 0, name: "Spinat", category: ["Gemüse"]},
+  {id: '9', quantity: 0, name: "Huhn", category: ["Fleisch"]},
+  {id: '10', quantity: 0, name: "Joghurt", category: ["Milchprodukte"]},
+  {id: '11', quantity: 0, name: "Reis", category: ["Getreideprodukte"]},
+  {id: '12', quantity: 0, name: "Tomate", category: ["Gemüse"]},
+  {id: '13', quantity: 0, name: "Rindfleisch", category: ["Fleisch"]},
+  {id: '14', quantity: 0, name: "Käse", category: ["Milchprodukte"]},
+  {id: '15', quantity: 0, name: "Haferflocken", category: ["Getreideprodukte"]},
+  {id: '16', quantity: 0, name: "Thunfisch", category: ["Fisch"]},
+  {id: '17', quantity: 0, name: "Brokkoli", category: ["Gemüse"]},
+  {id: '18', quantity: 0, name: "Schweinefleisch", category: ["Fleisch"]},
+  {id: '19', quantity: 0, name: "Quark", category: ["Milchprodukte"]},
+  {id: '20', quantity: 0, name: "Nudeln", category: ["Getreideprodukte"]},
+  {id: '21', quantity: 0, name: "Heilbutt", category: ["Fisch"]},
+  {id: '22', quantity: 0, name: "Paprika", category: ["Gemüse"]},
+  {id: '23', quantity: 0, name: "Lammfleisch", category: ["Fleisch"]},
+  {id: '24', quantity: 0, name: "Butter", category: ["Milchprodukte"]},
+  {id: '25', quantity: 0, name: "Müsli", category: ["Getreideprodukte"]},
+  {id: '26', quantity: 0, name: "Garnelen", category: ["Fisch"]},
+  {id: '27', quantity: 0, name: "Zucchini", category: ["Gemüse"]},
+  {id: '28', quantity: 0, name: "Pute", category: ["Fleisch"]},
+  {id: '29', quantity: 0, name: "Milchreis", category: ["Milchprodukte"]},
+  {id: '30', quantity: 0, name: "Quinoa", category: ["Getreideprodukte"]},
+  {id: '31', quantity: 0, name: "Forelle", category: ["Fisch"]}
 ];
 
 @Injectable({
@@ -73,13 +73,15 @@ export class DatabaseService {
   private updateDatabase() {
     this.#store.categories = [];
     this.all.items.forEach(item => {
-      let cat = this.categories.find(category => category.name === item.category);
+      item.category?.forEach(category => {
+        let cat = this.categories.find(aCategory => category === aCategory.name);
       if (!cat && item.category) {
-        cat = {items: [item], name: item.category}
+        cat = {items: [item], name: category}
         this.categories.push(cat);
       } else {
         cat?.items.push(item);
       }
+      })
     });
   }
 

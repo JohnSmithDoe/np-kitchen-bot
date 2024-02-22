@@ -49,7 +49,7 @@
 <ng-template #listComplex>
   <ion-list #ionList>
     <!-- Casting $event to $any is a temporary fix for this bug https://github.com/ionic-team/ionic-framework/issues/24245 -->
-    <ion-reorder-group [disabled]="!!currentCategory" (ionItemReorder)="handleReorder($any($event))">
+    <ion-reorder-group [disabled]="false" (ionItemReorder)="handleReorder($any($event))">
       @for (item of items; track item.id) {
 
         <ion-item-sliding (ionDrag)="deleteItemOnDrag($event, item, ionList)">

@@ -1,8 +1,8 @@
-import {JsonPipe, NgTemplateOutlet} from "@angular/common";
+import {NgTemplateOutlet} from "@angular/common";
 import {Component, EventEmitter, inject, Input, OnChanges, Output, SimpleChanges} from '@angular/core';
-import {IonicModule} from "@ionic/angular";
+import {IonButton, IonButtons, IonContent, IonHeader, IonModal, IonTitle, IonToolbar} from "@ionic/angular/standalone";
 import {StorageItem, StorageItemList} from "../../@types/types";
-import {StorageListComponent} from "../../components/np-list/storage-list.component";
+import {StorageListComponent} from "../../components/storage-list/storage-list.component";
 import {DatabaseService} from "../../services/database.service";
 import {NewItemDialogComponent} from "../new-item-dialog/new-item-dialog.component";
 
@@ -10,11 +10,16 @@ import {NewItemDialogComponent} from "../new-item-dialog/new-item-dialog.compone
   selector: 'app-add-item-dialog',
   standalone: true,
   imports: [
-    IonicModule,
+    IonButton,
     NewItemDialogComponent,
     NgTemplateOutlet,
     StorageListComponent,
-    JsonPipe
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonModal,
+    IonButtons,
+    IonContent,
   ],
   templateUrl: './add-item.dialog.html',
   styleUrl: './add-item.dialog.scss'
@@ -46,14 +51,13 @@ export class AddItemDialog implements OnChanges {
   }
 
   async createItem(item?: StorageItem) {
+    this.isCreating = false;
     if (item?.name.length) {
       this.#database.addToAllItems(item);
       await this.#database.save();
-    }
-    this.isCreating = false;
     this.newItemName = null;
     this.selectItem(item);
-
+    }
   }
 
   selectItem(item?: StorageItem) {

@@ -14,7 +14,7 @@ import {
 import {addIcons} from "ionicons";
 import {add, remove} from "ionicons/icons";
 import {StorageItem, StorageItemList} from "../../@types/types";
-import {StorageListComponent} from "../../components/np-list/storage-list.component";
+import {StorageListComponent} from "../../components/storage-list/storage-list.component";
 import {AddItemDialog} from "../../dialogs/add-item-dialog/add-item.dialog";
 import {DatabaseService} from "../../services/database.service";
 

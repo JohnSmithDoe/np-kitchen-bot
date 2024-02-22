@@ -13,15 +13,15 @@ export function uuidv4() {
 export function getCategoriesFromList(itemList: StorageItemList) {
   return itemList.items.reduce(
     (categories, item) => {
-      if (item.category) {
+      item.category?.forEach(category => {
         // hmm: string category on item
-        const found = categories.find(cat => cat.name === item.category);
+        const found = categories.find(cat => cat.name === category);
         if (!found) {
-          categories.push({name: item.category, items: [item]})
+          categories.push({name: category, items: [item]})
         }else {
           found.items.push(item);
         }
-      }
+      })
       return categories;
     },
     [] as StorageCategory[]

@@ -101,7 +101,8 @@ export class StorageListComponent implements OnInit {
       this.items = this.itemList.items.filter(item => {
         let foundByName = item.name.toLowerCase().indexOf(searchFor) >= 0;
         // or by category
-        foundByName ||= this.search === 'full' && (item.category?.toLowerCase().indexOf(searchFor) ?? -1) >= 0;
+        foundByName ||= this.search === 'full'
+          && ((item.category?.findIndex(cat => cat.toLowerCase().indexOf(searchFor) >= 0) ?? -1) >= 0);
         return foundByName;
       });
     } else {
@@ -146,7 +147,7 @@ export class StorageListComponent implements OnInit {
     // Finish the reorder and position the item in the DOM based on
     // where the gesture ended. This method can also be called directly
     // by the reorder group
-    ev.detail.complete();
+    ev.detail.complete(!this.currentCategory);
   }
 }
 

@@ -1,18 +1,47 @@
-import {JsonPipe} from "@angular/common";
 import {Component, EventEmitter, inject, Input, OnChanges, Output, SimpleChanges} from '@angular/core';
 import {FormsModule} from "@angular/forms";
-import {IonicModule} from "@ionic/angular";
+import {
+  IonAvatar,
+  IonButton,
+  IonButtons,
+  IonChip,
+  IonContent,
+  IonHeader,
+  IonIcon,
+  IonInput,
+  IonItem,
+  IonLabel,
+  IonList,
+  IonModal,
+  IonTitle,
+  IonToolbar
+} from "@ionic/angular/standalone";
+import {addIcons} from "ionicons";
+import {closeCircle} from "ionicons/icons";
 import {StorageItem} from "../../@types/types";
 import {DatabaseService} from "../../services/database.service";
+import {CategoriesDialogComponent} from "../categories-dialog/categories-dialog.component";
 
 @Component({
   selector: 'app-new-item-dialog',
   standalone: true,
   imports: [
-    IonicModule,
+    IonButton,
     FormsModule,
-    JsonPipe
-
+    IonToolbar,
+    IonHeader,
+    IonModal,
+    IonTitle,
+    IonButtons,
+    IonContent,
+    IonList,
+    IonItem,
+    IonInput,
+    IonChip,
+    IonAvatar,
+    IonLabel,
+    IonIcon,
+    CategoriesDialogComponent,
   ],
   templateUrl: './new-item-dialog.component.html',
   styleUrl: './new-item-dialog.component.scss'
@@ -24,6 +53,11 @@ export class NewItemDialogComponent implements OnChanges {
   @Input() value!: StorageItem;
 
   @Output() createItem: EventEmitter<StorageItem> = new EventEmitter<StorageItem>();
+  selectCategories = false;
+
+  constructor() {
+    addIcons({closeCircle})
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if(changes.hasOwnProperty('isOpen') && this.isOpen) {
@@ -36,4 +70,14 @@ export class NewItemDialogComponent implements OnChanges {
     this.createItem.emit(doCreate ? this.value : undefined);
   }
 
+  setCategories(categories?: string[]) {
+    this.selectCategories = false;
+    if(categories) {
+      this.value.category = categories;
+    }
+  }
+
+  removeCategory(cat: string) {
+    this.value.category?.splice(this.value.category?.indexOf(cat),1);
+  }
 }
