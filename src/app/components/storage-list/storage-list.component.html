@@ -35,9 +35,7 @@
     }
 
     @for (item of items; track item.id) {
-      <ion-item [button]="true" (click)="selectItem.emit(item)">
-        <ion-label>{{ item.name }} <small>({{item.category??'na'}})</small></ion-label>
-      </ion-item>
+      <app-storage-item [item]="item" (selectItem)="selectItem.emit(item)"></app-storage-item>
     } @empty {
       <ion-item [button]="true" (click)="createItem.emit(searchTerm ?? undefined)" [color]="'primary'">
         <ion-label>{{ searchTerm }} not found! Click here to create ...</ion-label>
@@ -53,43 +51,38 @@
       @for (item of items; track item.id) {
 
         <ion-item-sliding (ionDrag)="deleteItemOnDrag($event, item, ionList)">
-          <ion-item>
-            <ion-label [class.bought]="item.state === 'bought'">
-             {{ item.quantity }} x {{ item.name }}</ion-label>
-            <ion-buttons slot="end">
-              <ion-button (click)="moveItem.emit(item)">
-                <ion-icon name="cart"></ion-icon>
-              </ion-button>
-              <ion-button (click)="item.quantity = item.quantity +1">
-                <ion-icon name="add"></ion-icon>
-              </ion-button>
-              <ion-button (click)="item.quantity = item.quantity -1">
-                <ion-icon name="remove"></ion-icon>
-              </ion-button>
-            </ion-buttons>
-            <ion-reorder slot="start"></ion-reorder>
-          </ion-item>
+          <app-storage-item type="extended" [item]="item"
+                            (selectItem)="selectItem.emit(item)"
+                            (cartItem)="moveItem.emit(item)"
+          ></app-storage-item>
           <ion-item-options>
             <ion-item-option color="danger" expandable (click)="deleteItemFromList(ionList, item)">Delete</ion-item-option>
           </ion-item-options>
         </ion-item-sliding>
       } @empty {
         @if (!!searchTerm) {
-          <ion-item [button]="true" (click)="addTemporaryItem()">
-            <ion-label class="ion-text-wrap">
-              {{ 'storage.list.notfound.add.temporary' | translate : {value: searchTerm} }}
-            </ion-label>
-          </ion-item>
+          <app-storage-item
+            header="{{ 'storage.list.notfound.add.temporary' | translate : {value: searchTerm} }}"
+            [label]="searchTerm" (selectItem)="addTemporaryItem($event)"
+          ></app-storage-item>
+          <app-storage-item
+            header="{{ 'storage.list.notfound.add.permanent' | translate : {value: searchTerm} }}"
+            [label]="searchTerm" (selectItem)="createItem.emit(searchTerm)"
+          ></app-storage-item>
+
           @if (alternatives.length) {
+            <ion-list-header color="secondary">
+              <ion-label>found in globals</ion-label>
+            </ion-list-header>
             @for (alternate of alternatives; track alternate.id) {
-              <ion-item [button]="true" (click)="selectItem.emit(alternate)" [color]="'secondary'">
-                <ion-label> {{ searchTerm }} found in: {{ alternate.name }} Click here to add this ...</ion-label>
-              </ion-item>
+              <app-storage-item
+                [item]="alternate"
+                color="secondary"
+                helper="Click here to add this ..."
+                (selectItem)="selectItem.emit(alternate)"
+
+              ></app-storage-item>
             }
-          } @else {
-            <ion-item [button]="true" (click)="createItem.emit(searchTerm)" [color]="'primary'">
-              <ion-label>{{ searchTerm }} not found! Click here to create ...</ion-label>
-            </ion-item>
           }
         } @else {
           <ion-item>

@@ -1,8 +1,8 @@
 {
-	"shoppinglist.page.title": "",
+	"shoppinglist.page.title": "Einkaufsliste",
 	"inventory.page.title": "Lagerung",
-	"home.page.title.shopping": "",
-	"home.page.title.inventory": "",
+	"home.page.title.shopping": "Einkaufsliste",
+	"home.page.title.inventory": "Lagerung",
 	"new.item.dialog.button.close": "Abbrechen",
 	"new.item.dialog.title": "Neuer Eintrag",
 	"new.item.dialog.button.create": "Anlegen",
@@ -10,5 +10,8 @@
 	"new.item.dialog.name.placeholder": "Gib einen Namen ein",
 	"new.item.dialog.categories": "Kategorien:",
 	"new.item.dialog.categories.empty": "Klicke hier zum hinzufügen...",
-	"categories": "XXXXXXXXX"
+	"categories": "XXXXXXXXX",
+	"storage.list.notfound.add.temporary": "Zur Liste hinzufügen",
+	"storage.list.notfound.add.permanent": "Neuen Eintrag anlegen und zur Liste hinzufügen",
+	"storage.list.empty": "Die Liste enthält keine Einträge"
 }

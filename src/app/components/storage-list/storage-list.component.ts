@@ -25,7 +25,8 @@ import {addIcons} from "ionicons";
 import {add, cart, remove} from "ionicons/icons";
 import {NPIonDragEvent, StorageCategory, StorageItem, StorageItemList} from "../../@types/types";
 import {DatabaseService} from "../../services/database.service";
-import {getCategoriesFromList, uuidv4} from "../../utils";
+import {getCategoriesFromList} from "../../utils";
+import {StorageItemComponent} from "../storage-item/storage-item.component";
 
 @Component({
   selector: 'app-storage-list',
@@ -52,6 +53,7 @@ import {getCategoriesFromList, uuidv4} from "../../utils";
     IonText,
     FormsModule,
     TranslateModule,
+    StorageItemComponent,
   ]
 })
 export class StorageListComponent implements OnInit {
@@ -161,9 +163,8 @@ export class StorageListComponent implements OnInit {
     ev.detail.complete(!this.currentCategory);
   }
 
-  async addTemporaryItem() {
-    if(!this.searchTerm) return;
-    await this.#database.addItem({name: this.searchTerm, id: uuidv4(), quantity: 1}, this.itemList);
+  async addTemporaryItem(item: StorageItem) {
+    await this.#database.addItem(item, this.itemList);
     this.searchItem(null);
   }
 
