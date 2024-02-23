@@ -1,4 +1,4 @@
-<ion-searchbar (ionInput)="searchItem($event)" [debounce]="250"></ion-searchbar>
+<ion-searchbar [(ngModel)]="searchTerm" (ionInput)="searchTermChange($event)" [debounce]="250"></ion-searchbar>
 <ion-toolbar>
   <ion-buttons slot="end">
     <ion-button (click)="setDisplayMode('alphabetical')">A-Z</ion-button>
@@ -70,13 +70,35 @@
             <ion-reorder slot="start"></ion-reorder>
           </ion-item>
           <ion-item-options>
-            <ion-item-option color="danger" expandable (click)="deleteItem(ionList, item)">Delete</ion-item-option>
+            <ion-item-option color="danger" expandable (click)="deleteItemFromList(ionList, item)">Delete</ion-item-option>
           </ion-item-options>
         </ion-item-sliding>
       } @empty {
-        <ion-item>
-          {{!!searchTerm ? 'Not found' : 'Empty list' }}
-        </ion-item>
+        @if (!!searchTerm) {
+          <ion-item [button]="true" (click)="addTemporaryItem()">
+            <ion-label class="ion-text-wrap">
+              {{ 'storage.list.notfound.add.temporary' | translate : {value: searchTerm} }}
+            </ion-label>
+          </ion-item>
+          @if (alternatives.length) {
+            @for (alternate of alternatives; track alternate.id) {
+              <ion-item [button]="true" (click)="selectItem.emit(alternate)" [color]="'secondary'">
+                <ion-label> {{ searchTerm }} found in: {{ alternate.name }} Click here to add this ...</ion-label>
+              </ion-item>
+            }
+          } @else {
+            <ion-item [button]="true" (click)="createItem.emit(searchTerm)" [color]="'primary'">
+              <ion-label>{{ searchTerm }} not found! Click here to create ...</ion-label>
+            </ion-item>
+          }
+        } @else {
+          <ion-item>
+            <ion-label class="ion-text-wrap">
+              {{ 'storage.list.empty' | translate }}
+            </ion-label>
+          </ion-item>
+        }
+
       }
     </ion-reorder-group>
   </ion-list>

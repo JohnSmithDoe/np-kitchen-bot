@@ -1,13 +1,11 @@
-<ion-modal [isOpen]="isOpen">
-  <ng-template>
     <ion-header>
       <ion-toolbar>
         <ion-buttons slot="start">
-          <ion-button (click)="close(false)">{{ 'new.item.dialog.button.close' | translate }}</ion-button>
+          <ion-button (click)="cancel.emit()">{{ 'new.item.dialog.button.close' | translate }}</ion-button>
         </ion-buttons>
         <ion-title>{{'new.item.dialog.title' | translate}}</ion-title>
         <ion-buttons slot="end">
-          <ion-button (click)="close(true)">{{ 'new.item.dialog.button.create' | translate }}</ion-button>
+          <ion-button (click)="createItem.emit(value)">{{ 'new.item.dialog.button.create' | translate }}</ion-button>
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
@@ -36,9 +34,11 @@
         </ion-item>
       </ion-list>
     </ion-content>
-  </ng-template>
-</ion-modal>
-<app-categories-dialog [isOpen]="selectCategories"
-                       [item]="value"
-                       (confirm)="setCategories($event)"
-></app-categories-dialog>
+    <ion-modal [isOpen]="selectCategories">
+      <ng-template>
+        <app-categories-dialog [item]="value"
+                               (confirm)="setCategories($event)"
+                               (cancel)="selectCategories = false"
+        ></app-categories-dialog>
+      </ng-template>
+    </ion-modal>

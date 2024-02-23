@@ -1,4 +1,4 @@
-import {Component, inject, OnInit} from '@angular/core';
+import {Component, inject, OnInit, ViewChild} from '@angular/core';
 import {
   IonButton,
   IonButtons,
@@ -8,6 +8,7 @@ import {
   IonHeader,
   IonIcon,
   IonMenuButton,
+  IonModal,
   IonTitle,
   IonToolbar
 } from '@ionic/angular/standalone';
@@ -17,6 +18,7 @@ import {add, remove} from "ionicons/icons";
 import {StorageItem, StorageItemList} from "../../@types/types";
 import {StorageListComponent} from "../../components/storage-list/storage-list.component";
 import {AddItemDialog} from "../../dialogs/add-item-dialog/add-item.dialog";
+import {NewItemDialogComponent} from "../../dialogs/new-item-dialog/new-item-dialog.component";
 import {DatabaseService} from "../../services/database.service";
 
 @Component({
@@ -24,12 +26,17 @@ import {DatabaseService} from "../../services/database.service";
   templateUrl: 'inventory.page.html',
   styleUrls: ['inventory.page.scss'],
   standalone: true,
-  imports: [StorageListComponent, IonHeader, IonToolbar, IonContent, IonFab, IonFabButton, IonIcon, IonTitle, AddItemDialog, IonButtons, IonMenuButton, IonButton, TranslateModule],
+  imports: [StorageListComponent, IonHeader, IonToolbar, IonContent, IonFab, IonFabButton, IonIcon, IonTitle, AddItemDialog, IonButtons, IonMenuButton, IonButton, TranslateModule, IonModal, NewItemDialogComponent],
 })
 export class InventoryPage implements OnInit{
+  @ViewChild(StorageListComponent, {static: true}) storageList!: StorageListComponent;
+
   readonly #database = inject(DatabaseService);
   inventory!: StorageItemList;
+
   isAdding = false;
+  isCreating = false;
+  createNewItemName: string | null | undefined;
 
   constructor() {
     addIcons({add, remove})
@@ -37,11 +44,34 @@ export class InventoryPage implements OnInit{
 
   ngOnInit(): void {
     this.inventory = this.#database.storage;
+    this.createNewItemName = null;
   }
 
-  async addItem(storageList: StorageListComponent, item?: StorageItem) {
+  async addItemToInventory(item?: StorageItem) {
     this.isAdding = false;
-    await storageList.addItem(item);
+    await this.#database.addItem(item, this.inventory);
+    this.storageList.refresh();
+  }
+
+  showCreateDialog(newItemName: string) {
+    this.isAdding = false;
+    this.isCreating = true;
+    this.createNewItemName = newItemName;
+  }
+
+  async createItemAndAddToInventory(item?: StorageItem) {
+    this.isCreating = false;
+    this.createNewItemName = null;
+    if (item?.name.length) {
+      this.#database.addToAllItems(item);
+      await this.#database.addItem(item, this.inventory);
+      this.storageList.refresh();
+    }
+  }
+
+  async removeItemFromInventory(item: StorageItem) {
+    await this.#database.deleteItem(item, this.inventory);
+    this.storageList.refresh();
   }
 
   async moveToShoppingList(item: StorageItem) {

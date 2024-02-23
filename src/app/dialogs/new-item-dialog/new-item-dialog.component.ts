@@ -1,4 +1,4 @@
-import {Component, EventEmitter, inject, Input, OnChanges, Output, SimpleChanges} from '@angular/core';
+import {Component, EventEmitter, inject, Input, OnInit, Output} from '@angular/core';
 import {FormsModule} from "@angular/forms";
 import {
   IonAvatar,
@@ -48,29 +48,23 @@ import {CategoriesDialogComponent} from "../categories-dialog/categories-dialog.
   templateUrl: './new-item-dialog.component.html',
   styleUrl: './new-item-dialog.component.scss'
 })
-export class NewItemDialogComponent implements OnChanges {
+export class NewItemDialogComponent implements OnInit {
   readonly #database = inject(DatabaseService);
-  @Input() isOpen = false;
   @Input() itemName?: string | null;
   @Input() value!: StorageItem;
 
-  @Output() createItem: EventEmitter<StorageItem> = new EventEmitter<StorageItem>();
+  @Output() createItem= new EventEmitter<StorageItem>();
+  @Output() cancel = new EventEmitter();
   selectCategories = false;
 
   constructor() {
     addIcons({closeCircle})
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if(changes.hasOwnProperty('isOpen') && this.isOpen) {
+  ngOnInit(): void {
         this.value = this.#database.createNewStorageItem(this.itemName ?? '')
-    }
   }
 
-  close(doCreate: boolean) {
-    this.isOpen = false;
-    this.createItem.emit(doCreate ? this.value : undefined);
-  }
 
   setCategories(categories?: string[]) {
     this.selectCategories = false;

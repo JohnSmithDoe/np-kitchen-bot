@@ -1,3 +1,8 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
 .item-category {
   display: inline-flex;
   justify-content: center;

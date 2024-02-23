@@ -1,13 +1,11 @@
-<ion-modal [isOpen]="isOpen">
-  <ng-template>
     <ion-header>
       <ion-toolbar>
         <ion-buttons slot="start">
-          <ion-button (click)="cancelChanges()">{{ 'categories' | translate }}</ion-button>
+          <ion-button (click)="cancel.emit()">{{ 'categories' | translate }}</ion-button>
         </ion-buttons>
         <ion-title>{{ 'title' }}</ion-title>
         <ion-buttons slot="end">
-          <ion-button (click)="confirmChanges()">Done</ion-button>
+          <ion-button (click)="confirm.emit(selection)">Done</ion-button>
         </ion-buttons>
       </ion-toolbar>
       <ion-toolbar>
@@ -30,5 +28,3 @@
         }
       </ion-list>
     </ion-content>
-  </ng-template>
-</ion-modal>

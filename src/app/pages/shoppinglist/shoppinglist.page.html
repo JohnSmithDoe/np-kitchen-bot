@@ -13,12 +13,30 @@
 </ion-header>
 
 <ion-content>
-  <app-storage-list #storageList
-                    [itemList]="shoppingList"
+  <app-storage-list [itemList]="shoppingList"
                     type="extended" search="name-only"
                     (moveItem)="buyItem($event)"
+                    (selectItem)="addItemToShoppingList($event)"
+                    (createItem)="showCreateDialog($event)"
   ></app-storage-list>
-
 </ion-content>
 
-<app-add-item-dialog [isOpen]="isAdding" (addItem)="storageList.addItem($event); isAdding = false;"></app-add-item-dialog>
+<ion-modal [isOpen]="isAdding">
+  <ng-template>
+    <app-add-item-dialog
+      (addItem)="addItemToShoppingList($event)"
+      (cancel)="isAdding = false"
+      (createItem)="showCreateDialog($event)"
+    ></app-add-item-dialog>
+  </ng-template>
+</ion-modal>
+
+<ion-modal [isOpen]="isCreating">
+  <ng-template>
+    <app-new-item-dialog
+      (cancel)="isCreating = false"
+      (createItem)="createItemAndAddToShoppingList($event)"
+      [itemName]="createNewItemName"
+    ></app-new-item-dialog>
+  </ng-template>
+</ion-modal>

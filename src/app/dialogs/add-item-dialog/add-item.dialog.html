@@ -1,5 +1,3 @@
-<ion-modal [isOpen]="isOpen">
-  <ng-template>
     <ion-header>
       <ion-toolbar>
         <ion-title>Modal</ion-title>
@@ -11,9 +9,6 @@
     <ion-content>
       <app-storage-list [itemList]="itemList"
                         (selectItem)="selectItem($event)"
-                        (createItem)="openNewDialog($event)"
+                        (createItem)="createNewItem($event)"
       ></app-storage-list>
-      <app-new-item-dialog [isOpen]="isCreating" [itemName]="newItemName" (createItem)="createItem($event)"></app-new-item-dialog>
     </ion-content>
-  </ng-template>
-</ion-modal>

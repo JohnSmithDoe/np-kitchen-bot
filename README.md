@@ -8,6 +8,15 @@
   * do this by using app-list
     * app-list cat-view?
     * filter, search...
+  * Use Cases shoppinglist
+    * Add Item from global list
+      * Create Item from Search input (global)
+        * Add to list afterward
+    * Create Item from Search input (temp/global)
+      * Add to list afterward
+      * If found global ask to add instead
+
+
 ## Barcode scanning
 https://ionic.io/blog/how-to-build-an-ionic-barcode-scanner-with-capacitor
 

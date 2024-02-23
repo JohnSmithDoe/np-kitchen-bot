@@ -42,10 +42,10 @@ import {DatabaseService} from "../../services/database.service";
 export class CategoriesDialogComponent implements OnInit {
   readonly #database = inject(DatabaseService);
 
-  @Input() isOpen = false;
   @Input() item?: StorageItem;
 
   @Output() confirm = new EventEmitter<string[]>();
+  @Output() cancel = new EventEmitter();
 
   items: StorageCategory[] = [];
   newCategories: StorageCategory[] = [];
@@ -61,16 +61,6 @@ export class CategoriesDialogComponent implements OnInit {
     if (this.item) {
       this.selection = this.item.category ?? [];
     }
-  }
-
-  cancelChanges() {
-    this.confirm.emit();
-    this.isOpen = false;
-  }
-
-  confirmChanges() {
-    this.confirm.emit(this.selection);
-    this.isOpen = false;
   }
 
   searchbarInput(ev: any) {

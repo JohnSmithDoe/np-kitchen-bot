@@ -1,5 +1,6 @@
 import {NgTemplateOutlet} from "@angular/common";
 import {Component, EventEmitter, inject, Input, OnInit, Output} from '@angular/core';
+import {FormsModule} from "@angular/forms";
 import {ItemReorderEventDetail, SearchbarCustomEvent} from "@ionic/angular";
 import {
   IonButton,
@@ -19,11 +20,12 @@ import {
   IonText,
   IonToolbar
 } from '@ionic/angular/standalone';
+import {TranslateModule} from "@ngx-translate/core";
 import {addIcons} from "ionicons";
 import {add, cart, remove} from "ionicons/icons";
 import {NPIonDragEvent, StorageCategory, StorageItem, StorageItemList} from "../../@types/types";
 import {DatabaseService} from "../../services/database.service";
-import {getCategoriesFromList} from "../../utils";
+import {getCategoriesFromList, uuidv4} from "../../utils";
 
 @Component({
   selector: 'app-storage-list',
@@ -48,6 +50,8 @@ import {getCategoriesFromList} from "../../utils";
     NgTemplateOutlet,
     IonContent,
     IonText,
+    FormsModule,
+    TranslateModule,
   ]
 })
 export class StorageListComponent implements OnInit {
@@ -60,10 +64,12 @@ export class StorageListComponent implements OnInit {
 
   @Output() createItem = new EventEmitter<string>();
   @Output() selectItem = new EventEmitter<StorageItem>();
+  @Output() deleteItem = new EventEmitter<StorageItem>();
   @Output() moveItem = new EventEmitter<StorageItem>();
 
   categories: { items: StorageItem[]; name: string }[] = [];
   items: StorageItem[] = [];
+  alternatives: StorageItem[] = [];
   mode: 'alphabetical' | 'categories' = 'alphabetical';
   searchTerm?: string | null;
   currentCategory?: StorageCategory;
@@ -94,8 +100,12 @@ export class StorageListComponent implements OnInit {
     this.mode = 'alphabetical';
   }
 
-  searchItem($event: SearchbarCustomEvent) {
-    this.searchTerm = $event.detail.value;
+  searchTermChange(ev: SearchbarCustomEvent) {
+    this.searchItem(ev.detail.value)
+  }
+
+  searchItem(searchTerm?: string|null) {
+    this.searchTerm = searchTerm;
     if (this.searchTerm) {
       const searchFor = this.searchTerm.toLowerCase();
       this.items = this.itemList.items.filter(item => {
@@ -105,11 +115,19 @@ export class StorageListComponent implements OnInit {
           && ((item.category?.findIndex(cat => cat.toLowerCase().indexOf(searchFor) >= 0) ?? -1) >= 0);
         return foundByName;
       });
+      this.alternatives = this.items.length
+        ? []
+        : this.#database.all.items.filter(item => {
+          let foundByName = item.name.toLowerCase().indexOf(searchFor) >= 0;
+          // or by category
+          foundByName ||= ((item.category?.findIndex(cat => cat.toLowerCase().indexOf(searchFor) >= 0) ?? -1) >= 0);
+          return foundByName;
+        });
     } else {
       this.items = this.itemList.items;
+      this.alternatives = [];
     }
   }
-
 
   setDisplayMode(mode: 'alphabetical' | 'categories') {
     this.items = this.itemList.items;
@@ -120,21 +138,14 @@ export class StorageListComponent implements OnInit {
   async deleteItemOnDrag($event: NPIonDragEvent, item: StorageItem, list: IonList) {
     // doubble the length or 250px
     if ($event.detail.ratio > 2 || $event.detail.amount > 250) {
-      await this.deleteItem(list, item);
+      await this.deleteItemFromList(list, item);
     }
   }
 
-  async deleteItem(list: IonList, item: StorageItem) {
+  async deleteItemFromList(list: IonList, item: StorageItem) {
     await list.closeSlidingItems();
-    await this.#database.deleteItem(item, this.itemList);
-    this.updateCategories();
+    this.deleteItem.emit(item);
   }
-
-  async addItem(item?: StorageItem) {
-    await this.#database.addItem(item, this.itemList);
-    this.updateCategories();
-  }
-
 
   async handleReorder(ev: CustomEvent<ItemReorderEventDetail>) {
     // The `from` and `to` properties contain the index of the item
@@ -148,6 +159,16 @@ export class StorageListComponent implements OnInit {
     // where the gesture ended. This method can also be called directly
     // by the reorder group
     ev.detail.complete(!this.currentCategory);
+  }
+
+  async addTemporaryItem() {
+    if(!this.searchTerm) return;
+    await this.#database.addItem({name: this.searchTerm, id: uuidv4(), quantity: 1}, this.itemList);
+    this.searchItem(null);
+  }
+
+  refresh() {
+    this.updateCategories();
   }
 }
 

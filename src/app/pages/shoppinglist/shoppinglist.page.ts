@@ -1,5 +1,5 @@
 import {JsonPipe} from "@angular/common";
-import {Component, inject, OnInit} from '@angular/core';
+import {Component, inject, OnInit, ViewChild} from '@angular/core';
 import {
   IonButton,
   IonButtons,
@@ -10,6 +10,7 @@ import {
   IonIcon,
   IonLabel,
   IonMenuButton,
+  IonModal,
   IonTitle,
   IonToolbar
 } from '@ionic/angular/standalone';
@@ -19,6 +20,7 @@ import {add, remove} from "ionicons/icons";
 import {StorageItem, StorageItemList} from "../../@types/types";
 import {StorageListComponent} from "../../components/storage-list/storage-list.component";
 import {AddItemDialog} from "../../dialogs/add-item-dialog/add-item.dialog";
+import {NewItemDialogComponent} from "../../dialogs/new-item-dialog/new-item-dialog.component";
 import {DatabaseService} from "../../services/database.service";
 
 @Component({
@@ -26,13 +28,18 @@ import {DatabaseService} from "../../services/database.service";
   templateUrl: 'shoppinglist.page.html',
   styleUrls: ['shoppinglist.page.scss'],
   standalone: true,
-  imports: [StorageListComponent, IonHeader, IonToolbar, IonContent, IonFab, IonFabButton, IonIcon, IonTitle, AddItemDialog, IonMenuButton, IonButtons, IonButton, JsonPipe, IonLabel, TranslateModule],
+  imports: [StorageListComponent, IonHeader, IonToolbar, IonContent, IonFab, IonFabButton, IonIcon, IonTitle, AddItemDialog, IonMenuButton, IonButtons, IonButton, JsonPipe, IonLabel, TranslateModule, IonModal, NewItemDialogComponent],
 })
 export class ShoppinglistPage implements OnInit{
 
+  @ViewChild(StorageListComponent, {static: true}) storageList!: StorageListComponent;
+
   readonly #database = inject(DatabaseService);
   shoppingList!: StorageItemList;
+
   isAdding = false;
+  isCreating = false;
+  createNewItemName: string | null | undefined;
 
   constructor() {
     addIcons({add, remove})
@@ -40,16 +47,35 @@ export class ShoppinglistPage implements OnInit{
 
   ngOnInit(): void {
     this.shoppingList = this.#database.shoppinglist();
+    this.createNewItemName = null;
   }
-  async addItem(item?: StorageItem) {
+
+  async addItemToShoppingList(item?: StorageItem) {
     this.isAdding = false;
     await this.#database.addItem(item, this.shoppingList);
+    this.storageList.refresh();
   }
+
+  async createItemAndAddToShoppingList(item?: StorageItem) {
+    this.isCreating = false;
+    this.createNewItemName = null;
+    if (item?.name.length) {
+      this.#database.addToAllItems(item);
+      await this.#database.addItem(item, this.shoppingList);
+      this.storageList.refresh();
+    }
+  }
+
+  showCreateDialog(newItemName: string) {
+    this.isAdding = false;
+    this.isCreating = true;
+    this.createNewItemName = newItemName;
+  }
+
   // what should happen if we buy an item?
   // some kind of state for now
   async buyItem(item: StorageItem) {
     item.state = 'bought'
     await this.#database.save();
   }
-
 }

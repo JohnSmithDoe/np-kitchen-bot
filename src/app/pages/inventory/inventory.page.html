@@ -1,7 +1,7 @@
-<ion-header [translucent]="true">
+<ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-menu-button></ion-menu-button>
+      <ion-menu-button> </ion-menu-button>
     </ion-buttons>
     <ion-title>{{'inventory.page.title' | translate}}</ion-title>
     <ion-buttons slot="end">
@@ -13,11 +13,31 @@
 </ion-header>
 
 <ion-content>
-  <app-storage-list #storageList
-                    [itemList]="inventory"
+  <app-storage-list [itemList]="inventory"
                     type="extended" search="name-only"
                     (moveItem)="moveToShoppingList($event)"
+                    (selectItem)="addItemToInventory($event)"
+                    (createItem)="showCreateDialog($event)"
+                    (deleteItem)="removeItemFromInventory($event)"
   ></app-storage-list>
 </ion-content>
 
-<app-add-item-dialog [isOpen]="isAdding" (addItem)="storageList.addItem($event); isAdding = false;"></app-add-item-dialog>
+<ion-modal [isOpen]="isAdding">
+  <ng-template>
+    <app-add-item-dialog
+      (addItem)="addItemToInventory($event)"
+      (cancel)="isAdding = false"
+      (createItem)="showCreateDialog($event)"
+    ></app-add-item-dialog>
+  </ng-template>
+</ion-modal>
+
+<ion-modal [isOpen]="isCreating">
+  <ng-template>
+    <app-new-item-dialog
+      (cancel)="isCreating = false"
+      (createItem)="createItemAndAddToInventory($event)"
+      [itemName]="createNewItemName"
+    ></app-new-item-dialog>
+  </ng-template>
+</ion-modal>
