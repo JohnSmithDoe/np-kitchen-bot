@@ -1,11 +1,16 @@
 <ion-searchbar [(ngModel)]="searchTerm" (ionInput)="searchTermChange($event)" [debounce]="250"></ion-searchbar>
-<ion-toolbar>
+<ion-toolbar [hidden]="!items.length">
+  <ion-buttons slot="start" [hidden]="type==='simple'">
+    <ion-button (click)="reorderDisabled = !reorderDisabled">
+      <ion-icon slot="icon-only" name="list"></ion-icon>
+    </ion-button>
+  </ion-buttons>
   <ion-buttons slot="end">
     <ion-button (click)="setDisplayMode('alphabetical')">A-Z</ion-button>
     <ion-button (click)="setDisplayMode('categories')">Categories</ion-button>
   </ion-buttons>
 </ion-toolbar>
-<div class="ion-padding storage-list-body">
+<div class="storage-list-body">
 
   @if (mode === 'alphabetical') {
     @if (type === 'simple') {
@@ -37,9 +42,10 @@
     @for (item of items; track item.id) {
       <app-storage-item [item]="item" (selectItem)="selectItem.emit(item)"></app-storage-item>
     } @empty {
-      <ion-item [button]="true" (click)="createItem.emit(searchTerm ?? undefined)" [color]="'primary'">
-        <ion-label>{{ searchTerm }} not found! Click here to create ...</ion-label>
-      </ion-item>
+      <app-storage-item
+        header="{{ 'storage.list.notfound.add.permanent' | translate : {value: searchTerm} }}"
+        [label]="searchTerm ?? ''" (selectItem)="createItem.emit($event)"
+      ></app-storage-item>
     }
   </ion-list>
 </ng-template>
@@ -47,47 +53,59 @@
 <ng-template #listComplex>
   <ion-list #ionList>
     <!-- Casting $event to $any is a temporary fix for this bug https://github.com/ionic-team/ionic-framework/issues/24245 -->
-    <ion-reorder-group [disabled]="false" (ionItemReorder)="handleReorder($any($event))">
+    <ion-reorder-group [disabled]="reorderDisabled" (ionItemReorder)="handleReorder($any($event))">
       @for (item of items; track item.id) {
-
-        <ion-item-sliding (ionDrag)="deleteItemOnDrag($event, item, ionList)">
+        <ion-item-sliding (ionDrag)="handleItemOptionsOnDrag($event, item, ionList)">
+          <ion-item-options side="start">
+            <ion-item-option color="success" expandable (click)="moveItemFromList(ionList, item)">
+              <ion-icon name="cart" slot="icon-only"></ion-icon>
+            </ion-item-option>
+          </ion-item-options>
           <app-storage-item type="extended" [item]="item"
                             (selectItem)="selectItem.emit(item)"
-                            (cartItem)="moveItem.emit(item)"
           ></app-storage-item>
-          <ion-item-options>
+          <ion-item-options side="end">
             <ion-item-option color="danger" expandable (click)="deleteItemFromList(ionList, item)">Delete</ion-item-option>
           </ion-item-options>
         </ion-item-sliding>
       } @empty {
         @if (!!searchTerm) {
+          <ion-list-header>
+            <ion-label>{{ 'storage.list.notfound.header' | translate }}</ion-label>
+          </ion-list-header>
           <app-storage-item
-            header="{{ 'storage.list.notfound.add.temporary' | translate : {value: searchTerm} }}"
+            helper="{{ 'storage.list.temporary.add' | translate : {value: searchTerm} }}"
+            color="secondary"
+            category="{{ 'storage.item.temporary.category' | translate }}"
             [label]="searchTerm" (selectItem)="addTemporaryItem($event)"
           ></app-storage-item>
           <app-storage-item
-            header="{{ 'storage.list.notfound.add.permanent' | translate : {value: searchTerm} }}"
-            [label]="searchTerm" (selectItem)="createItem.emit(searchTerm)"
+            color="tertiary"
+            helper="{{ 'storage.list.permanent.add' | translate : {value: searchTerm} }}"
+            [label]="searchTerm" (selectItem)="createItem.emit($event)"
           ></app-storage-item>
 
+
           @if (alternatives.length) {
-            <ion-list-header color="secondary">
-              <ion-label>found in globals</ion-label>
+            <ion-list-header>
+              <ion-label>{{ 'storage.list.alternates.header' | translate }}</ion-label>
             </ion-list-header>
             @for (alternate of alternatives; track alternate.id) {
               <app-storage-item
                 [item]="alternate"
                 color="secondary"
-                helper="Click here to add this ..."
+                helper="{{ 'storage.list.alternates.helper' | translate }}"
                 (selectItem)="selectItem.emit(alternate)"
 
               ></app-storage-item>
             }
           }
         } @else {
-          <ion-item>
+
+          <ion-item button (click)="emptyItem.emit()">
             <ion-label class="ion-text-wrap">
-              {{ 'storage.list.empty' | translate }}
+              <h2> {{ 'storage.list.empty' | translate }}</h2>
+            <ion-note slot="end">{{ 'storage.list.empty.helper' | translate }}</ion-note>
             </ion-label>
           </ion-item>
         }

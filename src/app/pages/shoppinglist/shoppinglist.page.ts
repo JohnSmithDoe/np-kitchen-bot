@@ -39,7 +39,7 @@ export class ShoppinglistPage implements OnInit{
 
   isAdding = false;
   isCreating = false;
-  createNewItemName: string | null | undefined;
+  createNewItem: StorageItem | null | undefined;
 
   constructor() {
     addIcons({add, remove})
@@ -47,7 +47,7 @@ export class ShoppinglistPage implements OnInit{
 
   ngOnInit(): void {
     this.shoppingList = this.#database.shoppinglist();
-    this.createNewItemName = null;
+    this.createNewItem = null;
   }
 
   async addItemToShoppingList(item?: StorageItem) {
@@ -56,9 +56,15 @@ export class ShoppinglistPage implements OnInit{
     this.storageList.refresh();
   }
 
+  showCreateDialog(newItem: StorageItem) {
+    this.isAdding = false;
+    this.isCreating = true;
+    this.createNewItem = newItem;
+  }
+
   async createItemAndAddToShoppingList(item?: StorageItem) {
     this.isCreating = false;
-    this.createNewItemName = null;
+    this.createNewItem = null;
     if (item?.name.length) {
       this.#database.addToAllItems(item);
       await this.#database.addItem(item, this.shoppingList);
@@ -66,10 +72,9 @@ export class ShoppinglistPage implements OnInit{
     }
   }
 
-  showCreateDialog(newItemName: string) {
-    this.isAdding = false;
-    this.isCreating = true;
-    this.createNewItemName = newItemName;
+  async removeItemFromShoppingList(item: StorageItem) {
+    await this.#database.deleteItem(item, this.shoppingList);
+    this.storageList.refresh();
   }
 
   // what should happen if we buy an item?

@@ -18,6 +18,8 @@
                     (moveItem)="buyItem($event)"
                     (selectItem)="addItemToShoppingList($event)"
                     (createItem)="showCreateDialog($event)"
+                    (deleteItem)="removeItemFromShoppingList($event)"
+                    (emptyItem)="isAdding = true"
   ></app-storage-list>
 </ion-content>
 
@@ -36,7 +38,7 @@
     <app-new-item-dialog
       (cancel)="isCreating = false"
       (createItem)="createItemAndAddToShoppingList($event)"
-      [itemName]="createNewItemName"
+      [item]="createNewItem"
     ></app-new-item-dialog>
   </ng-template>
 </ion-modal>

@@ -1,6 +1,7 @@
 import {NgTemplateOutlet} from "@angular/common";
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {
+  IonAvatar,
   IonButton,
   IonButtons,
   IonIcon,
@@ -32,15 +33,17 @@ import {uuidv4} from "../../utils";
     NgTemplateOutlet,
     IonNote,
     IonListHeader,
-    CategoriesPipe
+    CategoriesPipe,
+    IonAvatar
   ]
 })
-export class StorageItemComponent  implements OnInit {
+export class StorageItemComponent implements OnInit, OnChanges {
   @Input() item!: StorageItem;
   @Input() header?: string;
   @Input() label?: string;
   @Input() type: 'simple' | 'extended' = 'simple';
-  @Input() color: Color = 'primary';
+  @Input() color?: Color;
+  @Input() category?: string;
   @Input() helper?: string = 'Click here to add...';
 
   @Output() selectItem = new EventEmitter<StorageItem>();
@@ -50,8 +53,20 @@ export class StorageItemComponent  implements OnInit {
 
   ngOnInit() {
     if(!this.item && !this.label) throw new Error('Either label or item must be set');
-    if(!this.item && this.label) {
-      this.item = { name: this.label, id: uuidv4(), quantity: 1};
+    if (!this.item) {
+      this.#updateItem();
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.hasOwnProperty('label') && this.label) {
+      this.#updateItem();
+    }
+  }
+
+  #updateItem() {
+    if (this.label) {
+      this.item = {name: this.label, id: uuidv4(), quantity: 1, category: this.category ? [this.category] : undefined}
     }
   }
 

@@ -36,7 +36,7 @@ export class InventoryPage implements OnInit{
 
   isAdding = false;
   isCreating = false;
-  createNewItemName: string | null | undefined;
+  createNewItem: StorageItem | null | undefined;
 
   constructor() {
     addIcons({add, remove})
@@ -44,7 +44,7 @@ export class InventoryPage implements OnInit{
 
   ngOnInit(): void {
     this.inventory = this.#database.storage;
-    this.createNewItemName = null;
+    this.createNewItem = null;
   }
 
   async addItemToInventory(item?: StorageItem) {
@@ -53,15 +53,15 @@ export class InventoryPage implements OnInit{
     this.storageList.refresh();
   }
 
-  showCreateDialog(newItemName: string) {
+  showCreateDialog(newItem: StorageItem) {
     this.isAdding = false;
     this.isCreating = true;
-    this.createNewItemName = newItemName;
+    this.createNewItem = newItem;
   }
 
   async createItemAndAddToInventory(item?: StorageItem) {
     this.isCreating = false;
-    this.createNewItemName = null;
+    this.createNewItem = null;
     if (item?.name.length) {
       this.#database.addToAllItems(item);
       await this.#database.addItem(item, this.inventory);

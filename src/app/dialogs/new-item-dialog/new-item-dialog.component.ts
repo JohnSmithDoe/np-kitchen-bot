@@ -50,7 +50,7 @@ import {CategoriesDialogComponent} from "../categories-dialog/categories-dialog.
 })
 export class NewItemDialogComponent implements OnInit {
   readonly #database = inject(DatabaseService);
-  @Input() itemName?: string | null;
+  @Input() item?: StorageItem | null;
   @Input() value!: StorageItem;
 
   @Output() createItem= new EventEmitter<StorageItem>();
@@ -62,7 +62,7 @@ export class NewItemDialogComponent implements OnInit {
   }
 
   ngOnInit(): void {
-        this.value = this.#database.createNewStorageItem(this.itemName ?? '')
+        this.value = this.item ?? this.#database.createNewStorageItem('')
   }
 
 

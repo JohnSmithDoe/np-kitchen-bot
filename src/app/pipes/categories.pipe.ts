@@ -6,9 +6,10 @@ import {TranslateService} from "@ngx-translate/core";
   standalone: true
 })
 export class CategoriesPipe implements PipeTransform {
- readonly #translate = inject(TranslateService);
-  transform(value: string[]|undefined): string {
-    if(!value) return this.#translate.instant('storage-item.no-category')
+ readonly translate = inject(TranslateService);
+
+ transform(value: string[]|undefined): string {
+    if(!value) return this.translate.instant('storage-item.no-category')
     return value.join(', ');
   }
 

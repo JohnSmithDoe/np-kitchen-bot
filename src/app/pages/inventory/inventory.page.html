@@ -37,7 +37,7 @@
     <app-new-item-dialog
       (cancel)="isCreating = false"
       (createItem)="createItemAndAddToInventory($event)"
-      [itemName]="createNewItemName"
+      [item]="createNewItem"
     ></app-new-item-dialog>
   </ng-template>
 </ion-modal>

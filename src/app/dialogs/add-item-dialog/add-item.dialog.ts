@@ -27,7 +27,7 @@ export class AddItemDialog implements OnInit {
   @Input() itemList!: StorageItemList;
 
   @Output() addItem= new EventEmitter<StorageItem>();
-  @Output() createItem= new EventEmitter<string>();
+  @Output() createItem= new EventEmitter<StorageItem>();
   @Output() cancel= new EventEmitter();
 
   ngOnInit(): void {
@@ -42,7 +42,7 @@ export class AddItemDialog implements OnInit {
     this.addItem.emit(item);
   }
 
-  createNewItem(name: string) {
-    this.createItem.emit(name);
+  createNewItem(item: StorageItem) {
+    this.createItem.emit(item);
   }
 }

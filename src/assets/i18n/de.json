@@ -11,7 +11,13 @@
 	"new.item.dialog.categories": "Kategorien:",
 	"new.item.dialog.categories.empty": "Klicke hier zum hinzufügen...",
 	"categories": "XXXXXXXXX",
-	"storage.list.notfound.add.temporary": "Zur Liste hinzufügen",
-	"storage.list.notfound.add.permanent": "Neuen Eintrag anlegen und zur Liste hinzufügen",
-	"storage.list.empty": "Die Liste enthält keine Einträge"
+  "storage.list.alternates.header": "Vorhandenen Eintrag hinzufügen",
+  "storage.list.alternates.helper": "Eintrag hinzufügen",
+	"storage.list.notfound.header": "Kein Eintrag in der Liste gefunden!",
+	"storage.list.temporary.add": "Einmalig hinzufügen",
+	"storage.item.temporary.category": "Einmal Eintrag",
+	"storage.list.permanent.add": "Neuen Eintrag erstellen",
+	"storage.list.empty": "Die Liste enthält keine Einträge",
+	"storage.list.empty.helper": "Klicke hier um etwas hinzuzufügen oder gib etwas in die Suchleiste ein",
+	"storage-item.no-category": "Unzugeordnet"
 }

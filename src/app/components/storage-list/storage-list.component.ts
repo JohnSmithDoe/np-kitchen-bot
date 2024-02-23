@@ -14,6 +14,7 @@ import {
   IonLabel,
   IonList,
   IonListHeader,
+  IonNote,
   IonReorder,
   IonReorderGroup,
   IonSearchbar,
@@ -22,8 +23,9 @@ import {
 } from '@ionic/angular/standalone';
 import {TranslateModule} from "@ngx-translate/core";
 import {addIcons} from "ionicons";
-import {add, cart, remove} from "ionicons/icons";
+import {add, cart, list, remove} from "ionicons/icons";
 import {NPIonDragEvent, StorageCategory, StorageItem, StorageItemList} from "../../@types/types";
+import {CategoriesPipe} from "../../pipes/categories.pipe";
 import {DatabaseService} from "../../services/database.service";
 import {getCategoriesFromList} from "../../utils";
 import {StorageItemComponent} from "../storage-item/storage-item.component";
@@ -54,6 +56,8 @@ import {StorageItemComponent} from "../storage-item/storage-item.component";
     FormsModule,
     TranslateModule,
     StorageItemComponent,
+    CategoriesPipe,
+    IonNote,
   ]
 })
 export class StorageListComponent implements OnInit {
@@ -64,9 +68,10 @@ export class StorageListComponent implements OnInit {
   @Input() type: 'simple' | 'extended' = 'simple';
   @Input() search: 'full' | 'name-only' = 'full';
 
-  @Output() createItem = new EventEmitter<string>();
+  @Output() createItem = new EventEmitter<StorageItem>();
   @Output() selectItem = new EventEmitter<StorageItem>();
   @Output() deleteItem = new EventEmitter<StorageItem>();
+  @Output() emptyItem = new EventEmitter<void>();
   @Output() moveItem = new EventEmitter<StorageItem>();
 
   categories: { items: StorageItem[]; name: string }[] = [];
@@ -76,8 +81,10 @@ export class StorageListComponent implements OnInit {
   searchTerm?: string | null;
   currentCategory?: StorageCategory;
 
+  reorderDisabled = false;
+
   constructor() {
-    addIcons({add, remove, cart})
+    addIcons({add, remove, cart, list})
   }
 
   ngOnInit(): void {
@@ -85,7 +92,6 @@ export class StorageListComponent implements OnInit {
     this.updateCategories();
     this.searchTerm = undefined;
   }
-
   // needs to be called on changes inside the itemList
   updateCategories() {
     this.categories = getCategoriesFromList(this.itemList);
@@ -137,16 +143,22 @@ export class StorageListComponent implements OnInit {
     this.currentCategory = undefined;
   }
 
-  async deleteItemOnDrag($event: NPIonDragEvent, item: StorageItem, list: IonList) {
+  async handleItemOptionsOnDrag(ev: NPIonDragEvent, item: StorageItem, list: IonList) {
     // doubble the length or 250px
-    if ($event.detail.ratio > 2 || $event.detail.amount > 250) {
+    if (ev.detail.ratio > 2 || ev.detail.amount > 250) {
       await this.deleteItemFromList(list, item);
+    }else if (ev.detail.ratio < -2 || ev.detail.amount < -250) {
+      await this.moveItemFromList(list, item);
     }
   }
 
   async deleteItemFromList(list: IonList, item: StorageItem) {
     await list.closeSlidingItems();
     this.deleteItem.emit(item);
+  }
+  async moveItemFromList(list: IonList, item: StorageItem) {
+    await list.closeSlidingItems();
+    this.moveItem.emit(item);
   }
 
   async handleReorder(ev: CustomEvent<ItemReorderEventDetail>) {
@@ -165,6 +177,7 @@ export class StorageListComponent implements OnInit {
 
   async addTemporaryItem(item: StorageItem) {
     await this.#database.addItem(item, this.itemList);
+    this.refresh();
     this.searchItem(null);
   }
 
