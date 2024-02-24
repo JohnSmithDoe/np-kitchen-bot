@@ -1,4 +1,5 @@
-import {Injectable} from '@angular/core';
+import {inject, Injectable} from '@angular/core';
+import {ToastController} from "@ionic/angular/standalone";
 import {Storage} from "@ionic/storage-angular";
 import {Datastore, StorageItem, StorageItemList} from "../@types/types";
 import {uuidv4} from "../utils";
@@ -43,6 +44,10 @@ const INITIAL_DATA = [
 })
 export class DatabaseService {
   static readonly CNP_STORAGE_KEY = 'np-kitchen-helper';
+
+  readonly #storageService = inject(Storage);
+  readonly #toastController = inject(ToastController);
+
   #store: Datastore = {
     all: {title: 'All Items', id:'_all', items: []} ,
     storage: {title: 'Inventory', id:'_storage', items: []} ,
@@ -50,13 +55,9 @@ export class DatabaseService {
     categories: []
   }
 
-  constructor(private storageService: Storage) {
-
-  }
-
   async initialize() {
-    await this.storageService.create();
-    const stored = await this.storageService.get(DatabaseService.CNP_STORAGE_KEY);
+    await this.#storageService.create();
+    const stored = await this.#storageService.get(DatabaseService.CNP_STORAGE_KEY);
     if (stored) this.#store = stored;
     if(!stored) {
       this.all.items = INITIAL_DATA;
@@ -66,7 +67,7 @@ export class DatabaseService {
 
   async save() {
     this.updateDatabase();
-    await this.storageService.set(DatabaseService.CNP_STORAGE_KEY, this.#store);
+    await this.#storageService.set(DatabaseService.CNP_STORAGE_KEY, this.#store);
 
   }
 
@@ -113,17 +114,20 @@ export class DatabaseService {
   }
 
   async addItem(item: StorageItem | undefined, list: StorageItemList) {
+    let result = item;
     if (item) {
       // check duplicates
-      const foundItem = list.items.find(aItem => aItem.id === item.id);
-      if (foundItem) {
-        foundItem.quantity++;
+      result = list.items.find(aItem => aItem.id === item.id);
+      if (result) {
+        result.quantity++;
       } else {
         item.quantity = 1;
-        list.items.push({...item})
+        result = {...item};
+        list.items.push(result)
       }
-      return this.save();
+      await this.save();
     }
+    return result;
   }
 
   addToAllItems(item: StorageItem) {
@@ -142,5 +146,16 @@ export class DatabaseService {
     const item = list.items.splice(from, 1);
     list.items.splice(to,0, ...item)
     return this.save();
+  }
+
+
+  async showToast(message: string) {
+    const toast = await this.#toastController.create({
+      position: 'bottom',
+      duration: 1500,
+      color: "success",
+      message
+    })
+    await toast.present();
   }
 }

@@ -49,8 +49,9 @@ export class InventoryPage implements OnInit{
 
   async addItemToInventory(item?: StorageItem) {
     this.isAdding = false;
-    await this.#database.addItem(item, this.inventory);
+    item = await this.#database.addItem(item, this.inventory);
     this.storageList.refresh();
+    await this.#database.showToast(`Added 1 x ${item?.name} (Total: ${item?.quantity})`);
   }
 
   showCreateDialog(newItem: StorageItem) {
@@ -64,30 +65,22 @@ export class InventoryPage implements OnInit{
     this.createNewItem = null;
     if (item?.name.length) {
       this.#database.addToAllItems(item);
-      await this.#database.addItem(item, this.inventory);
+      item = await this.#database.addItem(item, this.inventory);
       this.storageList.refresh();
+      await this.#database.showToast(`Created ${item?.name} and added`);
     }
   }
 
   async removeItemFromInventory(item: StorageItem) {
     await this.#database.deleteItem(item, this.inventory);
     this.storageList.refresh();
+    await this.#database.showToast(`Removed ${item?.name}`);
   }
 
-  async moveToShoppingList(item: StorageItem) {
+  async moveToShoppingList(item?: StorageItem) {
     this.isAdding = false;
-    if (item) {
-      // check duplicates
-      const foundItem = this.#database.shoppinglist().items.find(aItem => aItem.id === item.id);
-      if (foundItem) {
-        foundItem.quantity++;
-      } else {
-        const newItem = {...item};
-        newItem.quantity = 1;
-        this.#database.shoppinglist().items.push(newItem)
-        await this.#database.save();
-      }
-    }
-
+    item = await this.#database.addItem(item, this.#database.shoppinglist())
+    await this.#database.showToast(`Added 1 x ${item?.name} to the shopping list (Total: ${item?.quantity})`);
   }
+
 }

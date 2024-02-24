@@ -1,4 +1,3 @@
-import {JsonPipe} from "@angular/common";
 import {Component, inject, OnInit, ViewChild} from '@angular/core';
 import {
   IonButton,
@@ -16,7 +15,7 @@ import {
 } from '@ionic/angular/standalone';
 import {TranslateModule} from "@ngx-translate/core";
 import {addIcons} from "ionicons";
-import {add, remove} from "ionicons/icons";
+import {add, duplicate, remove} from "ionicons/icons";
 import {StorageItem, StorageItemList} from "../../@types/types";
 import {StorageListComponent} from "../../components/storage-list/storage-list.component";
 import {AddItemDialog} from "../../dialogs/add-item-dialog/add-item.dialog";
@@ -28,7 +27,7 @@ import {DatabaseService} from "../../services/database.service";
   templateUrl: 'shoppinglist.page.html',
   styleUrls: ['shoppinglist.page.scss'],
   standalone: true,
-  imports: [StorageListComponent, IonHeader, IonToolbar, IonContent, IonFab, IonFabButton, IonIcon, IonTitle, AddItemDialog, IonMenuButton, IonButtons, IonButton, JsonPipe, IonLabel, TranslateModule, IonModal, NewItemDialogComponent],
+  imports: [StorageListComponent, IonHeader, IonToolbar, IonContent, IonFab, IonFabButton, IonIcon, IonTitle, AddItemDialog, IonMenuButton, IonButtons, IonButton, IonLabel, TranslateModule, IonModal, NewItemDialogComponent],
 })
 export class ShoppinglistPage implements OnInit{
 
@@ -42,7 +41,7 @@ export class ShoppinglistPage implements OnInit{
   createNewItem: StorageItem | null | undefined;
 
   constructor() {
-    addIcons({add, remove})
+    addIcons({add, remove, duplicate})
   }
 
   ngOnInit(): void {
@@ -52,8 +51,9 @@ export class ShoppinglistPage implements OnInit{
 
   async addItemToShoppingList(item?: StorageItem) {
     this.isAdding = false;
-    await this.#database.addItem(item, this.shoppingList);
-    this.storageList.refresh();
+    item = await this.#database.addItem(item, this.shoppingList);
+    this.storageList.refresh(true);
+    await this.#database.showToast(`Added 1 x ${item?.name} (Total: ${item?.quantity})`);
   }
 
   showCreateDialog(newItem: StorageItem) {
@@ -65,16 +65,19 @@ export class ShoppinglistPage implements OnInit{
   async createItemAndAddToShoppingList(item?: StorageItem) {
     this.isCreating = false;
     this.createNewItem = null;
+
     if (item?.name.length) {
       this.#database.addToAllItems(item);
       await this.#database.addItem(item, this.shoppingList);
       this.storageList.refresh();
+      await this.#database.showToast(`Created ${item?.name} and added`);
     }
   }
 
   async removeItemFromShoppingList(item: StorageItem) {
     await this.#database.deleteItem(item, this.shoppingList);
     this.storageList.refresh();
+    await this.#database.showToast(`Removed ${item?.name}`);
   }
 
   // what should happen if we buy an item?
@@ -82,5 +85,7 @@ export class ShoppinglistPage implements OnInit{
   async buyItem(item: StorageItem) {
     item.state = 'bought'
     await this.#database.save();
+    await this.#database.showToast(`Bought ${item?.name}`);
   }
+
 }

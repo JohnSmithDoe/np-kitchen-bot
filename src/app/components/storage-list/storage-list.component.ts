@@ -81,7 +81,7 @@ export class StorageListComponent implements OnInit {
   searchTerm?: string | null;
   currentCategory?: StorageCategory;
 
-  reorderDisabled = false;
+  reorderDisabled = true;
 
   constructor() {
     addIcons({add, remove, cart, list})
@@ -177,12 +177,24 @@ export class StorageListComponent implements OnInit {
 
   async addTemporaryItem(item: StorageItem) {
     await this.#database.addItem(item, this.itemList);
-    this.refresh();
-    this.searchItem(null);
+    this.refresh(true);
   }
 
-  refresh() {
+  refresh(resetSearch = false) {
     this.updateCategories();
+    this.searchItem(resetSearch ? null : this.searchTerm);
+  }
+
+  includedInAlternatives() {
+    return !!this.alternatives.find(item => item.name === this.searchTerm);
+  }
+  includedInItems() {
+    return !!this.items.find(item => item.name === this.searchTerm);
+  }
+
+  toggleReorder() {
+    this.reorderDisabled = !this.reorderDisabled;
+    this.setDisplayMode('alphabetical');
   }
 }
 

@@ -1,7 +1,7 @@
 <ion-searchbar [(ngModel)]="searchTerm" (ionInput)="searchTermChange($event)" [debounce]="250"></ion-searchbar>
 <ion-toolbar [hidden]="!items.length">
   <ion-buttons slot="start" [hidden]="type==='simple'">
-    <ion-button (click)="reorderDisabled = !reorderDisabled">
+    <ion-button (click)="toggleReorder()">
       <ion-icon slot="icon-only" name="list"></ion-icon>
     </ion-button>
   </ion-buttons>
@@ -38,14 +38,23 @@
         {{ header }}
       </ion-list-header>
     }
-
-    @for (item of items; track item.id) {
-      <app-storage-item [item]="item" (selectItem)="selectItem.emit(item)"></app-storage-item>
-    } @empty {
+    @if (!!searchTerm && !includedInItems()) {
       <app-storage-item
-        header="{{ 'storage.list.notfound.add.permanent' | translate : {value: searchTerm} }}"
+        color="tertiary"
+        helper="{{ 'storage.list.permanent.add' | translate : {value: searchTerm} }}"
+        categoryAlt="{{ 'storage.list.permanent.category' | translate }}"
         [label]="searchTerm ?? ''" (selectItem)="createItem.emit($event)"
       ></app-storage-item>
+    }
+    @for (item of items; track item.id) {
+      <app-storage-item
+        [item]="item"
+        color="medium"
+        helper="{{ 'storage.list.item.helper' | translate }}"
+        (selectItem)="selectItem.emit(item)"
+      ></app-storage-item>
+    } @empty {
+
     }
   </ion-list>
 </ng-template>
@@ -69,7 +78,8 @@
           </ion-item-options>
         </ion-item-sliding>
       } @empty {
-        @if (!!searchTerm) {
+
+        @if (!!searchTerm && !includedInAlternatives()) {
           <app-storage-item
             color="secondary"
             header="{{ 'storage.list.notfound.header' | translate }}"
@@ -83,23 +93,23 @@
             categoryAlt="{{ 'storage.list.permanent.category' | translate }}"
             [label]="searchTerm" (selectItem)="createItem.emit($event)"
           ></app-storage-item>
+        }
 
-          @if (alternatives.length) {
-            <ion-list-header>
-              <ion-label>{{ 'storage.list.alternates.header' | translate }}</ion-label>
-            </ion-list-header>
-            @for (alternate of alternatives; track alternate.id) {
-              <app-storage-item
-                [item]="alternate"
-                color="medium"
-                helper="{{ 'storage.list.alternates.helper' | translate }}"
-                (selectItem)="selectItem.emit(alternate)"
-
-              ></app-storage-item>
-            }
+        @if (!!searchTerm && alternatives.length) {
+          <ion-list-header>
+            <ion-label>{{ 'storage.list.alternates.header' | translate }}</ion-label>
+          </ion-list-header>
+          @for (alternate of alternatives; track alternate.id) {
+            <app-storage-item
+              [item]="alternate"
+              color="medium"
+              helper="{{ 'storage.list.alternates.helper' | translate }}"
+              (selectItem)="selectItem.emit(alternate)"
+            ></app-storage-item>
           }
-        } @else {
+        }
 
+        @if(!searchTerm) {
           <ion-item button (click)="emptyItem.emit()">
             <ion-label class="ion-text-wrap">
               <h2> {{ 'storage.list.empty' | translate }}</h2>
@@ -107,7 +117,6 @@
             </ion-label>
           </ion-item>
         }
-
       }
     </ion-reorder-group>
   </ion-list>
