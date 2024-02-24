@@ -8,8 +8,8 @@ import {TranslateService} from "@ngx-translate/core";
 export class CategoriesPipe implements PipeTransform {
  readonly translate = inject(TranslateService);
 
- transform(value: string[]|undefined): string {
-    if(!value) return this.translate.instant('storage-item.no-category')
+ transform(value: string[]|undefined, altText?: string): string {
+    if(!value) return altText ?? this.translate.instant('storage-item.no-category')
     return value.join(', ');
   }
 

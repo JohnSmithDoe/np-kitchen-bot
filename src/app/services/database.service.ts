@@ -129,7 +129,7 @@ export class DatabaseService {
   addToAllItems(item: StorageItem) {
     const gItem = this.#store.all.items.find(aItem => aItem.id === item.id);
     if(!gItem) {
-      this.#store.all.items.push(this.createNewStorageItem(item.name));
+      this.#store.all.items.push(item);
     }
   }
 

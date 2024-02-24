@@ -4,6 +4,7 @@ import {
   IonAvatar,
   IonButton,
   IonButtons,
+  IonChip,
   IonIcon,
   IonItem,
   IonLabel,
@@ -34,7 +35,8 @@ import {uuidv4} from "../../utils";
     IonNote,
     IonListHeader,
     CategoriesPipe,
-    IonAvatar
+    IonAvatar,
+    IonChip
   ]
 })
 export class StorageItemComponent implements OnInit, OnChanges {
@@ -44,6 +46,7 @@ export class StorageItemComponent implements OnInit, OnChanges {
   @Input() type: 'simple' | 'extended' = 'simple';
   @Input() color?: Color;
   @Input() category?: string;
+  @Input() categoryAlt?: string;
   @Input() helper?: string = 'Click here to add...';
 
   @Output() selectItem = new EventEmitter<StorageItem>();

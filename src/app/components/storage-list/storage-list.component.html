@@ -70,21 +70,19 @@
         </ion-item-sliding>
       } @empty {
         @if (!!searchTerm) {
-          <ion-list-header>
-            <ion-label>{{ 'storage.list.notfound.header' | translate }}</ion-label>
-          </ion-list-header>
           <app-storage-item
-            helper="{{ 'storage.list.temporary.add' | translate : {value: searchTerm} }}"
             color="secondary"
-            category="{{ 'storage.item.temporary.category' | translate }}"
+            header="{{ 'storage.list.notfound.header' | translate }}"
+            helper="{{ 'storage.list.temporary.add' | translate : {value: searchTerm} }}"
+            category="{{ 'storage.list.temporary.category' | translate }}"
             [label]="searchTerm" (selectItem)="addTemporaryItem($event)"
           ></app-storage-item>
           <app-storage-item
             color="tertiary"
             helper="{{ 'storage.list.permanent.add' | translate : {value: searchTerm} }}"
+            categoryAlt="{{ 'storage.list.permanent.category' | translate }}"
             [label]="searchTerm" (selectItem)="createItem.emit($event)"
           ></app-storage-item>
-
 
           @if (alternatives.length) {
             <ion-list-header>
@@ -93,7 +91,7 @@
             @for (alternate of alternatives; track alternate.id) {
               <app-storage-item
                 [item]="alternate"
-                color="secondary"
+                color="medium"
                 helper="{{ 'storage.list.alternates.helper' | translate }}"
                 (selectItem)="selectItem.emit(alternate)"
 

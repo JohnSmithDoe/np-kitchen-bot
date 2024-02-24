@@ -1,3 +1,4 @@
+@use "../../../theme/consts";
 
 .bought {
   text-decoration: line-through;
@@ -8,5 +9,7 @@
 //}
 .storage-item-helper {
   align-self: center;
+  text-align: end;
   padding: 0;
+  max-width: consts.$gc-smaller;
 }

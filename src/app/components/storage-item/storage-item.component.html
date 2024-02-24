@@ -11,7 +11,7 @@
     </ion-avatar>
     <ion-label class="ion-text-wrap">
       <h2>{{ item.name }}</h2>
-      <ion-note slot="end" color="primary">({{ item.category | appCategories }})</ion-note>
+      <ion-note color="primary">{{ item.category | appCategories : categoryAlt }}</ion-note>
     </ion-label>
     @if (helper) {
       <ion-note slot="end" color="primary" class="storage-item-helper">{{ helper }}</ion-note>
@@ -25,7 +25,7 @@
     </ion-avatar>
     <ion-label class="ion-text-wrap" [class.bought]="item.state === 'bought'">
       <h2>{{ item.quantity }} x {{ item.name }}</h2>
-      <ion-note slot="end">({{ item.category | appCategories }})</ion-note>
+      <ion-note slot="end">{{ item.category | appCategories : categoryAlt }}</ion-note>
     </ion-label>
     <ion-buttons slot="end">
       <ion-button (click)="item.quantity = item.quantity +1">
