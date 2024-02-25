@@ -19,7 +19,7 @@ import {add, duplicate, remove} from "ionicons/icons";
 import {StorageItem, StorageItemList} from "../../@types/types";
 import {StorageListComponent} from "../../components/storage-list/storage-list.component";
 import {AddItemDialog} from "../../dialogs/add-item-dialog/add-item.dialog";
-import {NewItemDialogComponent} from "../../dialogs/new-item-dialog/new-item-dialog.component";
+import {EditItemDialogComponent} from "../../dialogs/edit-item-dialog/edit-item-dialog.component";
 import {DatabaseService} from "../../services/database.service";
 
 @Component({
@@ -27,7 +27,7 @@ import {DatabaseService} from "../../services/database.service";
   templateUrl: 'shoppinglist.page.html',
   styleUrls: ['shoppinglist.page.scss'],
   standalone: true,
-  imports: [StorageListComponent, IonHeader, IonToolbar, IonContent, IonFab, IonFabButton, IonIcon, IonTitle, AddItemDialog, IonMenuButton, IonButtons, IonButton, IonLabel, TranslateModule, IonModal, NewItemDialogComponent],
+  imports: [StorageListComponent, IonHeader, IonToolbar, IonContent, IonFab, IonFabButton, IonIcon, IonTitle, AddItemDialog, IonMenuButton, IonButtons, IonButton, IonLabel, TranslateModule, IonModal, EditItemDialogComponent],
 })
 export class ShoppinglistPage implements OnInit{
 
@@ -67,7 +67,7 @@ export class ShoppinglistPage implements OnInit{
     this.createNewItem = null;
 
     if (item?.name.length) {
-      this.#database.addToAllItems(item);
+      await this.#database.addOrUpdateItem(item);
       await this.#database.addItem(item, this.shoppingList);
       this.storageList.refresh();
       await this.#database.showToast(`Created ${item?.name} and added`);

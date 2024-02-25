@@ -34,11 +34,11 @@
 
 <ion-modal [isOpen]="isCreating">
   <ng-template>
-    <app-new-item-dialog
+    <app-edit-item-dialog
       (cancel)="isCreating = false"
-      (createItem)="createItemAndAddToInventory($event)"
+      (saveItem)="createItemAndAddToInventory($event)"
       [item]="createNewItem"
-    ></app-new-item-dialog>
+    ></app-edit-item-dialog>
   </ng-template>
 </ion-modal>
 

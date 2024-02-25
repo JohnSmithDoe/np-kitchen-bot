@@ -21,6 +21,7 @@ import {
   IonText,
   IonToolbar
 } from '@ionic/angular/standalone';
+import {Color} from "@ionic/core/dist/types/interface";
 import {TranslateModule} from "@ngx-translate/core";
 import {addIcons} from "ionicons";
 import {add, cart, list, remove} from "ionicons/icons";
@@ -63,10 +64,18 @@ import {StorageItemComponent} from "../storage-item/storage-item.component";
 export class StorageListComponent implements OnInit {
   readonly #database = inject(DatabaseService);
 
-  @Input() header?: string;
   @Input() itemList!: StorageItemList;
-  @Input() type: 'simple' | 'extended' = 'simple';
   @Input() search: 'full' | 'name-only' = 'full';
+
+  @Input() header?: string;
+  @Input() headerColor: Color = 'secondary';
+  @Input() itemHelper?: string;
+  @Input() itemColor?: Color;
+  @Input() itemType: 'simple' | 'extended' = 'extended';
+  @Input() canAddTemporary = true;
+  @Input() canReorder = false;
+  @Input() canDelete = false;
+  @Input() canMove = false;
 
   @Output() createItem = new EventEmitter<StorageItem>();
   @Output() selectItem = new EventEmitter<StorageItem>();
@@ -116,21 +125,25 @@ export class StorageListComponent implements OnInit {
     this.searchTerm = searchTerm;
     if (this.searchTerm) {
       const searchFor = this.searchTerm.toLowerCase();
-      this.items = this.itemList.items.filter(item => {
-        let foundByName = item.name.toLowerCase().indexOf(searchFor) >= 0;
-        // or by category
-        foundByName ||= this.search === 'full'
-          && ((item.category?.findIndex(cat => cat.toLowerCase().indexOf(searchFor) >= 0) ?? -1) >= 0);
-        return foundByName;
-      });
-      this.alternatives = this.items.length
-        ? []
-        : this.#database.all.items.filter(item => {
-          let foundByName = item.name.toLowerCase().indexOf(searchFor) >= 0;
-          // or by category
-          foundByName ||= ((item.category?.findIndex(cat => cat.toLowerCase().indexOf(searchFor) >= 0) ?? -1) >= 0);
-          return foundByName;
-        });
+      this.items = this.itemList.items
+                       .filter(item => item.name.toLowerCase().indexOf(searchFor) >= 0)
+                       .concat(
+                         ...this.itemList.items
+                                .filter(item => {
+                                  return this.search === 'full'
+                                    && ((item.category?.findIndex(cat => cat.toLowerCase()
+                                                                            .indexOf(searchFor) >= 0) ?? -1) >= 0)
+                                })
+                       )
+      const others = this.#database.all.items
+                         .filter(dbItem => !this.items.find(aItem => aItem.id === dbItem.id));
+      this.alternatives = others
+        .filter(item => item.name.toLowerCase().indexOf(searchFor) >= 0)
+        .concat(
+          ...others
+            .filter(item => ((item.category?.findIndex(cat => cat.toLowerCase()
+                                                                 .indexOf(searchFor) >= 0) ?? -1) >= 0))
+        );
     } else {
       this.items = this.itemList.items;
       this.alternatives = [];
@@ -185,13 +198,10 @@ export class StorageListComponent implements OnInit {
     this.searchItem(resetSearch ? null : this.searchTerm);
   }
 
-  includedInAlternatives() {
-    return !!this.alternatives.find(item => item.name === this.searchTerm);
+  includedInOthers() {
+    return !!this.alternatives.find(item => item.name === this.searchTerm)
+      || !!this.items.find(item => item.name === this.searchTerm);
   }
-  includedInItems() {
-    return !!this.items.find(item => item.name === this.searchTerm);
-  }
-
   toggleReorder() {
     this.reorderDisabled = !this.reorderDisabled;
     this.setDisplayMode('alphabetical');

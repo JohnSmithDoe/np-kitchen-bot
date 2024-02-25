@@ -18,7 +18,7 @@ import {add, remove} from "ionicons/icons";
 import {StorageItem, StorageItemList} from "../../@types/types";
 import {StorageListComponent} from "../../components/storage-list/storage-list.component";
 import {AddItemDialog} from "../../dialogs/add-item-dialog/add-item.dialog";
-import {NewItemDialogComponent} from "../../dialogs/new-item-dialog/new-item-dialog.component";
+import {EditItemDialogComponent} from "../../dialogs/edit-item-dialog/edit-item-dialog.component";
 import {DatabaseService} from "../../services/database.service";
 
 @Component({
@@ -26,7 +26,7 @@ import {DatabaseService} from "../../services/database.service";
   templateUrl: 'inventory.page.html',
   styleUrls: ['inventory.page.scss'],
   standalone: true,
-  imports: [StorageListComponent, IonHeader, IonToolbar, IonContent, IonFab, IonFabButton, IonIcon, IonTitle, AddItemDialog, IonButtons, IonMenuButton, IonButton, TranslateModule, IonModal, NewItemDialogComponent],
+  imports: [StorageListComponent, IonHeader, IonToolbar, IonContent, IonFab, IonFabButton, IonIcon, IonTitle, AddItemDialog, IonButtons, IonMenuButton, IonButton, TranslateModule, IonModal, EditItemDialogComponent],
 })
 export class InventoryPage implements OnInit{
   @ViewChild(StorageListComponent, {static: true}) storageList!: StorageListComponent;
@@ -64,7 +64,7 @@ export class InventoryPage implements OnInit{
     this.isCreating = false;
     this.createNewItem = null;
     if (item?.name.length) {
-      this.#database.addToAllItems(item);
+      await this.#database.addOrUpdateItem(item);
       item = await this.#database.addItem(item, this.inventory);
       this.storageList.refresh();
       await this.#database.showToast(`Created ${item?.name} and added`);

@@ -130,13 +130,6 @@ export class DatabaseService {
     return result;
   }
 
-  addToAllItems(item: StorageItem) {
-    const gItem = this.#store.all.items.find(aItem => aItem.id === item.id);
-    if(!gItem) {
-      this.#store.all.items.push(item);
-    }
-  }
-
   async deleteItem(item: StorageItem, list: StorageItemList) {
     list.items.splice(list.items.findIndex(aItem => aItem.id === item.id ), 1);
     return this.save();
@@ -148,6 +141,18 @@ export class DatabaseService {
     return this.save();
   }
 
+  async addOrUpdateItem(item: StorageItem) {
+    const gItemIdx = this.#store.all.items.findIndex(aItem => aItem.id === item.id);
+    // remove old if it exists and update copies
+    if (gItemIdx >= 0) {
+      this.#store.all.items.splice(gItemIdx, 1, item);
+      this.#updateItem(item, this.#store.storage);
+      this.#store.shoppinglists.forEach(list => this.#updateItem(item, list));
+    }else {
+      this.#store.all.items.push(item);
+    }
+    return this.save();
+  }
 
   async showToast(message: string) {
     const toast = await this.#toastController.create({
@@ -157,5 +162,20 @@ export class DatabaseService {
       message
     })
     await toast.present();
+  }
+
+  #updateItem(item: StorageItem, list: StorageItemList) {
+    const value = list.items.find(listItem => listItem.id === item.id);
+    if (value) {
+      value.name = item.name;
+      value.category = item.category;
+    }
+  }
+
+  cloneStorageItem(item: StorageItem): StorageItem {
+    return {
+      ...item,
+      category: item.category ? [...item.category] : undefined
+    }
   }
 }

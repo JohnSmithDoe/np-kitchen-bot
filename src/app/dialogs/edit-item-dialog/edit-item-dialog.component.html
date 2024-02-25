@@ -4,12 +4,12 @@
           <ion-button (click)="cancel.emit()">{{ 'new.item.dialog.button.close' | translate }}</ion-button>
         </ion-buttons>
         <ion-buttons slot="end">
-          <ion-button (click)="createItem.emit(value)">{{ 'new.item.dialog.button.create' | translate }}</ion-button>
+          <ion-button (click)="saveItem.emit(value)">{{ saveButtonText }}</ion-button>
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
     <ion-content>
-      <h3 class="ion-padding">{{'new.item.dialog.title' | translate}}</h3>
+      <h3 class="ion-padding">{{ dialogTitle }}</h3>
       <ion-list>
         <ion-item>
           <ion-input label="{{'new.item.dialog.name' | translate}}"

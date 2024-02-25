@@ -1,6 +1,7 @@
 import {Routes} from '@angular/router';
 import {HomePage} from "./home.page";
 
+const redirectToStartPage = '/home/database';
 export const routes: Routes = [
   {
     path: 'home',
@@ -22,15 +23,20 @@ export const routes: Routes = [
           import('../tasks/tasks.page').then((m) => m.TasksPage),
       },
       {
+        path: 'database',
+        loadComponent: () =>
+          import('../database/database.page').then((m) => m.DatabasePage),
+      },
+      {
         path: '',
-        redirectTo: '/home/inventory',
+        redirectTo: redirectToStartPage,
         pathMatch: 'full',
       },
     ],
   },
   {
     path: '',
-    redirectTo: '/home/inventory',
+    redirectTo: redirectToStartPage,
     pathMatch: 'full',
   },
 ];

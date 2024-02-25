@@ -1,5 +1,6 @@
 import {JsonPipe} from "@angular/common";
 import {Component, inject, OnInit} from '@angular/core';
+import {RouterLink} from "@angular/router";
 import {Barcode, BarcodeFormat, BarcodeScanner} from '@capacitor-mlkit/barcode-scanning';
 import {Share} from "@capacitor/share";
 import {
@@ -9,8 +10,13 @@ import {
   IonButtons,
   IonContent,
   IonHeader,
+  IonItem,
+  IonLabel,
+  IonList,
+  IonListHeader,
   IonMenu,
   IonMenuButton,
+  IonMenuToggle,
   IonRouterOutlet,
   IonTitle,
   IonToolbar
@@ -20,7 +26,7 @@ import {
   selector: 'app-root',
   templateUrl: 'app.component.html',
   standalone: true,
-  imports: [IonApp, IonRouterOutlet, IonMenu, IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonMenuButton, JsonPipe, IonButton],
+  imports: [IonApp, IonRouterOutlet, IonMenu, IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonMenuButton, JsonPipe, IonButton, IonList, IonListHeader, IonItem, IonLabel, RouterLink, IonMenuToggle],
 })
 export class AppComponent implements OnInit {
   readonly #alertController = inject(AlertController);
