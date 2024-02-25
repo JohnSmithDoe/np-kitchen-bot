@@ -43,7 +43,7 @@
         color="tertiary"
         helper="{{ 'storage.list.permanent.add' | translate : {value: searchTerm} }}"
         categoryAlt="{{ 'storage.list.permanent.category' | translate }}"
-        [label]="searchTerm ?? ''" (selectItem)="createItem.emit($event)"
+        [label]="searchTerm" (selectItem)="createItem.emit($event)"
       ></app-storage-item>
     }
     @for (item of items; track item.id) {
