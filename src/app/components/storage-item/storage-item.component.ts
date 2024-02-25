@@ -16,7 +16,7 @@ import {Color} from '@ionic/core/dist/types/interface'
 import {TranslateModule} from "@ngx-translate/core";
 import {StorageItem} from "../../@types/types";
 import {CategoriesPipe} from "../../pipes/categories.pipe";
-import {uuidv4} from "../../utils";
+import {DatabaseService} from "../../services/database.service";
 
 @Component({
   selector: 'app-storage-item',
@@ -69,8 +69,7 @@ export class StorageItemComponent implements OnInit, OnChanges {
 
   #updateItem() {
     if (this.label) {
-      this.item = {name: this.label, id: uuidv4(), quantity: 1, category: this.category ? [this.category] : undefined}
+      this.item = DatabaseService.createStorageItem(this.label, this.category);
     }
   }
-
 }

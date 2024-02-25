@@ -13,7 +13,7 @@ import {
   IonTitle,
   IonToolbar
 } from '@ionic/angular/standalone';
-import {TranslateModule} from "@ngx-translate/core";
+import {TranslateModule, TranslateService} from "@ngx-translate/core";
 import {addIcons} from "ionicons";
 import {add, duplicate, remove} from "ionicons/icons";
 import {StorageItem, StorageItemList} from "../../@types/types";
@@ -21,6 +21,7 @@ import {StorageListComponent} from "../../components/storage-list/storage-list.c
 import {AddItemDialog} from "../../dialogs/add-item-dialog/add-item.dialog";
 import {EditItemDialogComponent} from "../../dialogs/edit-item-dialog/edit-item-dialog.component";
 import {DatabaseService} from "../../services/database.service";
+import {UiService} from "../../services/ui.service";
 
 @Component({
   selector: 'app-page-shopping-list',
@@ -34,6 +35,9 @@ export class ShoppinglistPage implements OnInit{
   @ViewChild(StorageListComponent, {static: true}) storageList!: StorageListComponent;
 
   readonly #database = inject(DatabaseService);
+  readonly #uiService = inject(UiService);
+  readonly translate = inject(TranslateService);
+
   shoppingList!: StorageItemList;
 
   isAdding = false;
@@ -53,7 +57,7 @@ export class ShoppinglistPage implements OnInit{
     this.isAdding = false;
     item = await this.#database.addItem(item, this.shoppingList);
     this.storageList.refresh(true);
-    await this.#database.showToast(`Added 1 x ${item?.name} (Total: ${item?.quantity})`);
+    await this.#uiService.showToast(this.translate.instant('shoppinglist.page.toast.add', {name: item?.name, total: item?.quantity}));
   }
 
   showCreateDialog(newItem: StorageItem) {
@@ -69,15 +73,15 @@ export class ShoppinglistPage implements OnInit{
     if (item?.name.length) {
       await this.#database.addOrUpdateItem(item);
       await this.#database.addItem(item, this.shoppingList);
-      this.storageList.refresh();
-      await this.#database.showToast(`Created ${item?.name} and added`);
+      this.storageList.refresh(true);
+      await this.#uiService.showToast(this.translate.instant('shoppinglist.page.toast.created', {name: item?.name}));
     }
   }
 
   async removeItemFromShoppingList(item: StorageItem) {
     await this.#database.deleteItem(item, this.shoppingList);
     this.storageList.refresh();
-    await this.#database.showToast(`Removed ${item?.name}`);
+    await this.#uiService.showToast(this.translate.instant('shoppinglist.page.toast.remove', {name: item?.name}));
   }
 
   // what should happen if we buy an item?
@@ -85,7 +89,7 @@ export class ShoppinglistPage implements OnInit{
   async buyItem(item: StorageItem) {
     item.state = 'bought'
     await this.#database.save();
-    await this.#database.showToast(`Bought ${item?.name}`);
+    await this.#uiService.showToast(this.translate.instant('shoppinglist.page.toast.move', {name: item?.name, total: item?.quantity}));
   }
 
 }

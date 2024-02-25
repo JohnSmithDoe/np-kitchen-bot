@@ -1,5 +1,5 @@
 import {NgTemplateOutlet} from "@angular/common";
-import {Component, EventEmitter, inject, Input, OnInit, Output} from '@angular/core';
+import {booleanAttribute, Component, EventEmitter, inject, Input, OnInit, Output} from '@angular/core';
 import {FormsModule} from "@angular/forms";
 import {ItemReorderEventDetail, SearchbarCustomEvent} from "@ionic/angular";
 import {
@@ -72,10 +72,10 @@ export class StorageListComponent implements OnInit {
   @Input() itemHelper?: string;
   @Input() itemColor?: Color;
   @Input() itemType: 'simple' | 'extended' = 'extended';
-  @Input() canAddTemporary = true;
-  @Input() canReorder = false;
-  @Input() canDelete = false;
-  @Input() canMove = false;
+  @Input({transform: booleanAttribute}) canAddTemporary = true;
+  @Input({transform: booleanAttribute}) canReorder = false;
+  @Input({transform: booleanAttribute}) canDelete = false;
+  @Input({transform: booleanAttribute}) canMove = false;
 
   @Output() createItem = new EventEmitter<StorageItem>();
   @Output() selectItem = new EventEmitter<StorageItem>();
@@ -157,10 +157,11 @@ export class StorageListComponent implements OnInit {
   }
 
   async handleItemOptionsOnDrag(ev: NPIonDragEvent, item: StorageItem, list: IonList) {
-    // doubble the length or 250px
-    if (ev.detail.ratio > 2 || ev.detail.amount > 250) {
+    // tripple the length or 250px
+    const MAX_DRAG_RATIO = 3;
+    if (ev.detail.ratio > MAX_DRAG_RATIO || ev.detail.amount > 250) {
       await this.deleteItemFromList(list, item);
-    }else if (ev.detail.ratio < -2 || ev.detail.amount < -250) {
+    }else if (ev.detail.ratio < -MAX_DRAG_RATIO || ev.detail.amount < -250) {
       await this.moveItemFromList(list, item);
     }
   }

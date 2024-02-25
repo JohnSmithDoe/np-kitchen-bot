@@ -12,7 +12,7 @@ import {
   IonTitle,
   IonToolbar
 } from '@ionic/angular/standalone';
-import {TranslateModule} from "@ngx-translate/core";
+import {TranslateModule, TranslateService} from "@ngx-translate/core";
 import {addIcons} from "ionicons";
 import {add, remove} from "ionicons/icons";
 import {StorageItem, StorageItemList} from "../../@types/types";
@@ -20,6 +20,7 @@ import {StorageListComponent} from "../../components/storage-list/storage-list.c
 import {AddItemDialog} from "../../dialogs/add-item-dialog/add-item.dialog";
 import {EditItemDialogComponent} from "../../dialogs/edit-item-dialog/edit-item-dialog.component";
 import {DatabaseService} from "../../services/database.service";
+import {UiService} from "../../services/ui.service";
 
 @Component({
   selector: 'app-page-inventory',
@@ -32,6 +33,9 @@ export class InventoryPage implements OnInit{
   @ViewChild(StorageListComponent, {static: true}) storageList!: StorageListComponent;
 
   readonly #database = inject(DatabaseService);
+  readonly #uiService = inject(UiService);
+  readonly translate = inject(TranslateService);
+
   inventory!: StorageItemList;
 
   isAdding = false;
@@ -51,7 +55,7 @@ export class InventoryPage implements OnInit{
     this.isAdding = false;
     item = await this.#database.addItem(item, this.inventory);
     this.storageList.refresh();
-    await this.#database.showToast(`Added 1 x ${item?.name} (Total: ${item?.quantity})`);
+    await this.#uiService.showToast(this.translate.instant('inventory.page.toast.add', {name: item?.name, total: item?.quantity}));
   }
 
   showCreateDialog(newItem: StorageItem) {
@@ -67,20 +71,20 @@ export class InventoryPage implements OnInit{
       await this.#database.addOrUpdateItem(item);
       item = await this.#database.addItem(item, this.inventory);
       this.storageList.refresh();
-      await this.#database.showToast(`Created ${item?.name} and added`);
+      await this.#uiService.showToast(this.translate.instant('inventory.page.toast.created', {name: item?.name}));
     }
   }
 
   async removeItemFromInventory(item: StorageItem) {
     await this.#database.deleteItem(item, this.inventory);
     this.storageList.refresh();
-    await this.#database.showToast(`Removed ${item?.name}`);
+    await this.#uiService.showToast(this.translate.instant('inventory.page.toast.remove', {name: item?.name}));
   }
 
   async moveToShoppingList(item?: StorageItem) {
     this.isAdding = false;
     item = await this.#database.addItem(item, this.#database.shoppinglist())
-    await this.#database.showToast(`Added 1 x ${item?.name} to the shopping list (Total: ${item?.quantity})`);
+    await this.#uiService.showToast(this.translate.instant('inventory.page.toast.move', {name: item?.name, total: item?.quantity}));
   }
 
 }

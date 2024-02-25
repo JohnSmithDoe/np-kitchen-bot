@@ -7,8 +7,10 @@ import {
   IonContent,
   IonHeader,
   IonItem,
+  IonLabel,
   IonList,
   IonModal,
+  IonNote,
   IonSearchbar,
   IonTitle,
   IonToolbar
@@ -35,7 +37,9 @@ import {DatabaseService} from "../../services/database.service";
     IonItem,
     IonCheckbox,
     FormsModule,
-    TranslateModule
+    TranslateModule,
+    IonLabel,
+    IonNote
 
   ]
 })
@@ -51,6 +55,7 @@ export class CategoriesDialogComponent implements OnInit {
   newCategories: StorageCategory[] = [];
   selection: string[] = [];
   searchFor?: string;
+  isExactlyIncluded = false;
 
   constructor() {
   }
@@ -70,14 +75,14 @@ export class CategoriesDialogComponent implements OnInit {
         ...this.newCategories,
         ...this.#database.categories
       ]
-    }else {
-    this.items = [
-      ...this.newCategories,
-      ...this.#database.categories
-    ].filter(
-      cat => cat.name.toLowerCase().includes(this.searchFor!)
-    )
-  }
+      this.isExactlyIncluded = false;
+    } else {
+      this.items = [
+        ...this.newCategories,
+        ...this.#database.categories
+      ].filter(cat => cat.name.toLowerCase().includes(this.searchFor!.toLowerCase()))
+      this.isExactlyIncluded = !!this.items.find(item => item.name.toLowerCase() === this.searchFor?.toLowerCase());
+    }
   }
 
   isChecked(item: StorageCategory) {

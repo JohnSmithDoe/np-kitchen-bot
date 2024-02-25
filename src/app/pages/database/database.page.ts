@@ -20,6 +20,7 @@ import {StorageListComponent} from "../../components/storage-list/storage-list.c
 import {AddItemDialog} from "../../dialogs/add-item-dialog/add-item.dialog";
 import {EditItemDialogComponent} from "../../dialogs/edit-item-dialog/edit-item-dialog.component";
 import {DatabaseService} from "../../services/database.service";
+import {UiService} from "../../services/ui.service";
 
 @Component({
   selector: 'app-page-database',
@@ -32,7 +33,9 @@ export class DatabasePage implements OnInit {
   @ViewChild(StorageListComponent, {static: true}) storageList!: StorageListComponent;
 
   readonly #database = inject(DatabaseService);
+  readonly #uiService = inject(UiService);
   readonly translate = inject(TranslateService);
+
   items!: StorageItemList;
 
   isEditing = false;
@@ -54,7 +57,8 @@ export class DatabasePage implements OnInit {
 
     await this.#database.addOrUpdateItem(item);
     this.storageList.refresh();
-    await this.#database.showToast(`Added 1 x ${item?.name} (Total: ${item?.quantity})`);
+    await this.#uiService.showToast(this.translate.instant('database.toast.add', {name: item.name, total: item.quantity}));
+
   }
 
   showEditDialog(item: StorageItem|null, mode: 'update' | 'create') {
@@ -66,7 +70,7 @@ export class DatabasePage implements OnInit {
   async removeItemFromDatabase(item: StorageItem) {
     await this.#database.deleteItem(item, this.items);
     this.storageList.refresh();
-    await this.#database.showToast(`Removed ${item?.name}`);
+    await this.#uiService.showToast(this.translate.instant('database.toast.remove', {name: item.name}));
   }
 
 }

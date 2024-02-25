@@ -21,6 +21,7 @@
                     [canDelete]="true"
                     (createItem)="showEditDialog($event, 'create')"
                     (selectItem)="showEditDialog($event, 'update')"
+                    (emptyItem)="showEditDialog(null, 'create')"
                     (deleteItem)="removeItemFromDatabase($event)"
   ></app-storage-list>
 </ion-content>
