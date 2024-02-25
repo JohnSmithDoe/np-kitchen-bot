@@ -32,8 +32,33 @@
             }
           </ion-label>
         </ion-item>
+        <ion-item>
+          <ion-select label="Einheit" label-placement="floating" interface="popover"
+                      [value]="value.unit"
+                      (ionChange)="setUnit($event)"
+          >
+            <ion-select-option value="pieces">Stück</ion-select-option>
+            <ion-select-option value="ml">Liter</ion-select-option>
+            <ion-select-option value="g">Kilogramm</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <ion-item>
+          <ion-select label="Verpackung" label-placement="floating" interface="popover"
+                      [value]="value.packaging"
+                      (ionChange)="setPackaging($event)"
+          >
+            @if (value.unit === 'ml') {
+              <ion-select-option value="bottle">Flasche</ion-select-option>
+            }
+            <ion-select-option value="loose">Einzeln</ion-select-option>
+            <ion-select-option value="package">Packung</ion-select-option>
+            <ion-select-option value="tin-can">Dose</ion-select-option>
+          </ion-select>
+        </ion-item>
       </ion-list>
     </ion-content>
+
+
     <ion-modal [isOpen]="selectCategories">
       <ng-template>
         <app-categories-dialog [item]="value"

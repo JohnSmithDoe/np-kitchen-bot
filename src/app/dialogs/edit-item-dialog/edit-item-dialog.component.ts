@@ -1,5 +1,6 @@
 import {Component, EventEmitter, inject, Input, OnInit, Output} from '@angular/core';
 import {FormsModule} from "@angular/forms";
+import {SelectCustomEvent} from "@ionic/angular";
 import {
   IonAvatar,
   IonButton,
@@ -13,13 +14,15 @@ import {
   IonLabel,
   IonList,
   IonModal,
+  IonSelect,
+  IonSelectOption,
   IonTitle,
   IonToolbar
 } from "@ionic/angular/standalone";
 import {TranslateModule, TranslateService} from "@ngx-translate/core";
 import {addIcons} from "ionicons";
 import {closeCircle} from "ionicons/icons";
-import {StorageItem} from "../../@types/types";
+import {StorageItem, TItemUnit, TPackagingUnit} from "../../@types/types";
 import {DatabaseService} from "../../services/database.service";
 import {CategoriesDialogComponent} from "../categories-dialog/categories-dialog.component";
 
@@ -44,6 +47,8 @@ import {CategoriesDialogComponent} from "../categories-dialog/categories-dialog.
     IonIcon,
     CategoriesDialogComponent,
     TranslateModule,
+    IonSelect,
+    IonSelectOption,
   ],
   templateUrl: './edit-item-dialog.component.html',
   styleUrl: './edit-item-dialog.component.scss'
@@ -77,7 +82,7 @@ export class EditItemDialogComponent implements OnInit {
 
     this.value = this.item
       ? this.#database.cloneStorageItem(this.item)
-      : this.#database.createNewStorageItem('')
+      : DatabaseService.createStorageItem('')
   }
 
 
@@ -90,5 +95,18 @@ export class EditItemDialogComponent implements OnInit {
     this.value.category?.splice(this.value.category?.indexOf(cat),1);
     // update object reference
     this.value.category = this.value.category ? [...this.value.category] : undefined;
+  }
+
+  setUnit(ev: SelectCustomEvent<TItemUnit>) {
+    this.value.unit = ev.detail.value;
+    if(this.value.unit === 'ml') {
+      this.value.packaging = 'bottle';
+    }else if( this.value.packaging === 'bottle') {
+      this.value.packaging = 'loose'
+    }
+  }
+
+  setPackaging(ev: SelectCustomEvent<TPackagingUnit>) {
+    this.value.packaging = ev.detail.value;
   }
 }
