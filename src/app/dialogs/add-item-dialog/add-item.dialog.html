@@ -1,5 +1,6 @@
     <ion-header>
       <ion-toolbar>
+        <ion-title>Eintrag hinzufügen</ion-title>
         <ion-buttons slot="end">
           <ion-button (click)="close()">Abbrechen</ion-button>
         </ion-buttons>
@@ -7,6 +8,7 @@
     </ion-header>
     <ion-content>
       <app-storage-list [itemList]="itemList"
+                        header="Datenbank"
                         itemType="simple"
                         itemColor="medium"
                         [canAddTemporary]="false"

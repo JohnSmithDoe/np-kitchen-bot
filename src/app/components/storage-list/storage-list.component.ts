@@ -194,14 +194,15 @@ export class StorageListComponent implements OnInit {
     this.refresh(true);
   }
 
-  refresh(resetSearch = false) {
+  refresh(resetSearch = true) {
     this.updateCategories();
     this.searchItem(resetSearch ? null : this.searchTerm);
   }
 
   includedInOthers() {
-    return !!this.alternatives.find(item => item.name === this.searchTerm)
-      || !!this.items.find(item => item.name === this.searchTerm);
+    const toLowerCaseSearchTerm = this.searchTerm?.toLowerCase();
+    return !!this.alternatives.find(item => item.name.toLowerCase() === toLowerCaseSearchTerm)
+      || !!this.items.find(item => item.name.toLowerCase() === toLowerCaseSearchTerm);
   }
   toggleReorder() {
     this.reorderDisabled = !this.reorderDisabled;

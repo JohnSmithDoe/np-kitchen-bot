@@ -13,7 +13,7 @@
     "lint": "ng lint",
     "serve:prod": "ionic serve --prod",
     "build:android": "ionic capacitor build android",
-    "i18n:extract": "ngx-translate-extract --input ./src --output src/assets/i18n/de.json --clean --format json"
+    "i18n:extract": "ngx-translate-extract --input ./src --output src/assets/i18n/de.json --clean --sort --format json"
   },
   "private": false,
   "dependencies": {

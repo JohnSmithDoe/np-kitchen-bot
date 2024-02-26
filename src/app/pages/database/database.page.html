@@ -15,10 +15,9 @@
 <ion-content>
   <app-storage-list [itemList]="items"
                     itemHelper="Eintrag bearbeiten"
-                    header="Database" headerColor="danger"
+                    header="In der Datenbank" headerColor="danger"
                     itemType="simple" itemColor="medium"
-                    [canAddTemporary]="false"
-                    [canDelete]="true"
+                    canAddTemporary="false" canDelete="true"
                     (createItem)="showEditDialog($event, 'create')"
                     (selectItem)="showEditDialog($event, 'update')"
                     (emptyItem)="showEditDialog(null, 'create')"

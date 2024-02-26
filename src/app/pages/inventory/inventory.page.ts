@@ -64,6 +64,11 @@ export class InventoryPage implements OnInit{
     this.createNewItem = newItem;
   }
 
+  showAddDialog() {
+    this.isAdding = true;
+    this.isCreating = false;
+  }
+
   async createItemAndAddToInventory(item?: StorageItem) {
     this.isCreating = false;
     this.createNewItem = null;
@@ -84,6 +89,7 @@ export class InventoryPage implements OnInit{
   async moveToShoppingList(item?: StorageItem) {
     this.isAdding = false;
     item = await this.#database.addItem(item, this.#database.shoppinglist())
+    console.log(item);
     await this.#uiService.showToast(this.translate.instant('inventory.page.toast.move', {name: item?.name, total: item?.quantity}));
   }
 

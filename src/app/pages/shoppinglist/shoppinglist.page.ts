@@ -56,7 +56,7 @@ export class ShoppinglistPage implements OnInit{
   async addItemToShoppingList(item?: StorageItem) {
     this.isAdding = false;
     item = await this.#database.addItem(item, this.shoppingList);
-    this.storageList.refresh(true);
+    this.storageList.refresh();
     await this.#uiService.showToast(this.translate.instant('shoppinglist.page.toast.add', {name: item?.name, total: item?.quantity}));
   }
 
@@ -73,7 +73,7 @@ export class ShoppinglistPage implements OnInit{
     if (item?.name.length) {
       await this.#database.addOrUpdateItem(item);
       await this.#database.addItem(item, this.shoppingList);
-      this.storageList.refresh(true);
+      this.storageList.refresh();
       await this.#uiService.showToast(this.translate.instant('shoppinglist.page.toast.created', {name: item?.name}));
     }
   }
