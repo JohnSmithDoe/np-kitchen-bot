@@ -33,7 +33,7 @@
           </ion-label>
         </ion-item>
         <ion-item>
-          <ion-select label="Einheit" label-placement="floating" interface="popover"
+          <ion-select label="Einheit" interface="popover"
                       [value]="value.unit"
                       (ionChange)="setUnit($event)"
           >
@@ -43,7 +43,7 @@
           </ion-select>
         </ion-item>
         <ion-item>
-          <ion-select label="Verpackung" label-placement="floating" interface="popover"
+          <ion-select label="Packung" interface="popover"
                       [value]="value.packaging"
                       (ionChange)="setPackaging($event)"
           >
@@ -51,9 +51,19 @@
               <ion-select-option value="bottle">Flasche</ion-select-option>
             }
             <ion-select-option value="loose">Einzeln</ion-select-option>
-            <ion-select-option value="package">Packung</ion-select-option>
+            <ion-select-option value="package">Päckchen</ion-select-option>
             <ion-select-option value="tin-can">Dose</ion-select-option>
           </ion-select>
+        </ion-item>
+        <ion-item>
+          <ion-input label="Packungsgröße" placeholder="in ml, g oder stückzahl" class="ion-text-end" type="number"
+                     [(ngModel)]="value.packagingWeight">
+          </ion-input>
+        </ion-item>     <ion-item>
+          <ion-input label="Preis pro Packung" placeholder="Money Amount" class="ion-text-end"
+                     [ngModel]="value.price | currency:currencyCode"
+                     (ionBlur)="updatePrice($event)">
+          </ion-input>
         </ion-item>
       </ion-list>
     </ion-content>

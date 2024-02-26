@@ -1,5 +1,5 @@
 import {HttpClient, HttpClientModule} from "@angular/common/http";
-import {APP_INITIALIZER, enableProdMode, importProvidersFrom} from '@angular/core';
+import {APP_INITIALIZER, enableProdMode, importProvidersFrom, LOCALE_ID} from '@angular/core';
 import {bootstrapApplication} from '@angular/platform-browser';
 import {provideRouter, RouteReuseStrategy} from '@angular/router';
 import {IonicRouteStrategy, provideIonicAngular} from '@ionic/angular/standalone';
@@ -42,6 +42,10 @@ void bootstrapApplication(AppComponent, {
         }
       }),
     ),
+    {
+      provide: LOCALE_ID,
+      useValue: 'de-DE'
+    },
     {
       provide: APP_INITIALIZER,
       useFactory: (db: DatabaseService) => () => db.initialize(),

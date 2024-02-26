@@ -1,4 +1,5 @@
-import {JsonPipe} from "@angular/common";
+import {JsonPipe, registerLocaleData} from "@angular/common";
+import * as de from '@angular/common/locales/de';
 import {Component, inject, OnInit} from '@angular/core';
 import {RouterLink} from "@angular/router";
 import {Barcode, BarcodeFormat, BarcodeScanner} from '@capacitor-mlkit/barcode-scanning';
@@ -34,6 +35,10 @@ export class AppComponent implements OnInit {
   isSupported = false;
   barcodes: Barcode[] = [];
 
+
+  constructor() {
+    registerLocaleData(de.default);
+  }
 
   async ngOnInit() {
     this.isSupported = (await BarcodeScanner.isSupported()).supported;

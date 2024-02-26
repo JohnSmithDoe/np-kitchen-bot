@@ -1,6 +1,7 @@
+import {CurrencyPipe} from "@angular/common";
 import {Component, EventEmitter, inject, Input, OnInit, Output} from '@angular/core';
 import {FormsModule} from "@angular/forms";
-import {SelectCustomEvent} from "@ionic/angular";
+import {InputCustomEvent, SelectCustomEvent} from "@ionic/angular";
 import {
   IonAvatar,
   IonButton,
@@ -49,6 +50,7 @@ import {CategoriesDialogComponent} from "../categories-dialog/categories-dialog.
     TranslateModule,
     IonSelect,
     IonSelectOption,
+    CurrencyPipe,
   ],
   templateUrl: './edit-item-dialog.component.html',
   styleUrl: './edit-item-dialog.component.scss'
@@ -56,22 +58,25 @@ import {CategoriesDialogComponent} from "../categories-dialog/categories-dialog.
 export class EditItemDialogComponent implements OnInit {
   readonly #database = inject(DatabaseService);
   readonly translate = inject(TranslateService);
+
   @Input() item?: StorageItem | null;
   @Input() mode: 'update' | 'create' = 'create';
   @Input() value!: StorageItem;
 
-
   @Output() saveItem = new EventEmitter<StorageItem>();
   @Output() cancel = new EventEmitter();
+
   selectCategories = false;
   dialogTitle = '';
   saveButtonText = '';
+  currencyCode: 'EUR' | 'USD' = 'EUR';
 
   constructor() {
     addIcons({closeCircle});
   }
 
   ngOnInit(): void {
+    this.currencyCode = this.translate.currentLang !== 'en' ? 'EUR' : 'USD';
     this.saveButtonText = this.mode === 'create'
       ? this.translate.instant('new.item.dialog.button.create')
       : this.translate.instant('new.item.dialog.button.update');
@@ -108,5 +113,23 @@ export class EditItemDialogComponent implements OnInit {
 
   setPackaging(ev: SelectCustomEvent<TPackagingUnit>) {
     this.value.packaging = ev.detail.value;
+  }
+
+  updatePrice(ev: InputCustomEvent<FocusEvent>) {
+    let inputValue = ev.target.value as string;
+    // get rid of all non-numeric chars
+    inputValue = inputValue.replace(/[^0-9,.-]+/g,"");
+
+    // if entered in english -> german e.g. 12.34 -> 12,34
+    if((/[0-9].*\.[0-9]{1,2}$/).test(inputValue)) {
+      inputValue = inputValue.replace(/\./g, 'X');
+      inputValue = inputValue.replace(/,/g, '.');
+      inputValue = inputValue.replace(/X/g, ',');
+    }
+    // only numbers , and - (points are removed) e.g. 1.234,34 € -> 1234,34
+    const cleanInput = inputValue.replace(/[^0-9,-]+/g,"");
+    // swap german , with . e.g. 1234,34 -> 1234.34
+    const numberInput = cleanInput.replace(/,+/g,".");
+    this.value.price = Number.parseFloat(numberInput);
   }
 }
