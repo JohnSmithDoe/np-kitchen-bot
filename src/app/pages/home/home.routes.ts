@@ -1,5 +1,5 @@
-import {Routes} from '@angular/router';
-import {HomePage} from "./home.page";
+import { Routes } from '@angular/router';
+import { HomePage } from './home.page';
 
 const redirectToStartPage = '/home/database';
 export const routes: Routes = [
@@ -10,7 +10,9 @@ export const routes: Routes = [
       {
         path: 'shoppinglist',
         loadComponent: () =>
-          import('../shoppinglist/shoppinglist.page').then((m) => m.ShoppinglistPage),
+          import('../shoppinglist/shoppinglist.page').then(
+            (m) => m.ShoppinglistPage
+          ),
       },
       {
         path: 'inventory',

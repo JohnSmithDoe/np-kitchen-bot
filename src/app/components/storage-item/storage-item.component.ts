@@ -1,5 +1,13 @@
-import {NgTemplateOutlet} from "@angular/common";
-import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges,
+} from '@angular/core';
 import {
   IonAvatar,
   IonButton,
@@ -10,13 +18,13 @@ import {
   IonLabel,
   IonListHeader,
   IonNote,
-  IonReorder
-} from "@ionic/angular/standalone";
-import {Color} from '@ionic/core/dist/types/interface'
-import {TranslateModule} from "@ngx-translate/core";
-import {StorageItem} from "../../@types/types";
-import {CategoriesPipe} from "../../pipes/categories.pipe";
-import {DatabaseService} from "../../services/database.service";
+  IonReorder,
+} from '@ionic/angular/standalone';
+import { Color } from '@ionic/core/dist/types/interface';
+import { TranslateModule } from '@ngx-translate/core';
+import { StorageItem } from '../../@types/types';
+import { CategoriesPipe } from '../../pipes/categories.pipe';
+import { DatabaseService } from '../../services/database.service';
 
 @Component({
   selector: 'app-storage-item',
@@ -36,8 +44,8 @@ import {DatabaseService} from "../../services/database.service";
     IonListHeader,
     CategoriesPipe,
     IonAvatar,
-    IonChip
-  ]
+    IonChip,
+  ],
 })
 export class StorageItemComponent implements OnInit, OnChanges {
   @Input() item!: StorageItem;
@@ -52,10 +60,11 @@ export class StorageItemComponent implements OnInit, OnChanges {
   @Output() selectItem = new EventEmitter<StorageItem>();
   @Output() cartItem = new EventEmitter<StorageItem>();
 
-  constructor() { }
+  constructor() {}
 
   ngOnInit() {
-    if(!this.item && !this.label) throw new Error('Either label or item must be set');
+    if (!this.item && !this.label)
+      throw new Error('Either label or item must be set');
     if (!this.item) {
       this.#updateItem();
     }

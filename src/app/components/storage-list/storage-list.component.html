@@ -1,4 +1,8 @@
-<ion-searchbar [(ngModel)]="searchTerm" (ionInput)="searchTermChange($event)" [debounce]="250"></ion-searchbar>
+<ion-searchbar
+  [(ngModel)]="searchTerm"
+  (ionInput)="searchTermChange($event)"
+  [debounce]="250"
+></ion-searchbar>
 <ion-toolbar [hidden]="!items.length">
   <ion-buttons slot="start" [hidden]="!canReorder">
     <ion-button (click)="toggleReorder()">
@@ -11,7 +15,6 @@
   </ion-buttons>
 </ion-toolbar>
 <div class="storage-list-body">
-
   @if (mode === 'alphabetical') {
     <ng-container *ngTemplateOutlet="listMode"></ng-container>
   } @else {
@@ -39,42 +42,62 @@
         @if (canAddTemporary) {
           <app-storage-item
             color="secondary"
-            helper="{{ 'storage.list.temporary.add' | translate : {value: searchTerm} }}"
+            helper="{{
+              'storage.list.temporary.add' | translate: { value: searchTerm }
+            }}"
             category="{{ 'storage.list.temporary.category' | translate }}"
-            [label]="searchTerm" (selectItem)="addTemporaryItem($event)"
+            [label]="searchTerm"
+            (selectItem)="addTemporaryItem($event)"
           ></app-storage-item>
         }
         <app-storage-item
           color="tertiary"
-          helper="{{ 'storage.list.permanent.add' | translate : {value: searchTerm} }}"
+          helper="{{
+            'storage.list.permanent.add' | translate: { value: searchTerm }
+          }}"
           categoryAlt="{{ 'storage.list.permanent.category' | translate }}"
-          [label]="searchTerm" (selectItem)="createItem.emit($event)"
+          [label]="searchTerm"
+          (selectItem)="createItem.emit($event)"
         ></app-storage-item>
       }
     }
 
     <!-- Casting $event to $any is a temporary fix for this bug https://github.com/ionic-team/ionic-framework/issues/24245 -->
-    <ion-reorder-group [disabled]="reorderDisabled" (ionItemReorder)="handleReorder($any($event))">
+    <ion-reorder-group
+      [disabled]="reorderDisabled"
+      (ionItemReorder)="handleReorder($any($event))"
+    >
       @for (item of items; track item.id) {
-        <ion-item-sliding (ionDrag)="handleItemOptionsOnDrag($event, item, ionList)">
+        <ion-item-sliding
+          (ionDrag)="handleItemOptionsOnDrag($event, item, ionList)"
+        >
           @if (canMove) {
             <ion-item-options side="start">
-              <ion-item-option color="success" expandable (click)="moveItemFromList(ionList, item)">
+              <ion-item-option
+                color="success"
+                expandable
+                (click)="moveItemFromList(ionList, item)"
+              >
                 <ion-icon name="cart" slot="icon-only"></ion-icon>
               </ion-item-option>
             </ion-item-options>
           }
 
-          <app-storage-item [item]="item"
-                            [type]="itemType"
-                            [color]="itemColor"
-                            [helper]="itemHelper ?? ('storage.list.item.helper' | translate)"
-                            (selectItem)="selectItem.emit(item)"
+          <app-storage-item
+            [item]="item"
+            [type]="itemType"
+            [color]="itemColor"
+            [helper]="itemHelper ?? ('storage.list.item.helper' | translate)"
+            (selectItem)="selectItem.emit(item)"
           ></app-storage-item>
 
           @if (canDelete) {
             <ion-item-options side="end">
-              <ion-item-option color="danger" expandable (click)="deleteItemFromList(ionList, item)">
+              <ion-item-option
+                color="danger"
+                expandable
+                (click)="deleteItemFromList(ionList, item)"
+              >
                 Delete
               </ion-item-option>
             </ion-item-options>
@@ -85,7 +108,9 @@
 
     @if (alternatives.length) {
       <ion-list-header>
-        <ion-label>{{ 'storage.list.alternates.header' | translate }}</ion-label>
+        <ion-label>{{
+          'storage.list.alternates.header' | translate
+        }}</ion-label>
       </ion-list-header>
       @for (alternate of alternatives; track alternate.id) {
         <app-storage-item
@@ -100,12 +125,12 @@
     @if (!searchTerm && !items.length) {
       <ion-item button (click)="emptyItem.emit()">
         <ion-label class="ion-text-wrap">
-          <h2> {{ 'storage.list.empty' | translate }}</h2>
-          <ion-note slot="end">{{ 'storage.list.empty.helper' | translate }}</ion-note>
+          <h2>{{ 'storage.list.empty' | translate }}</h2>
+          <ion-note slot="end">{{
+            'storage.list.empty.helper' | translate
+          }}</ion-note>
         </ion-label>
       </ion-item>
     }
   </ion-list>
-
 </ng-template>
-

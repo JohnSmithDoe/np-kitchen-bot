@@ -1,4 +1,4 @@
-import {Component, inject, OnInit, ViewChild} from '@angular/core';
+import { Component, inject, OnInit, ViewChild } from '@angular/core';
 import {
   IonButton,
   IonButtons,
@@ -10,27 +10,44 @@ import {
   IonMenuButton,
   IonModal,
   IonTitle,
-  IonToolbar
+  IonToolbar,
 } from '@ionic/angular/standalone';
-import {TranslateModule, TranslateService} from "@ngx-translate/core";
-import {addIcons} from "ionicons";
-import {add, remove} from "ionicons/icons";
-import {StorageItem, StorageItemList} from "../../@types/types";
-import {StorageListComponent} from "../../components/storage-list/storage-list.component";
-import {AddItemDialog} from "../../dialogs/add-item-dialog/add-item.dialog";
-import {EditItemDialogComponent} from "../../dialogs/edit-item-dialog/edit-item-dialog.component";
-import {DatabaseService} from "../../services/database.service";
-import {UiService} from "../../services/ui.service";
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { addIcons } from 'ionicons';
+import { add, remove } from 'ionicons/icons';
+import { StorageItem, StorageItemList } from '../../@types/types';
+import { StorageListComponent } from '../../components/storage-list/storage-list.component';
+import { AddItemDialog } from '../../dialogs/add-item-dialog/add-item.dialog';
+import { EditItemDialogComponent } from '../../dialogs/edit-item-dialog/edit-item-dialog.component';
+import { DatabaseService } from '../../services/database.service';
+import { UiService } from '../../services/ui.service';
 
 @Component({
   selector: 'app-page-inventory',
   templateUrl: 'inventory.page.html',
   styleUrls: ['inventory.page.scss'],
   standalone: true,
-  imports: [StorageListComponent, IonHeader, IonToolbar, IonContent, IonFab, IonFabButton, IonIcon, IonTitle, AddItemDialog, IonButtons, IonMenuButton, IonButton, TranslateModule, IonModal, EditItemDialogComponent],
+  imports: [
+    StorageListComponent,
+    IonHeader,
+    IonToolbar,
+    IonContent,
+    IonFab,
+    IonFabButton,
+    IonIcon,
+    IonTitle,
+    AddItemDialog,
+    IonButtons,
+    IonMenuButton,
+    IonButton,
+    TranslateModule,
+    IonModal,
+    EditItemDialogComponent,
+  ],
 })
-export class InventoryPage implements OnInit{
-  @ViewChild(StorageListComponent, {static: true}) storageList!: StorageListComponent;
+export class InventoryPage implements OnInit {
+  @ViewChild(StorageListComponent, { static: true })
+  storageList!: StorageListComponent;
 
   readonly #database = inject(DatabaseService);
   readonly #uiService = inject(UiService);
@@ -43,7 +60,7 @@ export class InventoryPage implements OnInit{
   createNewItem: StorageItem | null | undefined;
 
   constructor() {
-    addIcons({add, remove})
+    addIcons({ add, remove });
   }
 
   ngOnInit(): void {
@@ -55,7 +72,12 @@ export class InventoryPage implements OnInit{
     this.isAdding = false;
     item = await this.#database.addItem(item, this.inventory);
     this.storageList.refresh();
-    await this.#uiService.showToast(this.translate.instant('inventory.page.toast.add', {name: item?.name, total: item?.quantity}));
+    await this.#uiService.showToast(
+      this.translate.instant('inventory.page.toast.add', {
+        name: item?.name,
+        total: item?.quantity,
+      })
+    );
   }
 
   showCreateDialog(newItem: StorageItem) {
@@ -76,21 +98,33 @@ export class InventoryPage implements OnInit{
       await this.#database.addOrUpdateItem(item);
       item = await this.#database.addItem(item, this.inventory);
       this.storageList.refresh();
-      await this.#uiService.showToast(this.translate.instant('inventory.page.toast.created', {name: item?.name}));
+      await this.#uiService.showToast(
+        this.translate.instant('inventory.page.toast.created', {
+          name: item?.name,
+        })
+      );
     }
   }
 
   async removeItemFromInventory(item: StorageItem) {
     await this.#database.deleteItem(item, this.inventory);
     this.storageList.refresh();
-    await this.#uiService.showToast(this.translate.instant('inventory.page.toast.remove', {name: item?.name}));
+    await this.#uiService.showToast(
+      this.translate.instant('inventory.page.toast.remove', {
+        name: item?.name,
+      })
+    );
   }
 
   async moveToShoppingList(item?: StorageItem) {
     this.isAdding = false;
-    item = await this.#database.addItem(item, this.#database.shoppinglist())
+    item = await this.#database.addItem(item, this.#database.shoppinglist());
     console.log(item);
-    await this.#uiService.showToast(this.translate.instant('inventory.page.toast.move', {name: item?.name, total: item?.quantity}));
+    await this.#uiService.showToast(
+      this.translate.instant('inventory.page.toast.move', {
+        name: item?.name,
+        total: item?.quantity,
+      })
+    );
   }
-
 }

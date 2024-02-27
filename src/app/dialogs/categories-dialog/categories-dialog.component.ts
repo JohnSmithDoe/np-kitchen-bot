@@ -1,5 +1,12 @@
-import {Component, EventEmitter, inject, Input, OnInit, Output} from '@angular/core';
-import {FormsModule} from "@angular/forms";
+import {
+  Component,
+  EventEmitter,
+  inject,
+  Input,
+  OnInit,
+  Output,
+} from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import {
   IonButton,
   IonButtons,
@@ -13,11 +20,11 @@ import {
   IonNote,
   IonSearchbar,
   IonTitle,
-  IonToolbar
-} from "@ionic/angular/standalone";
-import {TranslateModule} from "@ngx-translate/core";
-import {StorageCategory, StorageItem} from "../../@types/types";
-import {DatabaseService} from "../../services/database.service";
+  IonToolbar,
+} from '@ionic/angular/standalone';
+import { TranslateModule } from '@ngx-translate/core';
+import { StorageCategory, StorageItem } from '../../@types/types';
+import { DatabaseService } from '../../services/database.service';
 
 @Component({
   selector: 'app-categories-dialog',
@@ -39,9 +46,8 @@ import {DatabaseService} from "../../services/database.service";
     FormsModule,
     TranslateModule,
     IonLabel,
-    IonNote
-
-  ]
+    IonNote,
+  ],
 })
 export class CategoriesDialogComponent implements OnInit {
   readonly #database = inject(DatabaseService);
@@ -57,8 +63,7 @@ export class CategoriesDialogComponent implements OnInit {
   searchFor?: string;
   isExactlyIncluded = false;
 
-  constructor() {
-  }
+  constructor() {}
 
   ngOnInit() {
     this.items = this.#database.categories;
@@ -71,26 +76,24 @@ export class CategoriesDialogComponent implements OnInit {
   searchbarInput(ev: any) {
     this.searchFor = ev.target.value;
     if (!this.searchFor || !this.searchFor.length) {
-      this.items = [
-        ...this.newCategories,
-        ...this.#database.categories
-      ]
+      this.items = [...this.newCategories, ...this.#database.categories];
       this.isExactlyIncluded = false;
     } else {
-      this.items = [
-        ...this.newCategories,
-        ...this.#database.categories
-      ].filter(cat => cat.name.toLowerCase().includes(this.searchFor!.toLowerCase()))
-      this.isExactlyIncluded = !!this.items.find(item => item.name.toLowerCase() === this.searchFor?.toLowerCase());
+      this.items = [...this.newCategories, ...this.#database.categories].filter(
+        (cat) => cat.name.toLowerCase().includes(this.searchFor!.toLowerCase())
+      );
+      this.isExactlyIncluded = !!this.items.find(
+        (item) => item.name.toLowerCase() === this.searchFor?.toLowerCase()
+      );
     }
   }
 
   isChecked(item: StorageCategory) {
-    return this.selection.find(selected => selected === item.name);
+    return this.selection.find((selected) => selected === item.name);
   }
 
   selectionChange(ev: any) {
-    const {checked, value} = ev.detail;
+    const { checked, value } = ev.detail;
     if (checked) {
       this.selection = [...this.selection, value.name];
     } else {
@@ -100,9 +103,9 @@ export class CategoriesDialogComponent implements OnInit {
 
   addNewCategory() {
     if (this.searchFor && !!this.searchFor.length) {
-      this.newCategories.push({name: this.searchFor, items: []})
+      this.newCategories.push({ name: this.searchFor, items: [] });
       this.selection = [...this.selection, this.searchFor];
-      this.searchbarInput({target: {value: null}})
+      this.searchbarInput({ target: { value: null } });
     }
   }
 }

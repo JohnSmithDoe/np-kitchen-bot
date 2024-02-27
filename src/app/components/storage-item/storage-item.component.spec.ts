@@ -9,8 +9,8 @@ describe('StorageItemComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ StorageItemComponent ],
-      imports: [IonicModule.forRoot()]
+      declarations: [StorageItemComponent],
+      imports: [IonicModule.forRoot()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(StorageItemComponent);

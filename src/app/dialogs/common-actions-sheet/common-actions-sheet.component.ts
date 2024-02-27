@@ -1,17 +1,15 @@
-import {Component, Input} from '@angular/core';
-import {IonActionSheet} from "@ionic/angular/standalone";
+import { Component, Input } from '@angular/core';
+import { IonActionSheet } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-common-actions-sheet',
   standalone: true,
-    imports: [
-        IonActionSheet
-    ],
+  imports: [IonActionSheet],
   templateUrl: './common-actions-sheet.component.html',
-  styleUrl: './common-actions-sheet.component.scss'
+  styleUrl: './common-actions-sheet.component.scss',
 })
 export class CommonActionsSheetComponent {
-   @Input() trigger?: string;
+  @Input() trigger?: string;
   actionSheetButtons = [
     {
       text: 'Used Item',
@@ -39,5 +37,4 @@ export class CommonActionsSheetComponent {
       },
     },
   ];
-
 }

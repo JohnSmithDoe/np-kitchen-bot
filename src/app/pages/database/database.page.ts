@@ -1,4 +1,4 @@
-import {Component, inject, OnInit, ViewChild} from '@angular/core';
+import { Component, inject, OnInit, ViewChild } from '@angular/core';
 import {
   IonButton,
   IonButtons,
@@ -10,27 +10,44 @@ import {
   IonMenuButton,
   IonModal,
   IonTitle,
-  IonToolbar
+  IonToolbar,
 } from '@ionic/angular/standalone';
-import {TranslateModule, TranslateService} from "@ngx-translate/core";
-import {addIcons} from "ionicons";
-import {add, remove} from "ionicons/icons";
-import {StorageItem, StorageItemList} from "../../@types/types";
-import {StorageListComponent} from "../../components/storage-list/storage-list.component";
-import {AddItemDialog} from "../../dialogs/add-item-dialog/add-item.dialog";
-import {EditItemDialogComponent} from "../../dialogs/edit-item-dialog/edit-item-dialog.component";
-import {DatabaseService} from "../../services/database.service";
-import {UiService} from "../../services/ui.service";
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { addIcons } from 'ionicons';
+import { add, remove } from 'ionicons/icons';
+import { StorageItem, StorageItemList } from '../../@types/types';
+import { StorageListComponent } from '../../components/storage-list/storage-list.component';
+import { AddItemDialog } from '../../dialogs/add-item-dialog/add-item.dialog';
+import { EditItemDialogComponent } from '../../dialogs/edit-item-dialog/edit-item-dialog.component';
+import { DatabaseService } from '../../services/database.service';
+import { UiService } from '../../services/ui.service';
 
 @Component({
   selector: 'app-page-database',
   templateUrl: 'database.page.html',
   styleUrls: ['database.page.scss'],
   standalone: true,
-  imports: [StorageListComponent, IonHeader, IonToolbar, IonContent, IonFab, IonFabButton, IonIcon, IonTitle, AddItemDialog, IonButtons, IonMenuButton, IonButton, TranslateModule, IonModal, EditItemDialogComponent],
+  imports: [
+    StorageListComponent,
+    IonHeader,
+    IonToolbar,
+    IonContent,
+    IonFab,
+    IonFabButton,
+    IonIcon,
+    IonTitle,
+    AddItemDialog,
+    IonButtons,
+    IonMenuButton,
+    IonButton,
+    TranslateModule,
+    IonModal,
+    EditItemDialogComponent,
+  ],
 })
 export class DatabasePage implements OnInit {
-  @ViewChild(StorageListComponent, {static: true}) storageList!: StorageListComponent;
+  @ViewChild(StorageListComponent, { static: true })
+  storageList!: StorageListComponent;
 
   readonly #database = inject(DatabaseService);
   readonly #uiService = inject(UiService);
@@ -43,7 +60,7 @@ export class DatabasePage implements OnInit {
   mode: 'update' | 'create' = 'create';
 
   constructor() {
-    addIcons({add, remove})
+    addIcons({ add, remove });
   }
 
   ngOnInit(): void {
@@ -57,11 +74,15 @@ export class DatabasePage implements OnInit {
 
     await this.#database.addOrUpdateItem(item);
     this.storageList.refresh();
-    await this.#uiService.showToast(this.translate.instant('database.toast.add', {name: item.name, total: item.quantity}));
-
+    await this.#uiService.showToast(
+      this.translate.instant('database.toast.add', {
+        name: item.name,
+        total: item.quantity,
+      })
+    );
   }
 
-  showEditDialog(item: StorageItem|null, mode: 'update' | 'create') {
+  showEditDialog(item: StorageItem | null, mode: 'update' | 'create') {
     this.mode = mode;
     this.isEditing = true;
     this.editItem = item;
@@ -70,7 +91,8 @@ export class DatabasePage implements OnInit {
   async removeItemFromDatabase(item: StorageItem) {
     await this.#database.deleteItem(item, this.items);
     this.storageList.refresh();
-    await this.#uiService.showToast(this.translate.instant('database.toast.remove', {name: item.name}));
+    await this.#uiService.showToast(
+      this.translate.instant('database.toast.remove', { name: item.name })
+    );
   }
-
 }

@@ -13,15 +13,19 @@
 </ion-header>
 
 <ion-content>
-  <app-storage-list [itemList]="inventory"
-                    type="extended" search="name-only"
-                    canMove="true" canDelete="true"
-                    header="{{'inventory.page.header' | translate}}" headerColor="medium"
-                    (moveItem)="moveToShoppingList($event)"
-                    (selectItem)="addItemToInventory($event)"
-                    (createItem)="showCreateDialog($event)"
-                    (deleteItem)="removeItemFromInventory($event)"
-                    (emptyItem)="showAddDialog()"
+  <app-storage-list
+    [itemList]="inventory"
+    type="extended"
+    search="name-only"
+    canMove="true"
+    canDelete="true"
+    header="{{'inventory.page.header' | translate}}"
+    headerColor="medium"
+    (moveItem)="moveToShoppingList($event)"
+    (selectItem)="addItemToInventory($event)"
+    (createItem)="showCreateDialog($event)"
+    (deleteItem)="removeItemFromInventory($event)"
+    (emptyItem)="showAddDialog()"
   ></app-storage-list>
 </ion-content>
 
@@ -44,4 +48,3 @@
     ></app-edit-item-dialog>
   </ng-template>
 </ion-modal>
-

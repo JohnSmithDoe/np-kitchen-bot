@@ -1,6 +1,6 @@
-import {ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import {InventoryPage} from './inventory.page';
+import { InventoryPage } from './inventory.page';
 
 describe('Tab1Page', () => {
   let component: InventoryPage;

@@ -13,15 +13,19 @@
 </ion-header>
 
 <ion-content>
-  <app-storage-list [itemList]="items"
-                    itemHelper="{{ 'database.page.itemHelper' | translate }}"
-                    header="{{ 'database.page.header' | translate }}" headerColor="danger"
-                    itemType="simple" itemColor="medium"
-                    canAddTemporary="false" canDelete="true"
-                    (createItem)="showEditDialog($event, 'create')"
-                    (selectItem)="showEditDialog($event, 'update')"
-                    (emptyItem)="showEditDialog(null, 'create')"
-                    (deleteItem)="removeItemFromDatabase($event)"
+  <app-storage-list
+    [itemList]="items"
+    itemHelper="{{ 'database.page.itemHelper' | translate }}"
+    header="{{ 'database.page.header' | translate }}"
+    headerColor="danger"
+    itemType="simple"
+    itemColor="medium"
+    canAddTemporary="false"
+    canDelete="true"
+    (createItem)="showEditDialog($event, 'create')"
+    (selectItem)="showEditDialog($event, 'update')"
+    (emptyItem)="showEditDialog(null, 'create')"
+    (deleteItem)="removeItemFromDatabase($event)"
   ></app-storage-list>
 </ion-content>
 
@@ -35,4 +39,3 @@
     ></app-edit-item-dialog>
   </ng-template>
 </ion-modal>
-

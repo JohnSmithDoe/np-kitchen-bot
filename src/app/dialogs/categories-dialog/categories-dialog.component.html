@@ -1,44 +1,64 @@
-    <ion-header>
-      <ion-toolbar>
-        <ion-buttons slot="start">
-          <ion-button (click)="cancel.emit()">{{ 'categories.dialog.cancel' | translate }}</ion-button>
-        </ion-buttons>
-        <ion-buttons slot="end">
-          <ion-button (click)="confirm.emit(selection)">{{ 'categories.dialog.confirm' | translate }}</ion-button>
-        </ion-buttons>
-      </ion-toolbar>
-      <ion-toolbar>
-        <ion-searchbar [(ngModel)]="searchFor" (ionInput)="searchbarInput($event)"></ion-searchbar>
-      </ion-toolbar>
-    </ion-header>
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="cancel.emit()">{{
+        'categories.dialog.cancel' | translate
+      }}</ion-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-button (click)="confirm.emit(selection)">{{
+        'categories.dialog.confirm' | translate
+      }}</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+  <ion-toolbar>
+    <ion-searchbar
+      [(ngModel)]="searchFor"
+      (ionInput)="searchbarInput($event)"
+    ></ion-searchbar>
+  </ion-toolbar>
+</ion-header>
 
-    <ion-content>
-      <ion-list id="modal-list" [inset]="true">
-        @if (!!searchFor && !isExactlyIncluded) {
-          <ion-item button (click)="addNewCategory()" [detail]="true" color="tertiary">
-            <ion-label>{{ 'categories-dialog.notfound.create' | translate : {name: searchFor} }}</ion-label>
-            <ion-note slot="end" class="storage-item-helper" color="primary">
-              {{ 'categories-dialog.notfound.create.helper' | translate : {name: searchFor} }}
+<ion-content>
+  <ion-list id="modal-list" [inset]="true">
+    @if (!!searchFor && !isExactlyIncluded) {
+      <ion-item
+        button
+        (click)="addNewCategory()"
+        [detail]="true"
+        color="tertiary"
+      >
+        <ion-label>{{
+          'categories-dialog.notfound.create' | translate: { name: searchFor }
+        }}</ion-label>
+        <ion-note slot="end" class="storage-item-helper" color="primary">
+          {{
+            'categories-dialog.notfound.create.helper'
+              | translate: { name: searchFor }
+          }}
+        </ion-note>
+      </ion-item>
+    }
+    @for (item of items; track item.name) {
+      <ion-item>
+        <ion-checkbox
+          [value]="item"
+          [checked]="isChecked(item)"
+          (ionChange)="selectionChange($event)"
+          >{{ item.name }}
+        </ion-checkbox>
+      </ion-item>
+    } @empty {
+      @if (!searchFor) {
+        <ion-item>
+          <ion-label>
+            {{ 'categories-dialog.empty' | translate }}<br />
+            <ion-note>
+              {{ 'categories-dialog.empty.helper' | translate }}
             </ion-note>
-          </ion-item>
-        }
-        @for (item of items; track item.name) {
-          <ion-item>
-            <ion-checkbox [value]="item" [checked]="isChecked(item)" (ionChange)="selectionChange($event)"
-            >{{ item.name }}
-            </ion-checkbox>
-          </ion-item>
-        } @empty {
-          @if(!searchFor) {
-            <ion-item>
-              <ion-label>
-                {{ 'categories-dialog.empty' | translate }}<br>
-                <ion-note>
-                  {{ 'categories-dialog.empty.helper' | translate }}
-                </ion-note>
-              </ion-label>
-            </ion-item>
-          }
-        }
-      </ion-list>
-    </ion-content>
+          </ion-label>
+        </ion-item>
+      }
+    }
+  </ion-list>
+</ion-content>

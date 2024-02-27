@@ -1,6 +1,6 @@
-import {ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import {TasksPage} from './tasks.page';
+import { TasksPage } from './tasks.page';
 
 describe('Tab3Page', () => {
   let component: TasksPage;

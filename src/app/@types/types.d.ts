@@ -1,9 +1,12 @@
-export type NPIonDragEvent = CustomEvent<{amount: number, ratio: number}>
+export type NPIonDragEvent = CustomEvent<{ amount: number; ratio: number }>;
 
 export type NPTimestamp = string;
 // Todo
 export interface StorageLocation {}
-export interface StorageCategory { name: string; items: StorageItem[] }
+export interface StorageCategory {
+  name: string;
+  items: StorageItem[];
+}
 export interface StorageUnit {}
 export interface Recipe {}
 
@@ -26,7 +29,7 @@ export interface StorageItem {
   name: string;
   quantity: number;
 
-  unit: TItemUnit
+  unit: TItemUnit;
 
   packaging: TPackagingUnit;
   packagingWeight?: number;
@@ -38,7 +41,6 @@ export interface StorageItem {
   desc?: string;
   mdh?: NPTimestamp;
   location?: string;
-
 }
 
 export interface StorageItemList {
@@ -47,11 +49,9 @@ export interface StorageItemList {
   items: StorageItem[];
 }
 
-
 export interface Datastore {
-  all: StorageItemList & {id: '_all', title: 'All Items'};
-  storage: StorageItemList & {id: '_storage', title: 'Inventory'};
+  all: StorageItemList & { id: '_all'; title: 'All Items' };
+  storage: StorageItemList & { id: '_storage'; title: 'Inventory' };
   shoppinglists: StorageItemList[];
-  categories: StorageCategory[]
+  categories: StorageCategory[];
 }
-

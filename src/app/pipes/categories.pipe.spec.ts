@@ -1,4 +1,4 @@
-import {CategoriesPipe} from './categories.pipe';
+import { CategoriesPipe } from './categories.pipe';
 
 describe('CategoriesPipePipe', () => {
   it('create an instance', () => {

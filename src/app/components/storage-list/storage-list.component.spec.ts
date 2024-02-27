@@ -1,6 +1,6 @@
-import {ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import {StorageListComponent} from './storage-list.component';
+import { StorageListComponent } from './storage-list.component';
 
 describe('Tab2Page', () => {
   let component: StorageListComponent;

@@ -1,6 +1,6 @@
-import {ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import {EditItemDialogComponent} from './edit-item-dialog.component';
+import { EditItemDialogComponent } from './edit-item-dialog.component';
 
 describe('NewItemDialogComponent', () => {
   let component: EditItemDialogComponent;
@@ -8,9 +8,8 @@ describe('NewItemDialogComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [EditItemDialogComponent]
-    })
-    .compileComponents();
+      imports: [EditItemDialogComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(EditItemDialogComponent);
     component = fixture.componentInstance;

@@ -8,10 +8,9 @@ describe('CommonActionsSheetComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CommonActionsSheetComponent]
-    })
-    .compileComponents();
-    
+      imports: [CommonActionsSheetComponent],
+    }).compileComponents();
+
     fixture = TestBed.createComponent(CommonActionsSheetComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

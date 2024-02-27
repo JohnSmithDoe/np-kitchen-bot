@@ -6,31 +6,32 @@
       </ion-toolbar>
     </ion-header>
     <ion-content class="ion-padding">
-      This is the menu content. Barcode scanning is supported? {{isSupported | json}}
-    <main>
-<!--      <ion-button (click)="shareShoppingList()">Share Shoppinglist</ion-button>-->
-<!--      <ion-button (click)="scan()">Scan</ion-button>-->
-      <ion-list>
-<!--        <ion-list-header>Einkauf</ion-list-header>-->
-        <ion-menu-toggle>
-          <ion-item button routerLink="/home/shoppinglist">
-            <ion-label>Einkaufsliste</ion-label>
-          </ion-item>
-        </ion-menu-toggle>
-<!--        <ion-list-header>Lagerung</ion-list-header>-->
-        <ion-menu-toggle>
-          <ion-item button routerLink="/home/inventory">
-            <ion-label>Lagerliste</ion-label>
-          </ion-item>
-        </ion-menu-toggle>
-<!--        <ion-list-header>Management</ion-list-header>-->
-        <ion-menu-toggle>
-          <ion-item button routerLink="/home/database">
-            <ion-label>Database</ion-label>
-          </ion-item>
-        </ion-menu-toggle>
-      </ion-list>
-    </main>
+      This is the menu content. Barcode scanning is supported?
+      {{ isSupported | json }}
+      <main>
+        <!--      <ion-button (click)="shareShoppingList()">Share Shoppinglist</ion-button>-->
+        <!--      <ion-button (click)="scan()">Scan</ion-button>-->
+        <ion-list>
+          <!--        <ion-list-header>Einkauf</ion-list-header>-->
+          <ion-menu-toggle>
+            <ion-item button routerLink="/home/shoppinglist">
+              <ion-label>Einkaufsliste</ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+          <!--        <ion-list-header>Lagerung</ion-list-header>-->
+          <ion-menu-toggle>
+            <ion-item button routerLink="/home/inventory">
+              <ion-label>Lagerliste</ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+          <!--        <ion-list-header>Management</ion-list-header>-->
+          <ion-menu-toggle>
+            <ion-item button routerLink="/home/database">
+              <ion-label>Database</ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+        </ion-list>
+      </main>
     </ion-content>
   </ion-menu>
   <div class="ion-page" id="main-content">

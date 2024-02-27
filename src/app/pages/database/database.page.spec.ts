@@ -1,6 +1,6 @@
-import {ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import {DatabasePage} from './database.page';
+import { DatabasePage } from './database.page';
 
 describe('Tab1Page', () => {
   let component: DatabasePage;
