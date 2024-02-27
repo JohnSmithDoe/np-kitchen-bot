@@ -16,7 +16,7 @@
   <app-storage-list [itemList]="shoppingList"
                     type="extended" search="name-only"
                     canMove="true" canDelete="true"
-                    header="Auf der Einkaufsliste" headerColor="success"
+                    header="{{'shoppinglist.page.header' | translate}}" headerColor="success"
                     (moveItem)="buyItem($event)"
                     (selectItem)="addItemToShoppingList($event)"
                     (createItem)="showCreateDialog($event)"

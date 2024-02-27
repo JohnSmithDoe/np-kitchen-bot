@@ -1,18 +1,19 @@
     <ion-header>
       <ion-toolbar>
-        <ion-title>Eintrag hinzufügen</ion-title>
+        <ion-title>{{ 'add-item.dialog.title' | translate }}</ion-title>
         <ion-buttons slot="end">
-          <ion-button (click)="close()">Abbrechen</ion-button>
+          <ion-button (click)="close()">{{ 'add-item.dialog.button.cancel' | translate }}</ion-button>
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
     <ion-content>
       <app-storage-list [itemList]="itemList"
-                        header="Datenbank"
+                        header="{{ 'add-item.dialog.header' | translate }}"
                         itemType="simple"
                         itemColor="medium"
                         [canAddTemporary]="false"
                         (selectItem)="selectItem($event)"
                         (createItem)="createNewItem($event)"
+                        (emptyItem)="createNewItem()"
       ></app-storage-list>
     </ion-content>

@@ -68,7 +68,7 @@
           <app-storage-item [item]="item"
                             [type]="itemType"
                             [color]="itemColor"
-                            [helper]="itemHelper ?? 'storage.list.item.helper' | translate"
+                            [helper]="itemHelper ?? ('storage.list.item.helper' | translate)"
                             (selectItem)="selectItem.emit(item)"
           ></app-storage-item>
 

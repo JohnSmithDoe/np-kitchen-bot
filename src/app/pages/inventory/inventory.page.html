@@ -16,7 +16,7 @@
   <app-storage-list [itemList]="inventory"
                     type="extended" search="name-only"
                     canMove="true" canDelete="true"
-                    header="Im Lager" headerColor="medium"
+                    header="{{'inventory.page.header' | translate}}" headerColor="medium"
                     (moveItem)="moveToShoppingList($event)"
                     (selectItem)="addItemToInventory($event)"
                     (createItem)="showCreateDialog($event)"

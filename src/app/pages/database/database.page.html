@@ -14,8 +14,8 @@
 
 <ion-content>
   <app-storage-list [itemList]="items"
-                    itemHelper="Eintrag bearbeiten"
-                    header="In der Datenbank" headerColor="danger"
+                    itemHelper="{{ 'database.page.itemHelper' | translate }}"
+                    header="{{ 'database.page.header' | translate }}" headerColor="danger"
                     itemType="simple" itemColor="medium"
                     canAddTemporary="false" canDelete="true"
                     (createItem)="showEditDialog($event, 'create')"
