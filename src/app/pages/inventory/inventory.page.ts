@@ -16,6 +16,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { add, remove } from 'ionicons/icons';
 import { IGlobalItem, IItemList, ILocalItem } from '../../@types/types';
+import { createGlobalItemFrom, createLocalItemFrom } from '../../app.factory';
 import { GlobalListComponent } from '../../components/global-list/global-list.component';
 import { LocalListComponent } from '../../components/local-list/local-list.component';
 import { AddItemDialog } from '../../dialogs/add-item-dialog/add-item.dialog';
@@ -74,35 +75,10 @@ export class InventoryPage implements OnInit {
     this.createNewItem = null;
   }
 
-  async updateInventoryItem(item?: ILocalItem) {
-    this.isEditing = false;
-    this.editItem = null;
-    await this.#database.addOrUpdateLocalItem(item, this.inventory);
-    console.log(item, this.inventory);
-    this.listComponent.refresh();
-    await this.#uiService.showToast(
-      this.translate.instant('inventory.page.toast.update', {
-        name: item?.name,
-        total: item?.quantity,
-      })
-    );
-  }
-  async addItemToInventory(item?: ILocalItem) {
-    this.isAdding = false;
-    const litem = await this.#database.addItem(item, this.inventory);
-    this.listComponent.refresh();
-    await this.#uiService.showToast(
-      this.translate.instant('inventory.page.toast.add', {
-        name: litem?.name,
-        total: litem?.quantity,
-      })
-    );
-  }
-
   showCreateDialog(newItem: ILocalItem) {
     this.isAdding = false;
     this.isCreating = true;
-    this.createNewItem = DatabaseService.createGlobalItemFrom(newItem);
+    this.createNewItem = createGlobalItemFrom(newItem);
   }
 
   showEditDialog(item: ILocalItem) {
@@ -118,13 +94,40 @@ export class InventoryPage implements OnInit {
     this.isCreating = false;
   }
 
+  async updateInventoryItem(item?: ILocalItem) {
+    this.isEditing = false;
+    this.editItem = null;
+    await this.#database.addOrUpdateLocalItem(item, this.inventory);
+    console.log(item, this.inventory);
+    this.listComponent.refresh();
+    await this.#uiService.showToast(
+      this.translate.instant('inventory.page.toast.update', {
+        name: item?.name,
+        total: item?.quantity,
+      })
+    );
+  }
+
+  async addItemToInventory(item?: ILocalItem) {
+    this.isAdding = false;
+    const litem = await this.#database.addItem(item, this.inventory);
+    this.listComponent.refresh();
+    await this.#uiService.showToast(
+      this.translate.instant('inventory.page.toast.add', {
+        name: litem?.name,
+        total: litem?.quantity,
+      })
+    );
+  }
+
   async createItemAndAddToInventory(item?: IGlobalItem) {
     this.isEditing = false;
     this.isCreating = false;
     this.createNewItem = null;
     if (item?.name.length) {
       await this.#database.addOrUpdateGlobalItem(item);
-      const litem = await this.#database.addItem(item, this.inventory);
+      const copy = createLocalItemFrom(item);
+      const litem = await this.#database.addItem(copy, this.inventory);
       this.listComponent.refresh();
       await this.#uiService.showToast(
         this.translate.instant('inventory.page.toast.created', {

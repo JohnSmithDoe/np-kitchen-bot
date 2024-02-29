@@ -40,6 +40,7 @@ import {
   TItemUnit,
   TPackagingUnit,
 } from '../../@types/types';
+import { createGlobalItem } from '../../app.factory';
 import { DatabaseService } from '../../services/database.service';
 import { CategoriesDialogComponent } from '../categories-dialog/categories-dialog.component';
 
@@ -116,7 +117,7 @@ export class EditGlobalItemDialogComponent implements OnInit {
 
     this.value = this.item
       ? this.#database.cloneItem(this.item)
-      : DatabaseService.createGlobalItem('');
+      : createGlobalItem('');
   }
 
   setCategories(categories?: string[]) {

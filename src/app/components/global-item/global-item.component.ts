@@ -23,8 +23,8 @@ import {
 import { Color } from '@ionic/core/dist/types/interface';
 import { TranslateModule } from '@ngx-translate/core';
 import { IGlobalItem } from '../../@types/types';
+import { createGlobalItem } from '../../app.factory';
 import { CategoriesPipe } from '../../pipes/categories.pipe';
-import { DatabaseService } from '../../services/database.service';
 
 @Component({
   selector: 'app-global-item',
@@ -50,7 +50,7 @@ import { DatabaseService } from '../../services/database.service';
 export class GlobalItemComponent implements OnInit, OnChanges {
   @Input() item!: IGlobalItem;
   @Input() header?: string;
-  @Input() label?: string;
+  @Input() label?: string | null;
   @Input() color?: Color;
   @Input() category?: string;
   @Input() categoryAlt?: string;
@@ -77,7 +77,7 @@ export class GlobalItemComponent implements OnInit, OnChanges {
 
   #updateItem() {
     if (this.label) {
-      this.item = DatabaseService.createGlobalItem(this.label, this.category);
+      this.item = createGlobalItem(this.label, this.category);
     }
   }
 }

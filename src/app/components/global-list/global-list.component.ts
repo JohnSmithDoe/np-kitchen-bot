@@ -39,9 +39,9 @@ import {
   IItemList,
   TIonDragEvent,
 } from '../../@types/types';
+import { checkItemOptionsOnDrag, getCategoriesFromList } from '../../app.utils';
 import { CategoriesPipe } from '../../pipes/categories.pipe';
 import { DatabaseService } from '../../services/database.service';
-import { checkItemOptionsOnDrag, getCategoriesFromList } from '../../utils';
 import { GlobalItemComponent } from '../global-item/global-item.component';
 import { LocalItemComponent } from '../local-item/local-item.component';
 

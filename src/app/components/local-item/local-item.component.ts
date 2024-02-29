@@ -24,8 +24,8 @@ import {
 import { Color } from '@ionic/core/dist/types/interface';
 import { TranslateModule } from '@ngx-translate/core';
 import { ILocalItem } from '../../@types/types';
+import { createLocalItem } from '../../app.factory';
 import { CategoriesPipe } from '../../pipes/categories.pipe';
-import { DatabaseService } from '../../services/database.service';
 
 @Component({
   selector: 'app-local-item',
@@ -55,10 +55,11 @@ export class LocalItemComponent implements OnInit, OnChanges {
   @Input() color?: Color;
   @Input() category?: string;
   @Input() categoryAlt?: string;
-  @Input() helper?: string = 'Click here to add...';
+  @Input() helper?: string;
 
   @Output() selectItem = new EventEmitter<ILocalItem>();
-  @Output() cartItem = new EventEmitter<ILocalItem>();
+  @Output() increment = new EventEmitter<ILocalItem>();
+  @Output() decrement = new EventEmitter<ILocalItem>();
 
   constructor() {}
 
@@ -78,7 +79,19 @@ export class LocalItemComponent implements OnInit, OnChanges {
 
   #updateItem() {
     if (this.label) {
-      this.item = DatabaseService.createLocalItem(this.label, this.category);
+      this.item = createLocalItem(this.label, this.category);
     }
+  }
+
+  // inner button click
+  incrementQuantity(ev: MouseEvent) {
+    this.increment.emit(this.item);
+    ev.stopPropagation();
+  }
+
+  // inner button click
+  decrementQuantity(ev: MouseEvent) {
+    this.decrement.emit(this.item);
+    ev.stopPropagation();
   }
 }

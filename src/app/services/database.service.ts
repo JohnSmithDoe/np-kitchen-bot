@@ -1,12 +1,12 @@
 import { inject, Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage-angular';
+import * as dayjs from 'dayjs';
 import {
   IDatastore,
   IGlobalItem,
   IItemList,
   ILocalItem,
 } from '../@types/types';
-import { uuidv4 } from '../utils';
 
 const INITIAL_DATA: IGlobalItem[] = [
   {
@@ -17,6 +17,7 @@ const INITIAL_DATA: IGlobalItem[] = [
     unit: 'pieces',
     packaging: 'loose',
     bestBeforeTimespan: 'forever',
+    createdAt: dayjs().format(),
   },
   {
     id: '2',
@@ -26,6 +27,7 @@ const INITIAL_DATA: IGlobalItem[] = [
     unit: 'pieces',
     packaging: 'loose',
     bestBeforeTimespan: 'forever',
+    createdAt: dayjs().format(),
   },
   {
     id: '3',
@@ -35,6 +37,7 @@ const INITIAL_DATA: IGlobalItem[] = [
     unit: 'pieces',
     packaging: 'loose',
     bestBeforeTimespan: 'forever',
+    createdAt: dayjs().format(),
   },
   {
     id: '4',
@@ -44,6 +47,7 @@ const INITIAL_DATA: IGlobalItem[] = [
     unit: 'pieces',
     packaging: 'loose',
     bestBeforeTimespan: 'forever',
+    createdAt: dayjs().format(),
   },
   {
     id: '5',
@@ -54,6 +58,7 @@ const INITIAL_DATA: IGlobalItem[] = [
     packaging: 'bottle',
     packagingWeight: 1000,
     bestBeforeTimespan: 'forever',
+    createdAt: dayjs().format(),
   },
   {
     id: '6',
@@ -63,6 +68,7 @@ const INITIAL_DATA: IGlobalItem[] = [
     unit: 'pieces',
     packaging: 'loose',
     bestBeforeTimespan: 'forever',
+    createdAt: dayjs().format(),
   },
   {
     id: '8',
@@ -73,6 +79,7 @@ const INITIAL_DATA: IGlobalItem[] = [
     packaging: 'package',
     packagingWeight: 750,
     bestBeforeTimespan: 'forever',
+    createdAt: dayjs().format(),
   },
   // {id: '10', quantity: 0, name: "Joghurt", category: ["Milchprodukte"]},
   // {id: '11', quantity: 0, name: "Reis", category: ["Getreideprodukte"]},
@@ -88,6 +95,7 @@ const INITIAL_DATA: IGlobalItem[] = [
     packaging: 'tin-can',
     packagingWeight: 220,
     bestBeforeTimespan: 'forever',
+    createdAt: dayjs().format(),
   },
   // {id: '17', quantity: 0, name: "Brokkoli", category: ["Gemüse"]},
   // {id: '19', quantity: 0, name: "Quark", category: ["Milchprodukte"]},
@@ -105,57 +113,6 @@ const INITIAL_DATA: IGlobalItem[] = [
 export class DatabaseService {
   static readonly CNP_STORAGE_KEY = 'np-kitchen-helper';
 
-  static createLocalItem(
-    name: string,
-    category?: string,
-    quantity = 0
-  ): ILocalItem {
-    return {
-      id: uuidv4(),
-      name,
-      quantity,
-      category: category ? [category] : undefined,
-      unit: 'pieces',
-      packaging: 'loose',
-    };
-  }
-
-  static createLocalItemFrom(global: IGlobalItem, quantity = 0): ILocalItem {
-    // TODO: mhd
-    return {
-      id: uuidv4(),
-      name: global.name,
-      quantity,
-      category: global.category,
-      unit: global.unit,
-      packaging: global.packaging,
-    };
-  }
-
-  static createGlobalItem(
-    name: string,
-    category?: string | string[],
-    quantity = 0
-  ): IGlobalItem {
-    return {
-      id: uuidv4(),
-      name,
-      quantity,
-      category: category
-        ? Array.isArray(category)
-          ? category
-          : [category]
-        : undefined,
-      unit: 'pieces',
-      packaging: 'loose',
-      bestBeforeTimespan: 'forever',
-      bestBeforeTimevalue: 1,
-    };
-  }
-
-  static createGlobalItemFrom(item: ILocalItem): IGlobalItem {
-    return DatabaseService.createGlobalItem(item.name, item.category);
-  }
   readonly #storageService = inject(Storage);
 
   #store: IDatastore = {
@@ -234,7 +191,7 @@ export class DatabaseService {
         result.quantity++;
       } else {
         item.quantity = 1;
-        result = { ...item };
+        result = this.cloneItem(item);
         list.items.push(result);
       }
       await this.save();
@@ -273,11 +230,7 @@ export class DatabaseService {
 
   #updateItem(item: ILocalItem, list: IItemList<ILocalItem>) {
     const value = list.items.find((listItem) => listItem.id === item.id);
-    if (value) {
-      value.name = item.name;
-      value.category = item.category;
-    }
-    return value;
+    return value ? Object.assign(value, item) : undefined;
   }
 
   cloneItem<T extends ILocalItem | IGlobalItem>(item: T): T {

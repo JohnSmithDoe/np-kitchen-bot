@@ -14,7 +14,7 @@
 </ion-header>
 
 <ion-content>
-  <h3 class="ion-padding">{{ dialogTitle }}</h3>
+  <h3 class="ion-padding-start">{{ dialogTitle }}</h3>
   <ion-list>
     <ion-item>
       <ion-input
@@ -44,11 +44,13 @@
     </ion-item>
 
     <ion-item>
-      <ion-input label="{{ 'edit.item.dialog.mhd' | translate }}"
-                 class="clickable"
-                 [ngModel]="date_event | date: undefined : undefined : 'de-DE' "
-                 type="date_event"
-                 id="open_cal"></ion-input>
+      <ion-input
+        label="{{ 'edit.item.dialog.mhd' | translate }}"
+        class="clickable"
+        [ngModel]="bestBeforeDate | date: undefined : undefined : 'de-DE'"
+        type="date_event"
+        id="open_cal"
+      ></ion-input>
       <ion-modal
         trigger="open_cal"
         [keepContentsMounted]="true"
@@ -57,9 +59,9 @@
         <ng-template>
           <ion-datetime
             presentation="date"
-            [(ngModel)]="date_event"
+            [(ngModel)]="bestBeforeDate"
             mode="md"
-            [ngModelOptions]="{standalone: true}"
+            [ngModelOptions]="{ standalone: true }"
             (ionChange)="datePick()"
             [showDefaultButtons]="true"
           ></ion-datetime>
@@ -69,7 +71,7 @@
   </ion-list>
 </ion-content>
 
-<ion-modal [isOpen]="selectCategories">
+<ion-modal [isOpen]="selectCategories" (didDismiss)="selectCategories = false">
   <ng-template>
     <app-categories-dialog
       [item]="value"

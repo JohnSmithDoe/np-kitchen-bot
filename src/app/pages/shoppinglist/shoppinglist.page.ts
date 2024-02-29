@@ -17,6 +17,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { add, duplicate, remove } from 'ionicons/icons';
 import { IGlobalItem, IItemList, ILocalItem } from '../../@types/types';
+import { createGlobalItemFrom } from '../../app.factory';
 import { LocalListComponent } from '../../components/local-list/local-list.component';
 import { AddItemDialog } from '../../dialogs/add-item-dialog/add-item.dialog';
 import { EditGlobalItemDialogComponent } from '../../dialogs/edit-global-item-dialog/edit-global-item-dialog.component';
@@ -85,7 +86,7 @@ export class ShoppinglistPage implements OnInit {
   showCreateDialog(newItem: ILocalItem) {
     this.isAdding = false;
     this.isCreating = true;
-    this.createNewItem = DatabaseService.createGlobalItemFrom(newItem);
+    this.createNewItem = createGlobalItemFrom(newItem);
   }
 
   async createItemAndAddToShoppingList(item?: IGlobalItem) {

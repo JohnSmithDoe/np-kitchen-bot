@@ -30,9 +30,11 @@ import {
   IonToolbar,
 } from '@ionic/angular/standalone';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import * as dayjs from 'dayjs';
 import { addIcons } from 'ionicons';
 import { closeCircle } from 'ionicons/icons';
 import { ILocalItem, TItemUnit, TPackagingUnit } from '../../@types/types';
+import { createLocalItem } from '../../app.factory';
 import { DatabaseService } from '../../services/database.service';
 import { CategoriesDialogComponent } from '../categories-dialog/categories-dialog.component';
 
@@ -83,12 +85,13 @@ export class EditLocalItemDialogComponent implements OnInit {
   saveButtonText = '';
   currencyCode: 'EUR' | 'USD' = 'EUR';
 
-  date_event: any;
+  bestBeforeDate = '';
 
   datePick() {
-    console.log(this.date_event);
-    this.date_event = this.date_event.substring(0, 10);
+    this.bestBeforeDate = this.bestBeforeDate?.substring(0, 10);
+    this.value.bestBefore = dayjs(this.bestBeforeDate).format();
   }
+
   constructor() {
     addIcons({ closeCircle });
   }
@@ -107,7 +110,11 @@ export class EditLocalItemDialogComponent implements OnInit {
 
     this.value = this.item
       ? this.#database.cloneItem(this.item)
-      : DatabaseService.createLocalItem('');
+      : createLocalItem('');
+
+    if (this.value.bestBefore) {
+      this.bestBeforeDate = dayjs(this.value.bestBefore).format();
+    }
   }
 
   setCategories(categories?: string[]) {

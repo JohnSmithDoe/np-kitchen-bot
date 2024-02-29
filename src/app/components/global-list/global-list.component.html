@@ -32,7 +32,7 @@
 
 <ng-template #listMode>
   <ion-list #ionList>
-    @if (!!searchTerm) {
+    @if (!!searchTerm?.length) {
       @if (!includedInOthers()) {
         <ion-list-header [color]="headerColor">
           {{ 'global.list.add.new.header' | translate }}
@@ -93,10 +93,6 @@
             </ion-item-options>
           }
         </ion-item-sliding>
-      } @empty {
-        <ion-item>
-          Keine Einträge gefunden
-        </ion-item>
       }
     </ion-reorder-group>
 

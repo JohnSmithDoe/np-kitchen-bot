@@ -24,8 +24,8 @@ import {
 } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
 import { IBaseItem, IItemCategory } from '../../@types/types';
+import { getCategoriesFromList } from '../../app.utils';
 import { DatabaseService } from '../../services/database.service';
-import { getCategoriesFromList } from '../../utils';
 
 @Component({
   selector: 'app-categories-dialog',
@@ -68,12 +68,20 @@ export class CategoriesDialogComponent implements OnInit {
   constructor() {}
 
   ngOnInit() {
-    this.allCategories = getCategoriesFromList(this.#database.all);
-    this.items = [...this.allCategories];
     this.searchFor = undefined;
+    this.allCategories = getCategoriesFromList(this.#database.all);
     if (this.item) {
       this.selection = this.item.category ?? [];
+      this.selection
+        .filter(
+          (category) =>
+            !this.allCategories.find((allCat) => allCat.name === category)
+        )
+        .forEach((localCategory) =>
+          this.allCategories.push({ name: localCategory, items: [] })
+        );
     }
+    this.items = [...this.allCategories];
   }
 
   searchbarInput(ev: any) {

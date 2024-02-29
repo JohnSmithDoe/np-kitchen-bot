@@ -38,6 +38,8 @@ export interface IBaseItem {
   packaging: TPackagingUnit;
   packagingWeight?: number;
 
+  createdAt: TTimestamp;
+
   category?: string[];
 
   price?: number;
@@ -52,7 +54,7 @@ export interface IGlobalItem extends IBaseItem {
 
 export interface ILocalItem extends IBaseItem {
   state?: 'bought';
-  mdh?: TTimestamp;
+  bestBefore?: TTimestamp;
 }
 
 export interface IItemList<T extends ILocalItem | IGlobalItem> {
