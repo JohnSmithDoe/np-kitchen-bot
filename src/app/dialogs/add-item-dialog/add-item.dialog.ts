@@ -17,8 +17,9 @@ import {
   IonToolbar,
 } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
-import { StorageItem, StorageItemList } from '../../@types/types';
-import { StorageListComponent } from '../../components/storage-list/storage-list.component';
+import { IGlobalItem, IItemList } from '../../@types/types';
+import { GlobalListComponent } from '../../components/global-list/global-list.component';
+import { LocalListComponent } from '../../components/local-list/local-list.component';
 import { DatabaseService } from '../../services/database.service';
 
 @Component({
@@ -27,7 +28,7 @@ import { DatabaseService } from '../../services/database.service';
   imports: [
     IonButton,
     NgTemplateOutlet,
-    StorageListComponent,
+    LocalListComponent,
     IonHeader,
     IonToolbar,
     IonTitle,
@@ -35,16 +36,17 @@ import { DatabaseService } from '../../services/database.service';
     IonButtons,
     IonContent,
     TranslateModule,
+    GlobalListComponent,
   ],
   templateUrl: './add-item.dialog.html',
   styleUrl: './add-item.dialog.scss',
 })
 export class AddItemDialog implements OnInit {
   readonly #database = inject(DatabaseService);
-  @Input() itemList!: StorageItemList;
+  @Input() itemList!: IItemList<IGlobalItem>;
 
-  @Output() addItem = new EventEmitter<StorageItem>();
-  @Output() createItem = new EventEmitter<StorageItem>();
+  @Output() addItem = new EventEmitter<IGlobalItem>();
+  @Output() createItem = new EventEmitter<IGlobalItem>();
   @Output() cancel = new EventEmitter();
 
   ngOnInit(): void {
@@ -55,11 +57,11 @@ export class AddItemDialog implements OnInit {
     this.cancel.emit();
   }
 
-  selectItem(item?: StorageItem) {
+  selectItem(item?: IGlobalItem) {
     this.addItem.emit(item);
   }
 
-  createNewItem(item?: StorageItem) {
+  createNewItem(item?: IGlobalItem) {
     this.createItem.emit(item);
   }
 }

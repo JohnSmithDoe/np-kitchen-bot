@@ -1,0 +1,12 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.global-list-body {
+  overflow: auto;
+  flex: 1;
+  ion-list {
+    flex: 1;
+  }
+}

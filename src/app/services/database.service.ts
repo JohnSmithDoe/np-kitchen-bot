@@ -1,9 +1,14 @@
 import { inject, Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage-angular';
-import { Datastore, StorageItem, StorageItemList } from '../@types/types';
+import {
+  IDatastore,
+  IGlobalItem,
+  IItemList,
+  ILocalItem,
+} from '../@types/types';
 import { uuidv4 } from '../utils';
 
-const INITIAL_DATA: StorageItem[] = [
+const INITIAL_DATA: IGlobalItem[] = [
   {
     id: '1',
     quantity: 0,
@@ -11,6 +16,7 @@ const INITIAL_DATA: StorageItem[] = [
     category: ['Obst'],
     unit: 'pieces',
     packaging: 'loose',
+    bestBeforeTimespan: 'forever',
   },
   {
     id: '2',
@@ -19,6 +25,7 @@ const INITIAL_DATA: StorageItem[] = [
     category: ['Obst'],
     unit: 'pieces',
     packaging: 'loose',
+    bestBeforeTimespan: 'forever',
   },
   {
     id: '3',
@@ -27,6 +34,7 @@ const INITIAL_DATA: StorageItem[] = [
     category: ['Gemüse'],
     unit: 'pieces',
     packaging: 'loose',
+    bestBeforeTimespan: 'forever',
   },
   {
     id: '4',
@@ -35,6 +43,7 @@ const INITIAL_DATA: StorageItem[] = [
     category: ['Protein'],
     unit: 'pieces',
     packaging: 'loose',
+    bestBeforeTimespan: 'forever',
   },
   {
     id: '5',
@@ -44,6 +53,7 @@ const INITIAL_DATA: StorageItem[] = [
     unit: 'ml',
     packaging: 'bottle',
     packagingWeight: 1000,
+    bestBeforeTimespan: 'forever',
   },
   {
     id: '6',
@@ -52,6 +62,7 @@ const INITIAL_DATA: StorageItem[] = [
     category: ['Getreideprodukte'],
     unit: 'pieces',
     packaging: 'loose',
+    bestBeforeTimespan: 'forever',
   },
   {
     id: '8',
@@ -61,6 +72,7 @@ const INITIAL_DATA: StorageItem[] = [
     unit: 'g',
     packaging: 'package',
     packagingWeight: 750,
+    bestBeforeTimespan: 'forever',
   },
   // {id: '10', quantity: 0, name: "Joghurt", category: ["Milchprodukte"]},
   // {id: '11', quantity: 0, name: "Reis", category: ["Getreideprodukte"]},
@@ -75,6 +87,7 @@ const INITIAL_DATA: StorageItem[] = [
     unit: 'g',
     packaging: 'tin-can',
     packagingWeight: 220,
+    bestBeforeTimespan: 'forever',
   },
   // {id: '17', quantity: 0, name: "Brokkoli", category: ["Gemüse"]},
   // {id: '19', quantity: 0, name: "Quark", category: ["Milchprodukte"]},
@@ -92,11 +105,11 @@ const INITIAL_DATA: StorageItem[] = [
 export class DatabaseService {
   static readonly CNP_STORAGE_KEY = 'np-kitchen-helper';
 
-  static createStorageItem(
+  static createLocalItem(
     name: string,
     category?: string,
     quantity = 0
-  ): StorageItem {
+  ): ILocalItem {
     return {
       id: uuidv4(),
       name,
@@ -107,13 +120,48 @@ export class DatabaseService {
     };
   }
 
+  static createLocalItemFrom(global: IGlobalItem, quantity = 0): ILocalItem {
+    // TODO: mhd
+    return {
+      id: uuidv4(),
+      name: global.name,
+      quantity,
+      category: global.category,
+      unit: global.unit,
+      packaging: global.packaging,
+    };
+  }
+
+  static createGlobalItem(
+    name: string,
+    category?: string | string[],
+    quantity = 0
+  ): IGlobalItem {
+    return {
+      id: uuidv4(),
+      name,
+      quantity,
+      category: category
+        ? Array.isArray(category)
+          ? category
+          : [category]
+        : undefined,
+      unit: 'pieces',
+      packaging: 'loose',
+      bestBeforeTimespan: 'forever',
+      bestBeforeTimevalue: 1,
+    };
+  }
+
+  static createGlobalItemFrom(item: ILocalItem): IGlobalItem {
+    return DatabaseService.createGlobalItem(item.name, item.category);
+  }
   readonly #storageService = inject(Storage);
 
-  #store: Datastore = {
+  #store: IDatastore = {
     all: { title: 'All Items', id: '_all', items: [] },
-    storage: { title: 'Inventory', id: '_storage', items: [] },
+    storage: { title: 'Storage', id: '_storage', items: [] },
     shoppinglists: [],
-    categories: [],
   };
 
   async initialize() {
@@ -138,22 +186,22 @@ export class DatabaseService {
   }
 
   private updateDatabase() {
-    // reset item references
-    this.categories.forEach((cat) => (cat.items = []));
-    // add all categories from all and link the items
-    this.all.items.forEach((item) => {
-      item.category?.forEach((category) => {
-        let cat = this.categories.find(
-          (aCategory) => category === aCategory.name
-        );
-        if (!cat && item.category) {
-          cat = { items: [item], name: category };
-          this.categories.push(cat);
-        } else {
-          cat?.items.push(item);
-        }
-      });
-    });
+    // // reset item references
+    // this.categories.forEach((cat) => (cat.items = []));
+    // // add all categories from all and link the items
+    // this.all.items.forEach((item) => {
+    //   item.category?.forEach((category) => {
+    //     let cat = this.categories.find(
+    //       (aCategory) => category === aCategory.name
+    //     );
+    //     if (!cat && item.category) {
+    //       cat = { items: [item], name: category };
+    //       this.categories.push(cat);
+    //     } else {
+    //       cat?.items.push(item);
+    //     }
+    //   });
+    // });
   }
 
   get all() {
@@ -176,11 +224,8 @@ export class DatabaseService {
     }
     return list;
   }
-  get categories() {
-    return this.#store.categories;
-  }
 
-  async addItem(item: StorageItem | undefined, list: StorageItemList) {
+  async addItem(item: ILocalItem | undefined, list: IItemList<ILocalItem>) {
     let result = item;
     if (item) {
       // check duplicates
@@ -197,7 +242,7 @@ export class DatabaseService {
     return result;
   }
 
-  async deleteItem(item: StorageItem, list: StorageItemList) {
+  async deleteItem(item: ILocalItem, list: IItemList<ILocalItem>) {
     list.items.splice(
       list.items.findIndex((aItem) => aItem.id === item.id),
       1
@@ -205,13 +250,13 @@ export class DatabaseService {
     return this.save();
   }
 
-  async reorder(list: StorageItemList, from: number, to: number) {
+  async reorder(list: IItemList<any>, from: number, to: number) {
     const item = list.items.splice(from, 1);
     list.items.splice(to, 0, ...item);
     return this.save();
   }
 
-  async addOrUpdateItem(item: StorageItem) {
+  async addOrUpdateGlobalItem(item: IGlobalItem) {
     const gItemIdx = this.#store.all.items.findIndex(
       (aItem) => aItem.id === item.id
     );
@@ -226,18 +271,28 @@ export class DatabaseService {
     return this.save();
   }
 
-  #updateItem(item: StorageItem, list: StorageItemList) {
+  #updateItem(item: ILocalItem, list: IItemList<ILocalItem>) {
     const value = list.items.find((listItem) => listItem.id === item.id);
     if (value) {
       value.name = item.name;
       value.category = item.category;
     }
+    return value;
   }
 
-  cloneStorageItem(item: StorageItem): StorageItem {
+  cloneItem<T extends ILocalItem | IGlobalItem>(item: T): T {
     return {
       ...item,
       category: item.category ? [...item.category] : undefined,
     };
+  }
+
+  async addOrUpdateLocalItem(
+    item: ILocalItem | undefined,
+    list: IItemList<ILocalItem>
+  ) {
+    if (!item) return;
+    const updated = this.#updateItem(item, list);
+    return !updated ? this.addItem(item, list) : this.save();
   }
 }

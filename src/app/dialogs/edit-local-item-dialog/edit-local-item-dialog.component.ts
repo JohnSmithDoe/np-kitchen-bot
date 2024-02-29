@@ -1,4 +1,4 @@
-import { CurrencyPipe } from '@angular/common';
+import { CurrencyPipe, DatePipe } from '@angular/common';
 import {
   Component,
   EventEmitter,
@@ -15,6 +15,7 @@ import {
   IonButtons,
   IonChip,
   IonContent,
+  IonDatetime,
   IonHeader,
   IonIcon,
   IonInput,
@@ -22,6 +23,7 @@ import {
   IonLabel,
   IonList,
   IonModal,
+  IonPopover,
   IonSelect,
   IonSelectOption,
   IonTitle,
@@ -30,7 +32,7 @@ import {
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { closeCircle } from 'ionicons/icons';
-import { StorageItem, TItemUnit, TPackagingUnit } from '../../@types/types';
+import { ILocalItem, TItemUnit, TPackagingUnit } from '../../@types/types';
 import { DatabaseService } from '../../services/database.service';
 import { CategoriesDialogComponent } from '../categories-dialog/categories-dialog.component';
 
@@ -58,19 +60,22 @@ import { CategoriesDialogComponent } from '../categories-dialog/categories-dialo
     IonSelect,
     IonSelectOption,
     CurrencyPipe,
+    IonDatetime,
+    DatePipe,
+    IonPopover,
   ],
-  templateUrl: './edit-item-dialog.component.html',
-  styleUrl: './edit-item-dialog.component.scss',
+  templateUrl: './edit-local-item-dialog.component.html',
+  styleUrl: './edit-local-item-dialog.component.scss',
 })
-export class EditItemDialogComponent implements OnInit {
+export class EditLocalItemDialogComponent implements OnInit {
   readonly #database = inject(DatabaseService);
   readonly translate = inject(TranslateService);
 
-  @Input() item?: StorageItem | null;
+  @Input() item?: ILocalItem | null;
   @Input() mode: 'update' | 'create' = 'create';
-  @Input() value!: StorageItem;
+  @Input() value!: ILocalItem;
 
-  @Output() saveItem = new EventEmitter<StorageItem>();
+  @Output() saveItem = new EventEmitter<ILocalItem>();
   @Output() cancel = new EventEmitter();
 
   selectCategories = false;
@@ -78,6 +83,12 @@ export class EditItemDialogComponent implements OnInit {
   saveButtonText = '';
   currencyCode: 'EUR' | 'USD' = 'EUR';
 
+  date_event: any;
+
+  datePick() {
+    console.log(this.date_event);
+    this.date_event = this.date_event.substring(0, 10);
+  }
   constructor() {
     addIcons({ closeCircle });
   }
@@ -86,17 +97,17 @@ export class EditItemDialogComponent implements OnInit {
     this.currencyCode = this.translate.currentLang !== 'en' ? 'EUR' : 'USD';
     this.saveButtonText =
       this.mode === 'create'
-        ? this.translate.instant('new.item.dialog.button.create')
-        : this.translate.instant('new.item.dialog.button.update');
+        ? this.translate.instant('edit.item.dialog.button.create')
+        : this.translate.instant('edit.item.dialog.button.update');
 
     this.dialogTitle =
       this.mode === 'create'
-        ? this.translate.instant('new.item.dialog.title.create')
-        : this.translate.instant('new.item.dialog.title.update');
+        ? this.translate.instant('edit.item.dialog.title.create')
+        : this.translate.instant('edit.item.dialog.title.update');
 
     this.value = this.item
-      ? this.#database.cloneStorageItem(this.item)
-      : DatabaseService.createStorageItem('');
+      ? this.#database.cloneItem(this.item)
+      : DatabaseService.createLocalItem('');
   }
 
   setCategories(categories?: string[]) {

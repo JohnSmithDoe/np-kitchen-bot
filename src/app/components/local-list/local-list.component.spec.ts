@@ -1,13 +1,13 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { StorageListComponent } from './storage-list.component';
+import { LocalListComponent } from './local-list.component';
 
 describe('Tab2Page', () => {
-  let component: StorageListComponent;
-  let fixture: ComponentFixture<StorageListComponent>;
+  let component: LocalListComponent;
+  let fixture: ComponentFixture<LocalListComponent>;
 
   beforeEach(async () => {
-    fixture = TestBed.createComponent(StorageListComponent);
+    fixture = TestBed.createComponent(LocalListComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

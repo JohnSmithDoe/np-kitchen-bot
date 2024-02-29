@@ -13,29 +13,28 @@
 </ion-header>
 
 <ion-content>
-  <app-storage-list
+  <app-global-list
     [itemList]="items"
     itemHelper="{{ 'database.page.itemHelper' | translate }}"
     header="{{ 'database.page.header' | translate }}"
     headerColor="danger"
     itemType="simple"
     itemColor="medium"
-    canAddTemporary="false"
     canDelete="true"
     (createItem)="showEditDialog($event, 'create')"
     (selectItem)="showEditDialog($event, 'update')"
     (emptyItem)="showEditDialog(null, 'create')"
     (deleteItem)="removeItemFromDatabase($event)"
-  ></app-storage-list>
+  ></app-global-list>
 </ion-content>
 
 <ion-modal [isOpen]="isEditing">
   <ng-template>
-    <app-edit-item-dialog
+    <app-edit-global-item-dialog
       [item]="editItem"
       [mode]="mode"
       (saveItem)="saveItemToDatabase($event)"
       (cancel)="isEditing = false"
-    ></app-edit-item-dialog>
+    ></app-edit-global-item-dialog>
   </ng-template>
 </ion-modal>

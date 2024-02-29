@@ -23,8 +23,9 @@ import {
   IonToolbar,
 } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
-import { StorageCategory, StorageItem } from '../../@types/types';
+import { IBaseItem, IItemCategory } from '../../@types/types';
 import { DatabaseService } from '../../services/database.service';
+import { getCategoriesFromList } from '../../utils';
 
 @Component({
   selector: 'app-categories-dialog',
@@ -52,13 +53,14 @@ import { DatabaseService } from '../../services/database.service';
 export class CategoriesDialogComponent implements OnInit {
   readonly #database = inject(DatabaseService);
 
-  @Input() item?: StorageItem;
+  @Input() item?: IBaseItem;
 
   @Output() confirm = new EventEmitter<string[]>();
   @Output() cancel = new EventEmitter();
 
-  items: StorageCategory[] = [];
-  newCategories: StorageCategory[] = [];
+  items: IItemCategory[] = [];
+  allCategories: IItemCategory[] = [];
+  newCategories: IItemCategory[] = [];
   selection: string[] = [];
   searchFor?: string;
   isExactlyIncluded = false;
@@ -66,7 +68,8 @@ export class CategoriesDialogComponent implements OnInit {
   constructor() {}
 
   ngOnInit() {
-    this.items = this.#database.categories;
+    this.allCategories = getCategoriesFromList(this.#database.all);
+    this.items = [...this.allCategories];
     this.searchFor = undefined;
     if (this.item) {
       this.selection = this.item.category ?? [];
@@ -76,10 +79,10 @@ export class CategoriesDialogComponent implements OnInit {
   searchbarInput(ev: any) {
     this.searchFor = ev.target.value;
     if (!this.searchFor || !this.searchFor.length) {
-      this.items = [...this.newCategories, ...this.#database.categories];
+      this.items = [...this.newCategories, ...this.allCategories];
       this.isExactlyIncluded = false;
     } else {
-      this.items = [...this.newCategories, ...this.#database.categories].filter(
+      this.items = [...this.newCategories, ...this.allCategories].filter(
         (cat) => cat.name.toLowerCase().includes(this.searchFor!.toLowerCase())
       );
       this.isExactlyIncluded = !!this.items.find(
@@ -88,7 +91,7 @@ export class CategoriesDialogComponent implements OnInit {
     }
   }
 
-  isChecked(item: StorageCategory) {
+  isChecked(item: IItemCategory) {
     return this.selection.find((selected) => selected === item.name);
   }
 

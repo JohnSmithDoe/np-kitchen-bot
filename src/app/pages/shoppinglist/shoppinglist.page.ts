@@ -16,10 +16,10 @@ import {
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { add, duplicate, remove } from 'ionicons/icons';
-import { StorageItem, StorageItemList } from '../../@types/types';
-import { StorageListComponent } from '../../components/storage-list/storage-list.component';
+import { IGlobalItem, IItemList, ILocalItem } from '../../@types/types';
+import { LocalListComponent } from '../../components/local-list/local-list.component';
 import { AddItemDialog } from '../../dialogs/add-item-dialog/add-item.dialog';
-import { EditItemDialogComponent } from '../../dialogs/edit-item-dialog/edit-item-dialog.component';
+import { EditGlobalItemDialogComponent } from '../../dialogs/edit-global-item-dialog/edit-global-item-dialog.component';
 import { DatabaseService } from '../../services/database.service';
 import { UiService } from '../../services/ui.service';
 
@@ -29,7 +29,7 @@ import { UiService } from '../../services/ui.service';
   styleUrls: ['shoppinglist.page.scss'],
   standalone: true,
   imports: [
-    StorageListComponent,
+    LocalListComponent,
     IonHeader,
     IonToolbar,
     IonContent,
@@ -44,22 +44,22 @@ import { UiService } from '../../services/ui.service';
     IonLabel,
     TranslateModule,
     IonModal,
-    EditItemDialogComponent,
+    EditGlobalItemDialogComponent,
   ],
 })
 export class ShoppinglistPage implements OnInit {
-  @ViewChild(StorageListComponent, { static: true })
-  storageList!: StorageListComponent;
+  @ViewChild(LocalListComponent, { static: true })
+  listComponent!: LocalListComponent;
 
   readonly #database = inject(DatabaseService);
   readonly #uiService = inject(UiService);
   readonly translate = inject(TranslateService);
 
-  shoppingList!: StorageItemList;
+  shoppingList!: IItemList<ILocalItem>;
 
   isAdding = false;
   isCreating = false;
-  createNewItem: StorageItem | null | undefined;
+  createNewItem: IGlobalItem | null | undefined;
 
   constructor() {
     addIcons({ add, remove, duplicate });
@@ -70,10 +70,10 @@ export class ShoppinglistPage implements OnInit {
     this.createNewItem = null;
   }
 
-  async addItemToShoppingList(item?: StorageItem) {
+  async addItemToShoppingList(item?: ILocalItem) {
     this.isAdding = false;
     item = await this.#database.addItem(item, this.shoppingList);
-    this.storageList.refresh();
+    this.listComponent.refresh();
     await this.#uiService.showToast(
       this.translate.instant('shoppinglist.page.toast.add', {
         name: item?.name,
@@ -82,20 +82,20 @@ export class ShoppinglistPage implements OnInit {
     );
   }
 
-  showCreateDialog(newItem: StorageItem) {
+  showCreateDialog(newItem: ILocalItem) {
     this.isAdding = false;
     this.isCreating = true;
-    this.createNewItem = newItem;
+    this.createNewItem = DatabaseService.createGlobalItemFrom(newItem);
   }
 
-  async createItemAndAddToShoppingList(item?: StorageItem) {
+  async createItemAndAddToShoppingList(item?: IGlobalItem) {
     this.isCreating = false;
     this.createNewItem = null;
 
     if (item?.name.length) {
-      await this.#database.addOrUpdateItem(item);
+      await this.#database.addOrUpdateGlobalItem(item);
       await this.#database.addItem(item, this.shoppingList);
-      this.storageList.refresh();
+      this.listComponent.refresh();
       await this.#uiService.showToast(
         this.translate.instant('shoppinglist.page.toast.created', {
           name: item?.name,
@@ -104,9 +104,9 @@ export class ShoppinglistPage implements OnInit {
     }
   }
 
-  async removeItemFromShoppingList(item: StorageItem) {
+  async removeItemFromShoppingList(item: ILocalItem) {
     await this.#database.deleteItem(item, this.shoppingList);
-    this.storageList.refresh();
+    this.listComponent.refresh();
     await this.#uiService.showToast(
       this.translate.instant('shoppinglist.page.toast.remove', {
         name: item?.name,
@@ -116,7 +116,7 @@ export class ShoppinglistPage implements OnInit {
 
   // what should happen if we buy an item?
   // some kind of state for now
-  async buyItem(item: StorageItem) {
+  async buyItem(item: ILocalItem) {
     item.state = 'bought';
     await this.#database.save();
     await this.#uiService.showToast(

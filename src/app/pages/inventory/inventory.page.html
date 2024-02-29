@@ -13,23 +13,24 @@
 </ion-header>
 
 <ion-content>
-  <app-storage-list
+  <app-local-list
     [itemList]="inventory"
     type="extended"
     search="name-only"
-    canMove="true"
     canDelete="true"
     header="{{'inventory.page.header' | translate}}"
     headerColor="medium"
+    (addItem)="addItemToInventory($event)"
     (moveItem)="moveToShoppingList($event)"
-    (selectItem)="addItemToInventory($event)"
+    (selectItem)="showEditDialog($event)"
     (createItem)="showCreateDialog($event)"
     (deleteItem)="removeItemFromInventory($event)"
+    (altItem)="addGlobalItemToInventory($event)"
     (emptyItem)="showAddDialog()"
-  ></app-storage-list>
+  ></app-local-list>
 </ion-content>
 
-<ion-modal [isOpen]="isAdding">
+<ion-modal [isOpen]="isAdding" (didDismiss)="isAdding = false">
   <ng-template>
     <app-add-item-dialog
       (addItem)="addItemToInventory($event)"
@@ -39,12 +40,23 @@
   </ng-template>
 </ion-modal>
 
-<ion-modal [isOpen]="isCreating">
+<ion-modal [isOpen]="isEditing" (didDismiss)="isEditing = false">
   <ng-template>
     <app-edit-item-dialog
+      mode="update"
+      (cancel)="isEditing = false"
+      (saveItem)="updateInventoryItem($event)"
+      [item]="editItem"
+    ></app-edit-item-dialog>
+  </ng-template>
+</ion-modal>
+
+<ion-modal [isOpen]="isCreating" (didDismiss)="isCreating = false">
+  <ng-template>
+    <app-edit-global-item-dialog
       (cancel)="isCreating = false"
       (saveItem)="createItemAndAddToInventory($event)"
       [item]="createNewItem"
-    ></app-edit-item-dialog>
+    ></app-edit-global-item-dialog>
   </ng-template>
 </ion-modal>

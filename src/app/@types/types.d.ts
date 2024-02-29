@@ -1,14 +1,12 @@
-export type NPIonDragEvent = CustomEvent<{ amount: number; ratio: number }>;
+export type TIonDragEvent = CustomEvent<{ amount: number; ratio: number }>;
 
-export type NPTimestamp = string;
+export type TTimestamp = string;
 // Todo
-export interface StorageLocation {}
-export interface StorageCategory {
+export interface IItemLocation {}
+export interface IItemCategory<T extends IBaseItem = IBaseItem> {
   name: string;
-  items: StorageItem[];
+  items: T[];
 }
-export interface StorageUnit {}
-export interface Recipe {}
 
 // Orangensaft
 // Einheit: milliliter
@@ -22,9 +20,15 @@ export interface Recipe {}
 
 export type TItemUnit = 'ml' | 'g' | 'pieces';
 export type TPackagingUnit = 'bottle' | 'package' | 'loose' | 'tin-can';
+export type TBestBeforeTimespan =
+  | 'forever'
+  | 'days'
+  | 'weeks'
+  | 'months'
+  | 'years';
 
 //
-export interface StorageItem {
+export interface IBaseItem {
   id: string;
   name: string;
   quantity: number;
@@ -34,24 +38,37 @@ export interface StorageItem {
   packaging: TPackagingUnit;
   packagingWeight?: number;
 
-  state?: 'bought';
-
   category?: string[];
+
   price?: number;
   desc?: string;
-  mdh?: NPTimestamp;
   location?: string;
 }
 
-export interface StorageItemList {
-  id: string;
-  title: string;
-  items: StorageItem[];
+export interface IGlobalItem extends IBaseItem {
+  bestBeforeTimespan: TBestBeforeTimespan;
+  bestBeforeTimevalue?: number;
 }
 
-export interface Datastore {
-  all: StorageItemList & { id: '_all'; title: 'All Items' };
-  storage: StorageItemList & { id: '_storage'; title: 'Inventory' };
-  shoppinglists: StorageItemList[];
-  categories: StorageCategory[];
+export interface ILocalItem extends IBaseItem {
+  state?: 'bought';
+  mdh?: TTimestamp;
+}
+
+export interface IItemList<T extends ILocalItem | IGlobalItem> {
+  id: string;
+  title: string;
+  items: T[];
+}
+
+export interface IDatastore {
+  all: IItemList<IGlobalItem> & {
+    id: '_all';
+    title: 'All Items';
+  };
+  storage: IItemList<ILocalItem> & {
+    id: '_storage';
+    title: 'Storage';
+  };
+  shoppinglists: IItemList<ILocalItem>[];
 }

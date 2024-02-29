@@ -15,10 +15,12 @@ import {
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { add, remove } from 'ionicons/icons';
-import { StorageItem, StorageItemList } from '../../@types/types';
-import { StorageListComponent } from '../../components/storage-list/storage-list.component';
+import { IGlobalItem, IItemList, ILocalItem } from '../../@types/types';
+import { GlobalListComponent } from '../../components/global-list/global-list.component';
+import { LocalListComponent } from '../../components/local-list/local-list.component';
 import { AddItemDialog } from '../../dialogs/add-item-dialog/add-item.dialog';
-import { EditItemDialogComponent } from '../../dialogs/edit-item-dialog/edit-item-dialog.component';
+import { EditGlobalItemDialogComponent } from '../../dialogs/edit-global-item-dialog/edit-global-item-dialog.component';
+import { EditLocalItemDialogComponent } from '../../dialogs/edit-local-item-dialog/edit-local-item-dialog.component';
 import { DatabaseService } from '../../services/database.service';
 import { UiService } from '../../services/ui.service';
 
@@ -28,7 +30,7 @@ import { UiService } from '../../services/ui.service';
   styleUrls: ['inventory.page.scss'],
   standalone: true,
   imports: [
-    StorageListComponent,
+    LocalListComponent,
     IonHeader,
     IonToolbar,
     IonContent,
@@ -42,22 +44,26 @@ import { UiService } from '../../services/ui.service';
     IonButton,
     TranslateModule,
     IonModal,
-    EditItemDialogComponent,
+    EditLocalItemDialogComponent,
+    EditGlobalItemDialogComponent,
+    GlobalListComponent,
   ],
 })
 export class InventoryPage implements OnInit {
-  @ViewChild(StorageListComponent, { static: true })
-  storageList!: StorageListComponent;
+  @ViewChild(LocalListComponent, { static: true })
+  listComponent!: LocalListComponent;
 
   readonly #database = inject(DatabaseService);
   readonly #uiService = inject(UiService);
   readonly translate = inject(TranslateService);
 
-  inventory!: StorageItemList;
+  inventory!: IItemList<ILocalItem>;
 
   isAdding = false;
   isCreating = false;
-  createNewItem: StorageItem | null | undefined;
+  isEditing = false;
+  createNewItem: IGlobalItem | null | undefined;
+  editItem: ILocalItem | null | undefined;
 
   constructor() {
     addIcons({ add, remove });
@@ -68,47 +74,80 @@ export class InventoryPage implements OnInit {
     this.createNewItem = null;
   }
 
-  async addItemToInventory(item?: StorageItem) {
-    this.isAdding = false;
-    item = await this.#database.addItem(item, this.inventory);
-    this.storageList.refresh();
+  async updateInventoryItem(item?: ILocalItem) {
+    this.isEditing = false;
+    this.editItem = null;
+    await this.#database.addOrUpdateLocalItem(item, this.inventory);
+    console.log(item, this.inventory);
+    this.listComponent.refresh();
     await this.#uiService.showToast(
-      this.translate.instant('inventory.page.toast.add', {
+      this.translate.instant('inventory.page.toast.update', {
         name: item?.name,
         total: item?.quantity,
       })
     );
   }
+  async addItemToInventory(item?: ILocalItem) {
+    this.isAdding = false;
+    const litem = await this.#database.addItem(item, this.inventory);
+    this.listComponent.refresh();
+    await this.#uiService.showToast(
+      this.translate.instant('inventory.page.toast.add', {
+        name: litem?.name,
+        total: litem?.quantity,
+      })
+    );
+  }
 
-  showCreateDialog(newItem: StorageItem) {
+  showCreateDialog(newItem: ILocalItem) {
     this.isAdding = false;
     this.isCreating = true;
-    this.createNewItem = newItem;
+    this.createNewItem = DatabaseService.createGlobalItemFrom(newItem);
+  }
+
+  showEditDialog(item: ILocalItem) {
+    this.isAdding = false;
+    this.isCreating = false;
+    this.isEditing = true;
+    this.editItem = item;
   }
 
   showAddDialog() {
     this.isAdding = true;
+    this.isEditing = false;
     this.isCreating = false;
   }
 
-  async createItemAndAddToInventory(item?: StorageItem) {
+  async createItemAndAddToInventory(item?: IGlobalItem) {
+    this.isEditing = false;
     this.isCreating = false;
     this.createNewItem = null;
     if (item?.name.length) {
-      await this.#database.addOrUpdateItem(item);
-      item = await this.#database.addItem(item, this.inventory);
-      this.storageList.refresh();
+      await this.#database.addOrUpdateGlobalItem(item);
+      const litem = await this.#database.addItem(item, this.inventory);
+      this.listComponent.refresh();
       await this.#uiService.showToast(
         this.translate.instant('inventory.page.toast.created', {
-          name: item?.name,
+          name: litem?.name,
+        })
+      );
+    }
+  }
+  async addGlobalItemToInventory(item?: IGlobalItem) {
+    if (item) {
+      const litem = await this.#database.addItem(item, this.inventory);
+      this.listComponent.refresh();
+      await this.#uiService.showToast(
+        this.translate.instant('inventory.page.toast.added', {
+          name: litem?.name,
         })
       );
     }
   }
 
-  async removeItemFromInventory(item: StorageItem) {
+  async removeItemFromInventory(item: ILocalItem) {
     await this.#database.deleteItem(item, this.inventory);
-    this.storageList.refresh();
+    this.listComponent.refresh();
     await this.#uiService.showToast(
       this.translate.instant('inventory.page.toast.remove', {
         name: item?.name,
@@ -116,7 +155,7 @@ export class InventoryPage implements OnInit {
     );
   }
 
-  async moveToShoppingList(item?: StorageItem) {
+  async moveToShoppingList(item?: ILocalItem) {
     this.isAdding = false;
     item = await this.#database.addItem(item, this.#database.shoppinglist());
     console.log(item);

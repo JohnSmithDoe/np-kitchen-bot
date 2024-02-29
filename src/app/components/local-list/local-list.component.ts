@@ -34,20 +34,22 @@ import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { add, cart, list, remove } from 'ionicons/icons';
 import {
-  NPIonDragEvent,
-  StorageCategory,
-  StorageItem,
-  StorageItemList,
+  IGlobalItem,
+  IItemCategory,
+  IItemList,
+  ILocalItem,
+  TIonDragEvent,
 } from '../../@types/types';
 import { CategoriesPipe } from '../../pipes/categories.pipe';
 import { DatabaseService } from '../../services/database.service';
-import { getCategoriesFromList } from '../../utils';
-import { StorageItemComponent } from '../storage-item/storage-item.component';
+import { checkItemOptionsOnDrag, getCategoriesFromList } from '../../utils';
+import { GlobalItemComponent } from '../global-item/global-item.component';
+import { LocalItemComponent } from '../local-item/local-item.component';
 
 @Component({
-  selector: 'app-storage-list',
-  templateUrl: 'storage-list.component.html',
-  styleUrls: ['storage-list.component.scss'],
+  selector: 'app-local-list',
+  templateUrl: 'local-list.component.html',
+  styleUrls: ['local-list.component.scss'],
   standalone: true,
   imports: [
     IonSearchbar,
@@ -69,39 +71,41 @@ import { StorageItemComponent } from '../storage-item/storage-item.component';
     IonText,
     FormsModule,
     TranslateModule,
-    StorageItemComponent,
+    LocalItemComponent,
     CategoriesPipe,
     IonNote,
+    GlobalItemComponent,
   ],
 })
-export class StorageListComponent implements OnInit {
+export class LocalListComponent implements OnInit {
   readonly #database = inject(DatabaseService);
 
-  @Input() itemList!: StorageItemList;
+  @Input() itemList!: IItemList<ILocalItem>;
   @Input() search: 'full' | 'name-only' = 'full';
 
   @Input() header?: string;
   @Input() headerColor: Color = 'secondary';
   @Input() itemHelper?: string;
   @Input() itemColor?: Color;
-  @Input() itemType: 'simple' | 'extended' = 'extended';
   @Input({ transform: booleanAttribute }) canAddTemporary = true;
   @Input({ transform: booleanAttribute }) canReorder = false;
   @Input({ transform: booleanAttribute }) canDelete = false;
   @Input({ transform: booleanAttribute }) canMove = false;
 
-  @Output() createItem = new EventEmitter<StorageItem>();
-  @Output() selectItem = new EventEmitter<StorageItem>();
-  @Output() deleteItem = new EventEmitter<StorageItem>();
+  @Output() addItem = new EventEmitter<ILocalItem>();
+  @Output() createItem = new EventEmitter<ILocalItem>();
+  @Output() selectItem = new EventEmitter<ILocalItem>();
+  @Output() altItem = new EventEmitter<IGlobalItem>();
+  @Output() deleteItem = new EventEmitter<ILocalItem>();
   @Output() emptyItem = new EventEmitter<void>();
-  @Output() moveItem = new EventEmitter<StorageItem>();
+  @Output() moveItem = new EventEmitter<ILocalItem>();
 
-  categories: { items: StorageItem[]; name: string }[] = [];
-  items: StorageItem[] = [];
-  alternatives: StorageItem[] = [];
+  categories: { items: ILocalItem[]; name: string }[] = [];
+  items: ILocalItem[] = [];
+  alternatives: IGlobalItem[] = [];
   mode: 'alphabetical' | 'categories' = 'alphabetical';
   searchTerm?: string | null;
-  currentCategory?: StorageCategory;
+  currentCategory?: IItemCategory;
 
   reorderDisabled = true;
 
@@ -125,7 +129,7 @@ export class StorageListComponent implements OnInit {
     }
   }
 
-  chooseCategory(category: StorageCategory) {
+  chooseCategory(category: IItemCategory) {
     this.currentCategory = category;
     this.items = category.items;
     this.mode = 'alphabetical';
@@ -177,51 +181,34 @@ export class StorageListComponent implements OnInit {
   }
 
   async handleItemOptionsOnDrag(
-    ev: NPIonDragEvent,
-    item: StorageItem,
+    ev: TIonDragEvent,
+    item: ILocalItem,
     list: IonList
   ) {
-    // tripple the length or 250px
-    const MAX_DRAG_RATIO = 3;
-    if (ev.detail.ratio > MAX_DRAG_RATIO || ev.detail.amount > 250) {
-      await this.deleteItemFromList(list, item);
-    } else if (ev.detail.ratio < -MAX_DRAG_RATIO || ev.detail.amount < -250) {
-      await this.moveItemFromList(list, item);
+    switch (checkItemOptionsOnDrag(ev)) {
+      case 'end':
+        await this.deleteItemFromList(list, item);
+        break;
+      case 'start':
+        await this.moveItemFromList(list, item);
+        break;
     }
   }
-
-  async deleteItemFromList(list: IonList, item: StorageItem) {
+  async deleteItemFromList(list: IonList, item: ILocalItem) {
     await list.closeSlidingItems();
     this.deleteItem.emit(item);
   }
-  async moveItemFromList(list: IonList, item: StorageItem) {
+  async moveItemFromList(list: IonList, item: ILocalItem) {
     await list.closeSlidingItems();
     this.moveItem.emit(item);
   }
 
   async handleReorder(ev: CustomEvent<ItemReorderEventDetail>) {
-    // The `from` and `to` properties contain the index of the item
-    // when the drag started and ended, respectively
-    console.log(
-      'Dragged from index',
-      ev.detail.from,
-      'to',
-      ev.detail.to,
-      this.currentCategory
-    );
     if (!this.currentCategory) {
-      console.log('reordering index', ev.detail.from, 'to', ev.detail.to);
       await this.#database.reorder(this.itemList, ev.detail.from, ev.detail.to);
     }
-    // Finish the reorder and position the item in the DOM based on
-    // where the gesture ended. This method can also be called directly
-    // by the reorder group
+    // Finish the reorder and position the item in the DOM
     ev.detail.complete(!this.currentCategory);
-  }
-
-  async addTemporaryItem(item: StorageItem) {
-    await this.#database.addItem(item, this.itemList);
-    this.refresh(true);
   }
 
   refresh(resetSearch = true) {

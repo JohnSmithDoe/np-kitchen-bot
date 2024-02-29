@@ -9,14 +9,13 @@
   </ion-toolbar>
 </ion-header>
 <ion-content>
-  <app-storage-list
+  <app-global-list
     [itemList]="itemList"
     header="{{ 'add-item.dialog.header' | translate }}"
     itemType="simple"
     itemColor="medium"
-    [canAddTemporary]="false"
     (selectItem)="selectItem($event)"
     (createItem)="createNewItem($event)"
     (emptyItem)="createNewItem()"
-  ></app-storage-list>
+  ></app-global-list>
 </ion-content>

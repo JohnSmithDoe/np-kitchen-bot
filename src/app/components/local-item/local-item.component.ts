@@ -19,18 +19,19 @@ import {
   IonListHeader,
   IonNote,
   IonReorder,
+  IonRippleEffect,
 } from '@ionic/angular/standalone';
 import { Color } from '@ionic/core/dist/types/interface';
 import { TranslateModule } from '@ngx-translate/core';
-import { StorageItem } from '../../@types/types';
+import { ILocalItem } from '../../@types/types';
 import { CategoriesPipe } from '../../pipes/categories.pipe';
 import { DatabaseService } from '../../services/database.service';
 
 @Component({
-  selector: 'app-storage-item',
+  selector: 'app-local-item',
   standalone: true,
-  templateUrl: './storage-item.component.html',
-  styleUrls: ['./storage-item.component.scss'],
+  templateUrl: './local-item.component.html',
+  styleUrls: ['./local-item.component.scss'],
   imports: [
     IonItem,
     IonLabel,
@@ -45,20 +46,19 @@ import { DatabaseService } from '../../services/database.service';
     CategoriesPipe,
     IonAvatar,
     IonChip,
+    IonRippleEffect,
   ],
 })
-export class StorageItemComponent implements OnInit, OnChanges {
-  @Input() item!: StorageItem;
-  @Input() header?: string;
+export class LocalItemComponent implements OnInit, OnChanges {
+  @Input() item!: ILocalItem;
   @Input() label?: string;
-  @Input() type: 'simple' | 'extended' = 'simple';
   @Input() color?: Color;
   @Input() category?: string;
   @Input() categoryAlt?: string;
   @Input() helper?: string = 'Click here to add...';
 
-  @Output() selectItem = new EventEmitter<StorageItem>();
-  @Output() cartItem = new EventEmitter<StorageItem>();
+  @Output() selectItem = new EventEmitter<ILocalItem>();
+  @Output() cartItem = new EventEmitter<ILocalItem>();
 
   constructor() {}
 
@@ -78,7 +78,7 @@ export class StorageItemComponent implements OnInit, OnChanges {
 
   #updateItem() {
     if (this.label) {
-      this.item = DatabaseService.createStorageItem(this.label, this.category);
+      this.item = DatabaseService.createLocalItem(this.label, this.category);
     }
   }
 }

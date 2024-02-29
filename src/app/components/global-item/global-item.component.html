@@ -1,0 +1,29 @@
+@if (header) {
+  <ion-list-header>
+    <ion-label>{{ header }}</ion-label>
+  </ion-list-header>
+}
+
+<ion-item
+  [button]="true"
+  (click)="selectItem.emit(item)"
+  [color]="color"
+  detail="true"
+>
+  <ion-avatar slot="start">
+    <img alt="Image of the category" src="assets/avatar.svg" />
+  </ion-avatar>
+  <ion-label class="ion-text-wrap">
+    <h2>{{ item.name }}</h2>
+    <ion-note color="primary">{{
+        item.category | appCategories: categoryAlt
+      }}
+    </ion-note>
+  </ion-label>
+  @if (helper) {
+    <ion-note slot="end" color="primary" class="global-item-helper">{{
+        helper
+      }}
+    </ion-note>
+  }
+</ion-item>

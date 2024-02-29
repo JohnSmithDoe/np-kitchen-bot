@@ -4,17 +4,15 @@
 * Units: 3 x Kartoffeln, 3 x Spaghetti, 3 x Mehl ...
   * Besser? 500 g Kartoffeln ..., 3 Packungen Spaghetti, 2 kg Mehl ...
   * Alt UI: Bestandsregler (viel - wenig) mit min max ...
-* save all the stuff all the time
-  * do this by using app-list
-    * app-list cat-view?
-    * filter, search...
-  * Use Cases shoppinglist
-    * Add Item from global list
-      * Create Item from Search input (global)
-        * Add to list afterward
-    * Create Item from Search input (temp/global)
-      * Add to list afterward
-      * If found global ask to add instead
+* mhd, min amount and warning
+* ondismiss modals
+* swipe ratio
+* name, zusatz
+* multi search
+* clear category on search or search only category
+* sort
+* created timestemp
+* abteilung im supermarkt
 
 
 ## Barcode scanning
@@ -61,11 +59,9 @@ Build
 https://github.com/ionic-team/ionic-framework/issues/28385
 > ionic serve --prod
 
-
-
 >ionic capacitor build android
 
-Run
+Run and Build Apk
 ---
 Install Android Studio and open it once
 Open the android folder as a new project

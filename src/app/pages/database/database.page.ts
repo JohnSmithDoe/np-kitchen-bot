@@ -15,10 +15,12 @@ import {
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { add, remove } from 'ionicons/icons';
-import { StorageItem, StorageItemList } from '../../@types/types';
-import { StorageListComponent } from '../../components/storage-list/storage-list.component';
+import { IGlobalItem, IItemList } from '../../@types/types';
+import { GlobalListComponent } from '../../components/global-list/global-list.component';
+import { LocalListComponent } from '../../components/local-list/local-list.component';
 import { AddItemDialog } from '../../dialogs/add-item-dialog/add-item.dialog';
-import { EditItemDialogComponent } from '../../dialogs/edit-item-dialog/edit-item-dialog.component';
+import { EditGlobalItemDialogComponent } from '../../dialogs/edit-global-item-dialog/edit-global-item-dialog.component';
+import { EditLocalItemDialogComponent } from '../../dialogs/edit-local-item-dialog/edit-local-item-dialog.component';
 import { DatabaseService } from '../../services/database.service';
 import { UiService } from '../../services/ui.service';
 
@@ -28,7 +30,7 @@ import { UiService } from '../../services/ui.service';
   styleUrls: ['database.page.scss'],
   standalone: true,
   imports: [
-    StorageListComponent,
+    LocalListComponent,
     IonHeader,
     IonToolbar,
     IonContent,
@@ -42,21 +44,23 @@ import { UiService } from '../../services/ui.service';
     IonButton,
     TranslateModule,
     IonModal,
-    EditItemDialogComponent,
+    EditLocalItemDialogComponent,
+    EditGlobalItemDialogComponent,
+    GlobalListComponent,
   ],
 })
 export class DatabasePage implements OnInit {
-  @ViewChild(StorageListComponent, { static: true })
-  storageList!: StorageListComponent;
+  @ViewChild(LocalListComponent, { static: true })
+  listComponent!: LocalListComponent;
 
   readonly #database = inject(DatabaseService);
   readonly #uiService = inject(UiService);
   readonly translate = inject(TranslateService);
 
-  items!: StorageItemList;
+  items!: IItemList<IGlobalItem>;
 
   isEditing = false;
-  editItem: StorageItem | null | undefined;
+  editItem: IGlobalItem | null | undefined;
   mode: 'update' | 'create' = 'create';
 
   constructor() {
@@ -68,12 +72,12 @@ export class DatabasePage implements OnInit {
     this.editItem = null;
   }
 
-  async saveItemToDatabase(item?: StorageItem) {
+  async saveItemToDatabase(item?: IGlobalItem) {
     this.isEditing = false;
     if (!item) return;
 
-    await this.#database.addOrUpdateItem(item);
-    this.storageList.refresh();
+    await this.#database.addOrUpdateGlobalItem(item);
+    this.listComponent.refresh();
     await this.#uiService.showToast(
       this.translate.instant('database.toast.add', {
         name: item.name,
@@ -82,15 +86,15 @@ export class DatabasePage implements OnInit {
     );
   }
 
-  showEditDialog(item: StorageItem | null, mode: 'update' | 'create') {
+  showEditDialog(item: IGlobalItem | null, mode: 'update' | 'create') {
     this.mode = mode;
     this.isEditing = true;
     this.editItem = item;
   }
 
-  async removeItemFromDatabase(item: StorageItem) {
+  async removeItemFromDatabase(item: IGlobalItem) {
     await this.#database.deleteItem(item, this.items);
-    this.storageList.refresh();
+    this.listComponent.refresh();
     await this.#uiService.showToast(
       this.translate.instant('database.toast.remove', { name: item.name })
     );

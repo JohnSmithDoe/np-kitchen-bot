@@ -36,9 +36,13 @@ body.scanner-active {
   --background: transparent;
   --ion-background-color: transparent;
 }
-.storage-item-helper {
+.global-item-helper {
   align-self: center;
   text-align: end;
   padding: 0;
   max-width: consts.$gc-smaller;
+}
+
+.clickable {
+  cursor: pointer;
 }

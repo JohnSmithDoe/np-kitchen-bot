@@ -13,7 +13,7 @@
 </ion-header>
 
 <ion-content>
-  <app-storage-list
+  <app-local-list
     [itemList]="shoppingList"
     type="extended"
     search="name-only"
@@ -26,7 +26,7 @@
     (createItem)="showCreateDialog($event)"
     (deleteItem)="removeItemFromShoppingList($event)"
     (emptyItem)="isAdding = true"
-  ></app-storage-list>
+  ></app-local-list>
 </ion-content>
 
 <ion-modal [isOpen]="isAdding">
@@ -41,10 +41,10 @@
 
 <ion-modal [isOpen]="isCreating">
   <ng-template>
-    <app-edit-item-dialog
+    <app-edit-global-item-dialog
       (cancel)="isCreating = false"
       (saveItem)="createItemAndAddToShoppingList($event)"
       [item]="createNewItem"
-    ></app-edit-item-dialog>
+    ></app-edit-global-item-dialog>
   </ng-template>
 </ion-modal>
