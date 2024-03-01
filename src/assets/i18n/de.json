@@ -49,7 +49,7 @@
 	"local.list.empty.helper": "Klicke hier um etwas hinzuzufügen oder gib etwas in die Suchleiste ein",
 	"local.list.item.helper": "Eintrag hinzufügen",
 	"local.list.notfound": "{{value}} nicht gefunden",
-	"local.list.permanent.add": "Eintrag erstellen",
+	"local.list.permanent.add": "Globalen Eintrag erstellen",
 	"local.list.permanent.category": "Globaler Eintrag",
 	"local.list.temporary.add": "Einmalig hinzufügen",
 	"local.list.temporary.category": "Einmal Eintrag",

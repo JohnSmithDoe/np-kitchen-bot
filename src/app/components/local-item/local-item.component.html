@@ -1,10 +1,19 @@
 <ion-item button (click)="selectItem.emit(item)">
   <ion-reorder slot="start"></ion-reorder>
+  <div class="status-bar">
+    <ion-text [color]="getColor(item)"></ion-text>
+  </div>
   <!--  <ion-avatar slot="start">-->
   <!--    <img alt="Image of the category" src="assets/avatar.svg" />-->
   <!--  </ion-avatar>-->
   <ion-label class="ion-text-wrap" [class.bought]="item.state === 'bought'">
-    <h2>{{ item.quantity }} x {{ item.name }}</h2>
+    <h2>
+      {{ item.quantity }}
+      @if (item.minAmount) {
+        / {{ item.minAmount }}
+      }
+      x {{ item.name }}
+    </h2>
     <ion-note>{{ item.category | appCategories: categoryAlt }} </ion-note><br />
     <ion-note>
       @if (item.bestBefore) {

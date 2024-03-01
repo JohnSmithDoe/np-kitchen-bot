@@ -38,7 +38,7 @@ export function getCategoriesFromList<T extends IBaseItem = IBaseItem>(
 }
 
 // handle the dragging from the list items
-export function checkItemOptionsOnDrag(ev: TIonDragEvent, triggerAmount = 200) {
+export function checkItemOptionsOnDrag(ev: TIonDragEvent, triggerAmount = 180) {
   return ev.detail.amount > triggerAmount
     ? 'end'
     : ev.detail.amount < -triggerAmount

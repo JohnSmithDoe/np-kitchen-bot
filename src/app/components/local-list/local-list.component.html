@@ -40,15 +40,17 @@
         <!--        </ion-list-header>-->
         @if (canAddTemporary) {
           <app-create-item
-            [label]="searchTerm"
-            [helper]="
+            color="local"
+            helper="{{
               'local.list.temporary.add' | translate: { value: searchTerm }
-            "
+            }}"
+            [label]="searchTerm"
             [category]="'local.list.temporary.category' | translate"
             (selectItem)="addTemporary($event)"
           ></app-create-item>
         }
         <app-create-item
+          color="global"
           helper="{{
             'local.list.permanent.add' | translate: { value: searchTerm }
           }}"

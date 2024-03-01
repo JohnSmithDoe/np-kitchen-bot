@@ -2,7 +2,12 @@ import { Color } from '@ionic/core/dist/types/interface';
 
 export type TIonDragEvent = CustomEvent<{ amount: number; ratio: number }>;
 
-export type TColor = Color | 'global' | 'local';
+export type TColor =
+  | Color
+  | 'global'
+  | 'local'
+  | 'low-stock-warn'
+  | 'low-stock';
 
 export type TTimestamp = string;
 // Todo
@@ -36,6 +41,7 @@ export interface IBaseItem {
   id: string;
   name: string;
   quantity: number;
+  minAmount?: number;
 
   createdAt: TTimestamp;
 

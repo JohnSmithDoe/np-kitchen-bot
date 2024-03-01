@@ -26,6 +26,7 @@ import {
   IonPopover,
   IonSelect,
   IonSelectOption,
+  IonText,
   IonTitle,
   IonToolbar,
 } from '@ionic/angular/standalone';
@@ -65,6 +66,7 @@ import { CategoriesDialogComponent } from '../categories-dialog/categories-dialo
     IonDatetime,
     DatePipe,
     IonPopover,
+    IonText,
   ],
   templateUrl: './edit-local-item-dialog.component.html',
   styleUrl: './edit-local-item-dialog.component.scss',

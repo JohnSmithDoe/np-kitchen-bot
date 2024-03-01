@@ -96,4 +96,16 @@ export class LocalItemComponent implements OnInit, OnChanges {
     this.decrement.emit(this.item);
     ev.stopPropagation();
   }
+
+  getColor(item: ILocalItem): TColor {
+    let result: TColor = 'success';
+    if (item.minAmount) {
+      if (item.quantity === item.minAmount) {
+        result = 'warning';
+      } else if (item.quantity < item.minAmount) {
+        result = 'danger';
+      }
+    }
+    return result;
+  }
 }

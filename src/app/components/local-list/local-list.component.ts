@@ -243,7 +243,7 @@ export class LocalListComponent implements OnInit {
   }
 
   async changeQuantity(item: ILocalItem, diff: number) {
-    item.quantity = Math.max(1, item.quantity + diff);
+    item.quantity = Math.max(0, item.quantity + diff);
     await this.#database.save();
   }
 
