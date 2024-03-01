@@ -10,6 +10,7 @@
     </ion-button>
   </ion-buttons>
   <ion-buttons slot="end">
+    <ion-button (click)="sortList('bestbefore')">Mhd</ion-button>
     <ion-button (click)="setDisplayMode('alphabetical')">A-Z</ion-button>
     <ion-button (click)="setDisplayMode('categories')">Categories</ion-button>
   </ion-buttons>
@@ -32,10 +33,10 @@
 
 <ng-template #listMode>
   <ion-list #ionList>
-    @if (!!searchTerm) {
+    @if ((searchTerm?.length ?? 0) > 0) {
       @if (!includedInOthers()) {
-        <ion-list-header [color]="headerColor">
-          {{ 'local.list.notfound' | translate }}
+        <ion-list-header>
+          {{ 'local.list.notfound' | translate: { value: searchTerm } }}
         </ion-list-header>
         @if (canAddTemporary) {
           <app-global-item
@@ -59,7 +60,7 @@
         ></app-global-item>
       }
     }
-    @if (!!currentCategory || header) {
+    @if (((!!currentCategory || header) && !searchTerm) || items.length) {
       <ion-list-header [color]="headerColor">
         {{ currentCategory?.name ?? header }}
       </ion-list-header>
@@ -111,7 +112,7 @@
     </ion-reorder-group>
 
     @if (alternatives.length) {
-      <ion-list-header>
+      <ion-list-header color="local">
         <ion-label>{{ 'local.list.alternates.header' | translate }}</ion-label>
       </ion-list-header>
       @for (alternate of alternatives; track alternate.id) {

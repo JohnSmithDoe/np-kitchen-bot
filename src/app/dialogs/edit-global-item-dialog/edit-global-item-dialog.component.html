@@ -109,7 +109,7 @@
       <ion-input
         type="number"
         class="ion-text-end"
-        clearInput="true"
+        [clearOnEdit]="true"
         [disabled]="value.bestBeforeTimespan === 'forever'"
         [(ngModel)]="value.bestBeforeTimevalue"
       >

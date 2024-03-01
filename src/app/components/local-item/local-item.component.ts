@@ -1,4 +1,4 @@
-import { NgTemplateOutlet } from '@angular/common';
+import { DatePipe, NgTemplateOutlet } from '@angular/common';
 import {
   Component,
   EventEmitter,
@@ -20,6 +20,7 @@ import {
   IonNote,
   IonReorder,
   IonRippleEffect,
+  IonText,
 } from '@ionic/angular/standalone';
 import { Color } from '@ionic/core/dist/types/interface';
 import { TranslateModule } from '@ngx-translate/core';
@@ -47,6 +48,8 @@ import { CategoriesPipe } from '../../pipes/categories.pipe';
     IonAvatar,
     IonChip,
     IonRippleEffect,
+    DatePipe,
+    IonText,
   ],
 })
 export class LocalItemComponent implements OnInit, OnChanges {

@@ -8,7 +8,11 @@ import {
   Output,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { InputCustomEvent, SelectCustomEvent } from '@ionic/angular';
+import {
+  DatetimeCustomEvent,
+  InputCustomEvent,
+  SelectCustomEvent,
+} from '@ionic/angular';
 import {
   IonAvatar,
   IonButton,
@@ -85,11 +89,16 @@ export class EditLocalItemDialogComponent implements OnInit {
   saveButtonText = '';
   currencyCode: 'EUR' | 'USD' = 'EUR';
 
-  bestBeforeDate = '';
+  bestBeforeDate?: string;
 
-  datePick() {
-    this.bestBeforeDate = this.bestBeforeDate?.substring(0, 10);
-    this.value.bestBefore = dayjs(this.bestBeforeDate).format();
+  datePick(ev: DatetimeCustomEvent) {
+    if (typeof ev.detail.value === 'string') {
+      this.bestBeforeDate = ev.detail.value?.substring(0, 10);
+      this.value.bestBefore = dayjs(this.bestBeforeDate).format();
+    } else {
+      this.bestBeforeDate = undefined;
+      this.value.bestBefore = undefined;
+    }
   }
 
   constructor() {
@@ -98,6 +107,7 @@ export class EditLocalItemDialogComponent implements OnInit {
 
   ngOnInit(): void {
     this.currencyCode = this.translate.currentLang !== 'en' ? 'EUR' : 'USD';
+
     this.saveButtonText =
       this.mode === 'create'
         ? this.translate.instant('edit.item.dialog.button.create')

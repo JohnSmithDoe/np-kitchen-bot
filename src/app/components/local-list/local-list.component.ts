@@ -31,6 +31,7 @@ import {
 } from '@ionic/angular/standalone';
 import { Color } from '@ionic/core/dist/types/interface';
 import { TranslateModule } from '@ngx-translate/core';
+import * as dayjs from 'dayjs';
 import { addIcons } from 'ionicons';
 import { add, cart, list, remove } from 'ionicons/icons';
 import {
@@ -104,6 +105,8 @@ export class LocalListComponent implements OnInit {
   items: ILocalItem[] = [];
   alternatives: IGlobalItem[] = [];
   mode: 'alphabetical' | 'categories' = 'alphabetical';
+  sortBy?: 'alphabetical' | 'bestbefore';
+  sortDir: 'asc' | 'desc' = 'asc';
   searchTerm?: string | null;
   currentCategory?: IItemCategory;
 
@@ -178,6 +181,9 @@ export class LocalListComponent implements OnInit {
     this.items = this.itemList.items;
     this.mode = mode;
     this.currentCategory = undefined;
+    if (mode === 'alphabetical') {
+      this.sortList(mode);
+    }
   }
 
   async handleItemOptionsOnDrag(
@@ -235,5 +241,29 @@ export class LocalListComponent implements OnInit {
   async changeQuantity(item: ILocalItem, diff: number) {
     item.quantity = Math.max(1, item.quantity + diff);
     await this.#database.save();
+  }
+
+  sortList(mode: 'alphabetical' | 'bestbefore') {
+    if (this.sortBy === mode) {
+      this.sortDir = this.sortDir === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortDir = 'asc';
+    }
+    this.sortBy = mode;
+    this.items.sort((a, b) => {
+      const MAXDATE = '5000-1-1';
+      switch (mode) {
+        case 'alphabetical':
+          return this.sortDir === 'asc'
+            ? a.name.localeCompare(b.name)
+            : b.name.localeCompare(a.name);
+        case 'bestbefore':
+          return this.sortDir === 'asc'
+            ? dayjs(a.bestBefore ?? MAXDATE).unix() -
+                dayjs(b.bestBefore ?? MAXDATE).unix()
+            : dayjs(b.bestBefore ?? MAXDATE).unix() -
+                dayjs(a.bestBefore ?? MAXDATE).unix();
+      }
+    });
   }
 }

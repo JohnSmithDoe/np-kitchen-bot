@@ -1,13 +1,18 @@
 <ion-item button (click)="selectItem.emit(item)">
   <ion-reorder slot="start"></ion-reorder>
-  <ion-avatar slot="start">
-    <img alt="Image of the category" src="assets/avatar.svg" />
-  </ion-avatar>
+  <!--  <ion-avatar slot="start">-->
+  <!--    <img alt="Image of the category" src="assets/avatar.svg" />-->
+  <!--  </ion-avatar>-->
   <ion-label class="ion-text-wrap" [class.bought]="item.state === 'bought'">
     <h2>{{ item.quantity }} x {{ item.name }}</h2>
-    <ion-note slot="end">{{
-      item.category | appCategories: categoryAlt
-    }}</ion-note>
+    <ion-note>{{ item.category | appCategories: categoryAlt }} </ion-note><br />
+    <ion-note>
+      @if (item.bestBefore) {
+        <small>
+          [{{ item.bestBefore | date: undefined : undefined : 'de-DE' }}]
+        </small>
+      }
+    </ion-note>
   </ion-label>
   <ion-buttons slot="end">
     <ion-button (click)="incrementQuantity($event)">

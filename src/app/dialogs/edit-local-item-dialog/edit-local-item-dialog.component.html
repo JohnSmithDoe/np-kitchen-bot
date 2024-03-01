@@ -46,7 +46,7 @@
     <ion-item>
       <ion-input
         label="{{ 'edit.item.dialog.mhd' | translate }}"
-        class="clickable"
+        class="trigger"
         [ngModel]="bestBeforeDate | date: undefined : undefined : 'de-DE'"
         type="date_event"
         id="open_cal"
@@ -59,11 +59,11 @@
         <ng-template>
           <ion-datetime
             presentation="date"
-            [(ngModel)]="bestBeforeDate"
             mode="md"
-            [ngModelOptions]="{ standalone: true }"
-            (ionChange)="datePick()"
+            (ionChange)="datePick($event)"
+            [value]="bestBeforeDate"
             [showDefaultButtons]="true"
+            [showClearButton]="true"
           ></ion-datetime>
         </ng-template>
       </ion-modal>

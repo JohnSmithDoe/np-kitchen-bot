@@ -4,15 +4,17 @@
 * Units: 3 x Kartoffeln, 3 x Spaghetti, 3 x Mehl ...
   * Besser? 500 g Kartoffeln ..., 3 Packungen Spaghetti, 2 kg Mehl ...
   * Alt UI: Bestandsregler (viel - wenig) mit min max ...
-* mhd, min amount and warning
-* ondismiss modals
-* swipe ratio
+* min amount and warning
 * name, zusatz
 * multi search
 * clear category on search or search only category
 * sort
 * created timestemp
 * abteilung im supermarkt
+
+## ToTest
+* ondismiss modals
+* swipe ratio
 
 
 ## Barcode scanning
