@@ -20,9 +20,8 @@ import {
   IonNote,
   IonReorder,
 } from '@ionic/angular/standalone';
-import { Color } from '@ionic/core/dist/types/interface';
 import { TranslateModule } from '@ngx-translate/core';
-import { IGlobalItem } from '../../@types/types';
+import { IGlobalItem, TColor } from '../../@types/types';
 import { createGlobalItem } from '../../app.factory';
 import { CategoriesPipe } from '../../pipes/categories.pipe';
 
@@ -51,10 +50,10 @@ export class GlobalItemComponent implements OnInit, OnChanges {
   @Input() item!: IGlobalItem;
   @Input() header?: string;
   @Input() label?: string | null;
-  @Input() color?: Color;
+  @Input() color?: TColor;
   @Input() category?: string;
   @Input() categoryAlt?: string;
-  @Input() helper?: string = 'Click here to add...';
+  @Input() helper?: string;
 
   @Output() selectItem = new EventEmitter<IGlobalItem>();
   @Output() cartItem = new EventEmitter<IGlobalItem>();

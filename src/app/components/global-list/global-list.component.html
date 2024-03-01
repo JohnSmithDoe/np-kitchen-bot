@@ -37,15 +37,13 @@
         <ion-list-header [color]="headerColor">
           {{ 'global.list.add.new.header' | translate }}
         </ion-list-header>
-        <app-global-item
-          color="tertiary"
+        <app-create-item
           helper="{{
             'global.list.permanent.add' | translate: { value: searchTerm }
           }}"
-          categoryAlt="{{ 'global.list.permanent.category' | translate }}"
           [label]="searchTerm"
-          (selectItem)="createItem.emit($event)"
-        ></app-global-item>
+          (selectItem)="addGlobally($event)"
+        ></app-create-item>
       }
     }
     @if (!!currentCategory || header) {

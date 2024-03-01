@@ -8,11 +8,7 @@ import {
   Output,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import {
-  DatetimeCustomEvent,
-  InputCustomEvent,
-  SelectCustomEvent,
-} from '@ionic/angular';
+import { DatetimeCustomEvent, InputCustomEvent } from '@ionic/angular';
 import {
   IonAvatar,
   IonButton,
@@ -37,7 +33,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import * as dayjs from 'dayjs';
 import { addIcons } from 'ionicons';
 import { closeCircle } from 'ionicons/icons';
-import { ILocalItem, TItemUnit, TPackagingUnit } from '../../@types/types';
+import { ILocalItem } from '../../@types/types';
 import { createLocalItem } from '../../app.factory';
 import { DatabaseService } from '../../services/database.service';
 import { CategoriesDialogComponent } from '../categories-dialog/categories-dialog.component';
@@ -138,19 +134,6 @@ export class EditLocalItemDialogComponent implements OnInit {
     this.value.category = this.value.category
       ? [...this.value.category]
       : undefined;
-  }
-
-  setUnit(ev: SelectCustomEvent<TItemUnit>) {
-    this.value.unit = ev.detail.value;
-    if (this.value.unit === 'ml') {
-      this.value.packaging = 'bottle';
-    } else if (this.value.packaging === 'bottle') {
-      this.value.packaging = 'loose';
-    }
-  }
-
-  setPackaging(ev: SelectCustomEvent<TPackagingUnit>) {
-    this.value.packaging = ev.detail.value;
   }
 
   updatePrice(ev: InputCustomEvent<FocusEvent>) {

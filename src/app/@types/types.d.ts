@@ -1,4 +1,8 @@
+import { Color } from '@ionic/core/dist/types/interface';
+
 export type TIonDragEvent = CustomEvent<{ amount: number; ratio: number }>;
+
+export type TColor = Color | 'global' | 'local';
 
 export type TTimestamp = string;
 // Todo
@@ -33,11 +37,6 @@ export interface IBaseItem {
   name: string;
   quantity: number;
 
-  unit: TItemUnit;
-
-  packaging: TPackagingUnit;
-  packagingWeight?: number;
-
   createdAt: TTimestamp;
 
   category?: string[];
@@ -48,6 +47,10 @@ export interface IBaseItem {
 }
 
 export interface IGlobalItem extends IBaseItem {
+  unit: TItemUnit;
+  packaging: TPackagingUnit;
+  packagingWeight?: number;
+
   bestBeforeTimespan: TBestBeforeTimespan;
   bestBeforeTimevalue?: number;
 }

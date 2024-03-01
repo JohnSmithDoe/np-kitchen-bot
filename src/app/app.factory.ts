@@ -1,23 +1,34 @@
 import * as dayjs from 'dayjs';
-import { IGlobalItem, ILocalItem } from './@types/types';
+import { IBaseItem, IGlobalItem, ILocalItem, TTimestamp } from './@types/types';
 import { uuidv4 } from './app.utils';
 
-export function createLocalItem(
+export function createBaseItem(
   name: string,
-  category?: string,
+  category?: string | string[],
   quantity = 0
-): ILocalItem {
+): IBaseItem {
   return {
     id: uuidv4(),
     name,
     quantity,
-    category: category ? [category] : undefined,
-    unit: 'pieces',
-    packaging: 'loose',
+    category: category
+      ? Array.isArray(category)
+        ? category
+        : [category]
+      : undefined,
     createdAt: dayjs().format(),
   };
 }
 
+export function createLocalItem(
+  name: string,
+  category?: string | string[],
+  quantity = 0,
+  bestBefore?: TTimestamp
+): ILocalItem {
+  const base = createBaseItem(name, category, quantity);
+  return { ...base, bestBefore };
+}
 export function createLocalItemFrom(
   global: IGlobalItem,
   quantity = 0
@@ -28,37 +39,20 @@ export function createLocalItemFrom(
       .add(global.bestBeforeTimevalue ?? 1, global.bestBeforeTimespan)
       .format();
   }
-  return {
-    id: uuidv4(),
-    name: global.name,
-    quantity,
-    category: global.category,
-    unit: global.unit,
-    packaging: global.packaging,
-    createdAt: dayjs().format(),
-    bestBefore,
-  };
+  return createLocalItem(global.name, global.category, quantity, bestBefore);
 }
-
 export function createGlobalItem(
   name: string,
   category?: string | string[],
   quantity = 0
 ): IGlobalItem {
+  const base = createBaseItem(name, category, quantity);
   return {
-    id: uuidv4(),
-    name,
-    quantity,
-    category: category
-      ? Array.isArray(category)
-        ? category
-        : [category]
-      : undefined,
+    ...base,
     unit: 'pieces',
     packaging: 'loose',
     bestBeforeTimespan: 'forever',
     bestBeforeTimevalue: 1,
-    createdAt: dayjs().format(),
   };
 }
 

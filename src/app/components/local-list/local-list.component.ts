@@ -29,21 +29,24 @@ import {
   IonText,
   IonToolbar,
 } from '@ionic/angular/standalone';
-import { Color } from '@ionic/core/dist/types/interface';
 import { TranslateModule } from '@ngx-translate/core';
 import * as dayjs from 'dayjs';
 import { addIcons } from 'ionicons';
 import { add, cart, list, remove } from 'ionicons/icons';
 import {
+  IBaseItem,
   IGlobalItem,
   IItemCategory,
   IItemList,
   ILocalItem,
+  TColor,
   TIonDragEvent,
 } from '../../@types/types';
+import { createLocalItem } from '../../app.factory';
 import { checkItemOptionsOnDrag, getCategoriesFromList } from '../../app.utils';
 import { CategoriesPipe } from '../../pipes/categories.pipe';
 import { DatabaseService } from '../../services/database.service';
+import { CreateItemComponent } from '../create-item/create-item.component';
 import { GlobalItemComponent } from '../global-item/global-item.component';
 import { LocalItemComponent } from '../local-item/local-item.component';
 
@@ -76,6 +79,7 @@ import { LocalItemComponent } from '../local-item/local-item.component';
     CategoriesPipe,
     IonNote,
     GlobalItemComponent,
+    CreateItemComponent,
   ],
 })
 export class LocalListComponent implements OnInit {
@@ -85,9 +89,9 @@ export class LocalListComponent implements OnInit {
   @Input() search: 'full' | 'name-only' = 'full';
 
   @Input() header?: string;
-  @Input() headerColor: Color = 'secondary';
+  @Input() headerColor?: TColor;
   @Input() itemHelper?: string;
-  @Input() itemColor?: Color;
+  @Input() itemColor?: TColor;
   @Input({ transform: booleanAttribute }) canAddTemporary = true;
   @Input({ transform: booleanAttribute }) canReorder = false;
   @Input({ transform: booleanAttribute }) canDelete = false;
@@ -265,5 +269,10 @@ export class LocalListComponent implements OnInit {
                 dayjs(a.bestBefore ?? MAXDATE).unix();
       }
     });
+  }
+
+  addTemporary(base: IBaseItem) {
+    if (!this.searchTerm) return;
+    this.addItem.emit(createLocalItem(base.name, base.category));
   }
 }

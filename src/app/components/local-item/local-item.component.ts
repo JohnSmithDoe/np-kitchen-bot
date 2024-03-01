@@ -22,9 +22,8 @@ import {
   IonRippleEffect,
   IonText,
 } from '@ionic/angular/standalone';
-import { Color } from '@ionic/core/dist/types/interface';
 import { TranslateModule } from '@ngx-translate/core';
-import { ILocalItem } from '../../@types/types';
+import { ILocalItem, TColor } from '../../@types/types';
 import { createLocalItem } from '../../app.factory';
 import { CategoriesPipe } from '../../pipes/categories.pipe';
 
@@ -55,7 +54,7 @@ import { CategoriesPipe } from '../../pipes/categories.pipe';
 export class LocalItemComponent implements OnInit, OnChanges {
   @Input() item!: ILocalItem;
   @Input() label?: string;
-  @Input() color?: Color;
+  @Input() color?: TColor;
   @Input() category?: string;
   @Input() categoryAlt?: string;
   @Input() helper?: string;

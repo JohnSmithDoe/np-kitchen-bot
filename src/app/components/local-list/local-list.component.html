@@ -35,29 +35,26 @@
   <ion-list #ionList>
     @if ((searchTerm?.length ?? 0) > 0) {
       @if (!includedInOthers()) {
-        <ion-list-header>
-          {{ 'local.list.notfound' | translate: { value: searchTerm } }}
-        </ion-list-header>
+        <!--        <ion-list-header>-->
+        <!--          {{ 'local.list.notfound' | translate: { value: searchTerm } }}-->
+        <!--        </ion-list-header>-->
         @if (canAddTemporary) {
-          <app-global-item
-            color="secondary"
-            helper="{{
-              'local.list.temporary.add' | translate: { value: searchTerm }
-            }}"
-            category="{{ 'local.list.temporary.category' | translate }}"
+          <app-create-item
             [label]="searchTerm"
-            (selectItem)="addItem.emit($event)"
-          ></app-global-item>
+            [helper]="
+              'local.list.temporary.add' | translate: { value: searchTerm }
+            "
+            [category]="'local.list.temporary.category' | translate"
+            (selectItem)="addTemporary($event)"
+          ></app-create-item>
         }
-        <app-global-item
-          color="tertiary"
+        <app-create-item
           helper="{{
             'local.list.permanent.add' | translate: { value: searchTerm }
           }}"
-          categoryAlt="{{ 'local.list.permanent.category' | translate }}"
           [label]="searchTerm"
           (selectItem)="createItem.emit($event)"
-        ></app-global-item>
+        ></app-create-item>
       }
     }
     @if (((!!currentCategory || header) && !searchTerm) || items.length) {
@@ -112,13 +109,12 @@
     </ion-reorder-group>
 
     @if (alternatives.length) {
-      <ion-list-header color="local">
+      <ion-list-header>
         <ion-label>{{ 'local.list.alternates.header' | translate }}</ion-label>
       </ion-list-header>
       @for (alternate of alternatives; track alternate.id) {
         <app-global-item
           [item]="alternate"
-          color="medium"
           helper="{{ 'local.list.alternates.helper' | translate }}"
           (selectItem)="altItem.emit(alternate)"
         ></app-global-item>

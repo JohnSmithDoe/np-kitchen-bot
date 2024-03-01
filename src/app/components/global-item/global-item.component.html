@@ -15,13 +15,9 @@
   <!--  </ion-avatar>-->
   <ion-label class="ion-text-wrap">
     <h2>{{ item.name }}</h2>
-    <ion-note color="primary"
-      >{{ item.category | appCategories: categoryAlt }}
-    </ion-note>
+    <ion-note>{{ item.category | appCategories: categoryAlt }} </ion-note>
   </ion-label>
   @if (helper) {
-    <ion-note slot="end" color="primary" class="global-item-helper"
-      >{{ helper }}
-    </ion-note>
+    <ion-note slot="end" class="global-item-helper">{{ helper }} </ion-note>
   }
 </ion-item>
