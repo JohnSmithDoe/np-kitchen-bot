@@ -1,4 +1,4 @@
-package io.ionic.starter;
+package np.afterwork.kitchenbot;
 
 import com.getcapacitor.BridgeActivity;
 
