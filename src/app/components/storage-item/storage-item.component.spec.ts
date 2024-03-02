@@ -1,19 +1,19 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 
-import { LocalItemComponent } from './local-item.component';
+import { StorageItemComponent } from './storage-item.component';
 
-describe('LocalItemComponent', () => {
-  let component: LocalItemComponent;
-  let fixture: ComponentFixture<LocalItemComponent>;
+describe('StorageItemComponent', () => {
+  let component: StorageItemComponent;
+  let fixture: ComponentFixture<StorageItemComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [LocalItemComponent],
+      declarations: [StorageItemComponent],
       imports: [IonicModule.forRoot()],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(LocalItemComponent);
+    fixture = TestBed.createComponent(StorageItemComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   }));

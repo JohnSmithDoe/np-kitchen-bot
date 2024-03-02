@@ -13,7 +13,7 @@
 </ion-header>
 
 <ion-content>
-  <app-local-list
+  <app-shopping-list
     [itemList]="shoppingList"
     type="extended"
     search="name-only"
@@ -21,13 +21,13 @@
     canDelete="true"
     headerColor="shopping"
     header="{{'shoppinglist.page.header' | translate}}"
-    (addItem)="addLocalItemToShoppingList($event)"
+    (addItem)="addItemToShoppingList($event)"
     (moveItem)="buyItem($event)"
-    (selectItem)="addLocalItemToShoppingList($event)"
+    (selectItem)="addItemToShoppingList($event)"
     (createItem)="showCreateDialog($event)"
     (deleteItem)="removeItemFromShoppingList($event)"
     (emptyItem)="showEditDialog()"
-  ></app-local-list>
+  ></app-shopping-list>
 </ion-content>
 
 <ion-modal [isOpen]="isAdding" (didDismiss)="isAdding = false">
@@ -52,11 +52,11 @@
 
 <ion-modal [isOpen]="isEditing" (didDismiss)="isEditing = false">
   <ng-template>
-    <app-edit-item-dialog
+    <app-edit-shopping-item-dialog
       mode="create"
       (cancel)="isEditing = false"
-      (saveItem)="addLocalItemToShoppingList($event)"
+      (saveItem)="addItemToShoppingList($event)"
       [localList]="shoppingList"
-    ></app-edit-item-dialog>
+    ></app-edit-shopping-item-dialog>
   </ng-template>
 </ion-modal>

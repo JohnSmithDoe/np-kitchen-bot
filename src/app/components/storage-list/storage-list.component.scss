@@ -1,0 +1,16 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  ion-list-header {
+    background: var(--ion-color-tint);
+  }
+}
+
+.storage-list-body {
+  overflow: auto;
+  flex: 1;
+  ion-list {
+    flex: 1;
+  }
+}

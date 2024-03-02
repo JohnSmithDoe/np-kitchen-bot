@@ -1,5 +1,11 @@
 import * as dayjs from 'dayjs';
-import { IBaseItem, IGlobalItem, ILocalItem, TTimestamp } from './@types/types';
+import {
+  IBaseItem,
+  IGlobalItem,
+  IShoppingItem,
+  IStorageItem,
+  TTimestamp,
+} from './@types/types';
 import { uuidv4 } from './app.utils';
 
 export function createBaseItem(
@@ -18,26 +24,50 @@ export function createBaseItem(
   };
 }
 
-export function createLocalItem(
+export function createStorageItem(
   name: string,
   category?: string | string[],
   quantity = 0,
   bestBefore?: TTimestamp
-): ILocalItem {
+): IStorageItem {
   const base = createBaseItem(name, category);
   return { ...base, quantity, bestBefore };
 }
-export function createLocalItemFrom(
+export function createStorageItemFromGlobal(
   global: IGlobalItem,
   quantity = 0
-): ILocalItem {
+): IStorageItem {
   let bestBefore: string | undefined;
   if (global.bestBeforeTimespan !== 'forever') {
     bestBefore = dayjs()
       .add(global.bestBeforeTimevalue ?? 1, global.bestBeforeTimespan)
       .format();
   }
-  return createLocalItem(global.name, global.category, quantity, bestBefore);
+  return createStorageItem(global.name, global.category, quantity, bestBefore);
+}
+export function createShoppingItemFromGlobal(
+  global: IGlobalItem,
+  quantity = 0
+): IShoppingItem {
+  return createShoppingItem(global.name, global.category, quantity);
+}
+export function createShoppingItemFromStorage(
+  storage: IStorageItem,
+  quantity = 0
+): IShoppingItem {
+  return createShoppingItem(storage.name, storage.category, quantity);
+}
+export function createShoppingItem(
+  name: string,
+  category?: string | string[],
+  quantity = 0
+): IShoppingItem {
+  const base = createBaseItem(name, category);
+  return {
+    ...base,
+    quantity,
+    state: 'active',
+  };
 }
 export function createGlobalItem(
   name: string,

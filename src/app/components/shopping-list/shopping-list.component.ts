@@ -37,21 +37,26 @@ import {
   IGlobalItem,
   IItemCategory,
   IItemList,
+  IShoppingItem,
   TColor,
   TIonDragEvent,
 } from '../../@types/types';
-import { createGlobalItem } from '../../app.factory';
-import { checkItemOptionsOnDrag, getCategoriesFromList } from '../../app.utils';
+import { createShoppingItem } from '../../app.factory';
+import {
+  checkItemOptionsOnDrag,
+  getCategoriesFromList,
+  getCategoryItemsFromListShopping,
+} from '../../app.utils';
 import { CategoriesPipe } from '../../pipes/categories.pipe';
 import { DatabaseService } from '../../services/database.service';
 import { BaseItemComponent } from '../base-item/base-item.component';
 import { GlobalItemComponent } from '../global-item/global-item.component';
-import { StorageItemComponent } from '../storage-item/storage-item.component';
+import { ShoppingItemComponent } from '../shopping-item/shopping-item.component';
 
 @Component({
-  selector: 'app-global-list',
-  templateUrl: 'global-list.component.html',
-  styleUrls: ['global-list.component.scss'],
+  selector: 'app-shopping-list',
+  templateUrl: 'shopping-list.component.html',
+  styleUrls: ['shopping-list.component.scss'],
   standalone: true,
   imports: [
     IonSearchbar,
@@ -73,37 +78,42 @@ import { StorageItemComponent } from '../storage-item/storage-item.component';
     IonText,
     FormsModule,
     TranslateModule,
-    StorageItemComponent,
     CategoriesPipe,
     IonNote,
-    StorageItemComponent,
     GlobalItemComponent,
     BaseItemComponent,
+    ShoppingItemComponent,
   ],
 })
-export class GlobalListComponent implements OnInit {
+export class ShoppingListComponent implements OnInit {
   readonly #database = inject(DatabaseService);
 
-  @Input() itemList!: IItemList<IGlobalItem>;
+  @Input() itemList!: IItemList<IShoppingItem>;
   @Input() search: 'full' | 'name-only' = 'full';
 
   @Input() header?: string;
   @Input() headerColor?: TColor;
   @Input() itemHelper?: string;
   @Input() itemColor?: TColor;
+  @Input({ transform: booleanAttribute }) canAddTemporary = true;
   @Input({ transform: booleanAttribute }) canReorder = false;
   @Input({ transform: booleanAttribute }) canDelete = false;
   @Input({ transform: booleanAttribute }) canMove = false;
 
-  @Output() createItem = new EventEmitter<IGlobalItem>();
-  @Output() selectItem = new EventEmitter<IGlobalItem>();
-  @Output() deleteItem = new EventEmitter<IGlobalItem>();
+  @Output() addItem = new EventEmitter<IShoppingItem>();
+  @Output() createItem = new EventEmitter<IBaseItem>();
+  @Output() selectItem = new EventEmitter<IShoppingItem>();
+  @Output() altItem = new EventEmitter<IGlobalItem>();
+  @Output() deleteItem = new EventEmitter<IShoppingItem>();
   @Output() emptyItem = new EventEmitter<void>();
-  @Output() moveItem = new EventEmitter<IGlobalItem>();
+  @Output() moveItem = new EventEmitter<IShoppingItem>();
 
   categories: IItemCategory[] = [];
-  items: IGlobalItem[] = [];
+  items: IShoppingItem[] = [];
+  alternatives: IGlobalItem[] = [];
   mode: 'alphabetical' | 'categories' = 'alphabetical';
+  sortBy?: 'alphabetical';
+  sortDir: 'asc' | 'desc' = 'asc';
   searchTerm?: string | null;
   currentCategory?: IItemCategory;
 
@@ -126,8 +136,10 @@ export class GlobalListComponent implements OnInit {
       this.currentCategory = this.categories.find(
         (cat) => cat.name === this.currentCategory?.name
       );
-      this.items =
-        (this.currentCategory?.items as IGlobalItem[]) ?? this.itemList.items;
+      this.items = getCategoryItemsFromListShopping(
+        this.currentCategory,
+        this.itemList
+      );
     }
   }
 
@@ -161,20 +173,40 @@ export class GlobalListComponent implements OnInit {
                 ) ?? -1) >= 0
             );
       this.items = [...byName, ...byCat];
+      let others = this.#database.all.items.filter(
+        (dbItem) => !this.items.find((aItem) => aItem.name === dbItem.name)
+      );
+      this.alternatives = others.filter(
+        (item) => item.name.toLowerCase().indexOf(searchFor) >= 0
+      );
+      this.alternatives = this.alternatives.concat(
+        ...others.filter(
+          (item) =>
+            !this.alternatives.includes(item) &&
+            (item.category?.findIndex(
+              (cat) => cat.toLowerCase().indexOf(searchFor) >= 0
+            ) ?? -1) >= 0
+        )
+      );
     } else {
       this.items = this.itemList.items;
+      this.alternatives = [];
     }
   }
 
-  setDisplayMode(mode: 'alphabetical' | 'categories') {
+  setDisplayMode(
+    mode: 'alphabetical' | 'categories' | 'bestbefore',
+    sortBy: 'alphabetical' = 'alphabetical'
+  ) {
     this.items = this.itemList.items;
-    this.mode = mode;
+    this.mode = mode === 'bestbefore' ? 'alphabetical' : mode;
     this.currentCategory = undefined;
+    this.#sortList(sortBy);
   }
 
   async handleItemOptionsOnDrag(
     ev: TIonDragEvent,
-    item: IGlobalItem,
+    item: IShoppingItem,
     list: IonList
   ) {
     switch (checkItemOptionsOnDrag(ev)) {
@@ -186,13 +218,11 @@ export class GlobalListComponent implements OnInit {
         break;
     }
   }
-
-  async deleteItemFromList(list: IonList, item: IGlobalItem) {
+  async deleteItemFromList(list: IonList, item: IShoppingItem) {
     await list.closeSlidingItems();
     this.deleteItem.emit(item);
   }
-
-  async moveItemFromList(list: IonList, item: IGlobalItem) {
+  async moveItemFromList(list: IonList, item: IShoppingItem) {
     await list.closeSlidingItems();
     this.moveItem.emit(item);
   }
@@ -212,17 +242,41 @@ export class GlobalListComponent implements OnInit {
 
   includedInOthers() {
     const toLowerCaseSearchTerm = this.searchTerm?.toLowerCase();
-    return !!this.items.find(
-      (item) => item.name.toLowerCase() === toLowerCaseSearchTerm
+    return (
+      !!this.alternatives.find(
+        (item) => item.name.toLowerCase() === toLowerCaseSearchTerm
+      ) ||
+      !!this.items.find(
+        (item) => item.name.toLowerCase() === toLowerCaseSearchTerm
+      )
     );
   }
-
   toggleReorder() {
     this.reorderDisabled = !this.reorderDisabled;
     this.setDisplayMode('alphabetical');
   }
 
-  addGlobally(base: IBaseItem) {
-    this.createItem.emit(createGlobalItem(base.name, base.category));
+  async changeQuantity(item: IShoppingItem, diff: number) {
+    item.quantity = Math.max(0, item.quantity + diff);
+    await this.#database.save();
+  }
+
+  #sortList(mode: 'alphabetical') {
+    if (this.sortBy === mode) {
+      this.sortDir = this.sortDir === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortDir = 'asc';
+    }
+    this.sortBy = mode;
+    this.items.sort((a, b) => {
+      return this.sortDir === 'asc'
+        ? a.name.localeCompare(b.name)
+        : b.name.localeCompare(a.name);
+    });
+  }
+
+  addTemporary(base: IBaseItem) {
+    if (!this.searchTerm) return;
+    this.addItem.emit(createShoppingItem(base.name, base.category));
   }
 }

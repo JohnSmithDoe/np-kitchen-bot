@@ -20,13 +20,16 @@ import {
   IBaseItem,
   IGlobalItem,
   IItemList,
-  ILocalItem,
+  IShoppingItem,
 } from '../../@types/types';
-import { createGlobalItemFrom, createLocalItemFrom } from '../../app.factory';
-import { LocalListComponent } from '../../components/local-list/local-list.component';
+import {
+  createGlobalItemFrom,
+  createShoppingItemFromGlobal,
+} from '../../app.factory';
+import { ShoppingListComponent } from '../../components/shopping-list/shopping-list.component';
 import { AddItemDialog } from '../../dialogs/add-item-dialog/add-item.dialog';
 import { EditGlobalItemDialogComponent } from '../../dialogs/edit-global-item-dialog/edit-global-item-dialog.component';
-import { EditLocalItemDialogComponent } from '../../dialogs/edit-local-item-dialog/edit-local-item-dialog.component';
+import { EditShoppingItemDialogComponent } from '../../dialogs/edit-shopping-item-dialog/edit-shopping-item-dialog.component';
 import { DatabaseService } from '../../services/database.service';
 import { UiService } from '../../services/ui.service';
 
@@ -36,7 +39,6 @@ import { UiService } from '../../services/ui.service';
   styleUrls: ['shoppinglist.page.scss'],
   standalone: true,
   imports: [
-    LocalListComponent,
     IonHeader,
     IonToolbar,
     IonContent,
@@ -52,18 +54,19 @@ import { UiService } from '../../services/ui.service';
     TranslateModule,
     IonModal,
     EditGlobalItemDialogComponent,
-    EditLocalItemDialogComponent,
+    EditShoppingItemDialogComponent,
+    ShoppingListComponent,
   ],
 })
 export class ShoppinglistPage implements OnInit {
-  @ViewChild(LocalListComponent, { static: true })
-  listComponent!: LocalListComponent;
+  @ViewChild(ShoppingListComponent, { static: true })
+  listComponent!: ShoppingListComponent;
 
   readonly #database = inject(DatabaseService);
   readonly #uiService = inject(UiService);
   readonly translate = inject(TranslateService);
 
-  shoppingList!: IItemList<ILocalItem>;
+  shoppingList!: IItemList<IShoppingItem>;
 
   isAdding = false;
   isEditing = false;
@@ -81,13 +84,16 @@ export class ShoppinglistPage implements OnInit {
 
   async addGlobalItemToShoppingList(item?: IGlobalItem) {
     if (!item) return;
-    let litem: ILocalItem | undefined = createLocalItemFrom(item, 1);
-    return this.addLocalItemToShoppingList(litem);
+    let litem: IShoppingItem | undefined = createShoppingItemFromGlobal(
+      item,
+      1
+    );
+    return this.addItemToShoppingList(litem);
   }
 
-  async addLocalItemToShoppingList(item?: ILocalItem) {
+  async addItemToShoppingList(item?: IShoppingItem) {
     this.isAdding = false;
-    item = await this.#database.addItem(item, this.shoppingList);
+    item = await this.#database.addItemShopping(item, this.shoppingList);
     this.listComponent.refresh();
     await this.#uiService.showToast(
       this.translate.instant('shoppinglist.page.toast.add', {
@@ -113,7 +119,7 @@ export class ShoppinglistPage implements OnInit {
 
     if (item?.name.length) {
       await this.#database.addOrUpdateGlobalItem(item);
-      const litem = createLocalItemFrom(item, 1);
+      const litem = createShoppingItemFromGlobal(item, 1);
       await this.#database.addItem(litem, this.shoppingList);
       this.listComponent.refresh();
       await this.#uiService.showToast(
@@ -123,7 +129,7 @@ export class ShoppinglistPage implements OnInit {
       );
     }
   }
-  async removeItemFromShoppingList(item: ILocalItem) {
+  async removeItemFromShoppingList(item: IShoppingItem) {
     await this.#database.deleteItem(item, this.shoppingList);
     this.listComponent.refresh();
     await this.#uiService.showToast(
@@ -136,7 +142,7 @@ export class ShoppinglistPage implements OnInit {
 
   // some kind of state for now
 
-  async buyItem(item: ILocalItem) {
+  async buyItem(item: IShoppingItem) {
     item.state = 'bought';
     await this.#database.save();
     await this.#uiService.showToast(

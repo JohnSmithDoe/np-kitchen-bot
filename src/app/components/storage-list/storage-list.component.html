@@ -11,11 +11,12 @@
     </ion-button>
   </ion-buttons>
   <ion-buttons slot="end">
+    <ion-button (click)="setDisplayMode('bestbefore')">Mhd</ion-button>
     <ion-button (click)="setDisplayMode('alphabetical')">A-Z</ion-button>
     <ion-button (click)="setDisplayMode('categories')">Categories</ion-button>
   </ion-buttons>
 </ion-toolbar>
-<div class="global-list-body">
+<div class="storage-list-body">
   @if (mode === 'alphabetical') {
     <ng-container *ngTemplateOutlet="listMode"></ng-container>
   } @else {
@@ -33,21 +34,32 @@
 
 <ng-template #listMode>
   <ion-list #ionList>
-    @if (!!searchTerm?.length) {
+    @if ((searchTerm?.length ?? 0) > 0) {
       @if (!includedInOthers()) {
-        <ion-list-header [color]="headerColor">
-          {{ 'global.list.add.new.header' | translate }}
-        </ion-list-header>
+        <!--        <ion-list-header>-->
+        <!--          {{ 'storage.list.notfound' | translate: { value: searchTerm } }}-->
+        <!--        </ion-list-header>-->
+        @if (canAddTemporary) {
+          <app-base-item
+            [color]="headerColor"
+            helper="{{
+              'storage.list.temporary.add' | translate: { value: searchTerm }
+            }}"
+            [label]="searchTerm"
+            (selectItem)="addTemporary($event)"
+          ></app-base-item>
+        }
         <app-base-item
+          color="global"
           helper="{{
-            'global.list.permanent.add' | translate: { value: searchTerm }
+            'storage.list.permanent.add' | translate: { value: searchTerm }
           }}"
           [label]="searchTerm"
-          (selectItem)="addGlobally($event)"
+          (selectItem)="createItem.emit($event)"
         ></app-base-item>
       }
     }
-    @if (!!currentCategory || header) {
+    @if (((!!currentCategory || header) && !searchTerm) || items.length) {
       <ion-list-header [color]="headerColor">
         {{ currentCategory?.name ?? header }}
       </ion-list-header>
@@ -73,12 +85,15 @@
             </ion-item-options>
           }
 
-          <app-global-item
+          <app-storage-item
             [item]="item"
             [color]="itemColor"
-            [helper]="itemHelper ?? ('global.list.item.helper' | translate)"
+            [helper]="itemHelper ?? ('storage.list.item.helper' | translate)"
+            categoryAlt="{{ 'item.no-category' | translate }}"
             (selectItem)="selectItem.emit(item)"
-          ></app-global-item>
+            (increment)="changeQuantity($event, +1)"
+            (decrement)="changeQuantity($event, -1)"
+          ></app-storage-item>
 
           @if (canDelete) {
             <ion-item-options side="end">
@@ -95,12 +110,27 @@
       }
     </ion-reorder-group>
 
+    @if (alternatives.length) {
+      <ion-list-header color="global" class="tinted-header">
+        <ion-label>{{
+          'storage.list.alternates.header' | translate
+        }}</ion-label>
+      </ion-list-header>
+      @for (alternate of alternatives; track alternate.id) {
+        <app-global-item
+          [item]="alternate"
+          helper="{{ 'storage.list.alternates.helper' | translate }}"
+          (selectItem)="altItem.emit(alternate)"
+        ></app-global-item>
+      }
+    }
+
     @if (!searchTerm && !items.length) {
       <ion-item button (click)="emptyItem.emit()">
         <ion-label class="ion-text-wrap">
-          <h2>{{ 'global.list.empty' | translate }}</h2>
+          <h2>{{ 'storage.list.empty' | translate }}</h2>
           <ion-note slot="end">{{
-            'global.list.empty.helper' | translate
+            'storage.list.empty.helper' | translate
           }}</ion-note>
         </ion-label>
       </ion-item>

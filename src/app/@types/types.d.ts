@@ -6,7 +6,6 @@ export type TColor =
   | Color
   | 'global'
   | 'category'
-  | 'local'
   | 'storage'
   | 'shopping'
   | 'low-stock-warn'
@@ -43,8 +42,6 @@ export type TBestBeforeTimespan =
 export interface IBaseItem {
   id: string;
   name: string;
-  minAmount?: number;
-
   createdAt: TTimestamp;
 
   category?: string[];
@@ -63,9 +60,14 @@ export interface IGlobalItem extends IBaseItem {
   bestBeforeTimevalue?: number;
 }
 
-export interface ILocalItem extends IBaseItem {
+export interface IShoppingItem extends IBaseItem {
   quantity: number;
-  state?: 'bought';
+  state: 'bought' | 'active';
+}
+
+export interface IStorageItem extends IBaseItem {
+  quantity: number;
+  minAmount?: number;
   bestBefore?: TTimestamp;
 }
 
@@ -80,9 +82,9 @@ export interface IDatastore {
     id: '_all';
     title: 'All Items';
   };
-  storage: IItemList<ILocalItem> & {
+  storage: IItemList<IStorageItem> & {
     id: '_storage';
     title: 'Storage';
   };
-  shoppinglists: IItemList<ILocalItem>[];
+  shoppinglists: IItemList<IShoppingItem>[];
 }

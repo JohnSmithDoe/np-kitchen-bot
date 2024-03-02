@@ -2,7 +2,8 @@ import {
   IBaseItem,
   IItemCategory,
   IItemList,
-  ILocalItem,
+  IShoppingItem,
+  IStorageItem,
   TIonDragEvent,
 } from './@types/types';
 
@@ -18,15 +19,24 @@ export function uuidv4() {
     );
   });
 }
-
+//TODO clean up
 export function getCategoryItemsFromList(
   category: IItemCategory | undefined,
-  itemList: IItemList<ILocalItem>
+  itemList: IItemList<IStorageItem>
 ) {
   if (!category) return itemList.items;
   return category.items
     .map((base) => itemList.items.find((item) => base.id === item.id))
-    .filter((item) => !!item) as ILocalItem[];
+    .filter((item) => !!item) as IStorageItem[];
+}
+export function getCategoryItemsFromListShopping(
+  category: IItemCategory | undefined,
+  itemList: IItemList<IShoppingItem>
+) {
+  if (!category) return itemList.items;
+  return category.items
+    .map((base) => itemList.items.find((item) => base.id === item.id))
+    .filter((item) => !!item) as IShoppingItem[];
 }
 // grouping items by category
 // creates a new IItemCategory array from the given list

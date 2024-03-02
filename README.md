@@ -1,10 +1,12 @@
 # NP-Kitchen-Bot
 
 ## Todos:
+* ShoppingList -> local item -> storage item; shopping item from base item?
+  * Base list mit item template?! slot?!! ngContent...
 * Units: 3 x Kartoffeln, 3 x Spaghetti, 3 x Mehl ...
   * Besser? 500 g Kartoffeln ..., 3 Packungen Spaghetti, 2 kg Mehl ...
   * Alt UI: Bestandsregler (viel - wenig) mit min max ...
-* min amount and warning
+* min amount and warning -> background as well...
 * name, zusatz
 * multi search
 * clear category on search or search only category
@@ -12,21 +14,12 @@
 * created timestemp
 * abteilung im supermarkt
 
+
 ## Feedback
 
 ## ToTest
 * swipe ratio
 
-colors
-{"Raw umber":"916953","Rosy brown":"cf8e80","Melon":"fcb5b5","Mimi Pink":"fcddf2","Snow":"faf6f6"}
-
-<palette>
-  <color name="Raw umber" hex="916953" r="145" g="105" b="83" />
-  <color name="Rosy brown" hex="cf8e80" r="207" g="142" b="128" />
-  <color name="Melon" hex="fcb5b5" r="252" g="181" b="181" />
-  <color name="Mimi Pink" hex="fcddf2" r="252" g="221" b="242" />
-  <color name="Snow" hex="faf6f6" r="250" g="246" b="246" />
-</palette>
 
 
 ## Barcode scanning

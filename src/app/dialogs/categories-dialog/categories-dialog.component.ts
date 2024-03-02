@@ -81,9 +81,7 @@ export class CategoriesDialogComponent implements OnInit {
           (category) =>
             !this.allCategories.find((allCat) => allCat.name === category)
         )
-        .forEach((localCategory) =>
-          this.allCategories.push({ name: localCategory, items: [] })
-        );
+        .forEach((name) => this.allCategories.push({ name, items: [] }));
     }
     this.items = [...this.allCategories];
   }

@@ -23,15 +23,15 @@ import {
   IonText,
 } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
-import { ILocalItem, TColor } from '../../@types/types';
-import { createLocalItem } from '../../app.factory';
+import { IShoppingItem, TColor } from '../../@types/types';
+import { createShoppingItem } from '../../app.factory';
 import { CategoriesPipe } from '../../pipes/categories.pipe';
 
 @Component({
-  selector: 'app-local-item',
+  selector: 'app-shopping-item',
   standalone: true,
-  templateUrl: './local-item.component.html',
-  styleUrls: ['./local-item.component.scss'],
+  templateUrl: './shopping-item.component.html',
+  styleUrls: ['./shopping-item.component.scss'],
   imports: [
     IonItem,
     IonLabel,
@@ -51,17 +51,17 @@ import { CategoriesPipe } from '../../pipes/categories.pipe';
     IonText,
   ],
 })
-export class LocalItemComponent implements OnInit, OnChanges {
-  @Input() item!: ILocalItem;
+export class ShoppingItemComponent implements OnInit, OnChanges {
+  @Input() item!: IShoppingItem;
   @Input() label?: string;
   @Input() color?: TColor;
   @Input() category?: string;
   @Input() categoryAlt?: string;
   @Input() helper?: string;
 
-  @Output() selectItem = new EventEmitter<ILocalItem>();
-  @Output() increment = new EventEmitter<ILocalItem>();
-  @Output() decrement = new EventEmitter<ILocalItem>();
+  @Output() selectItem = new EventEmitter<IShoppingItem>();
+  @Output() increment = new EventEmitter<IShoppingItem>();
+  @Output() decrement = new EventEmitter<IShoppingItem>();
 
   constructor() {}
 
@@ -81,7 +81,7 @@ export class LocalItemComponent implements OnInit, OnChanges {
 
   #updateItem() {
     if (this.label) {
-      this.item = createLocalItem(this.label, this.category);
+      this.item = createShoppingItem(this.label, this.category);
     }
   }
 
@@ -95,17 +95,5 @@ export class LocalItemComponent implements OnInit, OnChanges {
   decrementQuantity(ev: MouseEvent) {
     this.decrement.emit(this.item);
     ev.stopPropagation();
-  }
-
-  getColor(item: ILocalItem): TColor {
-    let result: TColor = 'success';
-    if (item.minAmount) {
-      if (item.quantity === item.minAmount) {
-        result = 'warning';
-      } else if (item.quantity < item.minAmount) {
-        result = 'danger';
-      }
-    }
-    return result;
   }
 }

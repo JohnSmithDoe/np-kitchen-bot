@@ -8,7 +8,7 @@ import {
   Output,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { InputCustomEvent, SelectCustomEvent } from '@ionic/angular';
+import { DatetimeCustomEvent, InputCustomEvent } from '@ionic/angular';
 import {
   IonAvatar,
   IonButton,
@@ -23,7 +23,6 @@ import {
   IonLabel,
   IonList,
   IonModal,
-  IonNote,
   IonPopover,
   IonSelect,
   IonSelectOption,
@@ -32,22 +31,16 @@ import {
   IonToolbar,
 } from '@ionic/angular/standalone';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import * as dayjs from 'dayjs';
 import { addIcons } from 'ionicons';
 import { closeCircle } from 'ionicons/icons';
-import {
-  IGlobalItem,
-  IItemList,
-  IStorageItem,
-  TBestBeforeTimespan,
-  TItemUnit,
-  TPackagingUnit,
-} from '../../@types/types';
-import { createGlobalItem } from '../../app.factory';
+import { IItemList, IStorageItem } from '../../@types/types';
+import { createStorageItem } from '../../app.factory';
 import { DatabaseService } from '../../services/database.service';
 import { CategoriesDialogComponent } from '../categories-dialog/categories-dialog.component';
 
 @Component({
-  selector: 'app-edit-global-item-dialog',
+  selector: 'app-edit-storage-item-dialog',
   standalone: true,
   imports: [
     IonButton,
@@ -73,22 +66,21 @@ import { CategoriesDialogComponent } from '../categories-dialog/categories-dialo
     IonDatetime,
     DatePipe,
     IonPopover,
-    IonNote,
     IonText,
   ],
-  templateUrl: './edit-global-item-dialog.component.html',
-  styleUrl: './edit-global-item-dialog.component.scss',
+  templateUrl: './edit-storage-item-dialog.component.html',
+  styleUrl: './edit-storage-item-dialog.component.scss',
 })
-export class EditGlobalItemDialogComponent implements OnInit {
+export class EditStorageItemDialogComponent implements OnInit {
   readonly #database = inject(DatabaseService);
   readonly translate = inject(TranslateService);
 
-  @Input() item?: IGlobalItem | null;
-  @Input() mode: 'update' | 'create' = 'create';
-  @Input() value!: IGlobalItem;
+  @Input() item?: IStorageItem | null;
   @Input() localList!: IItemList<IStorageItem>;
+  @Input() mode: 'update' | 'create' = 'create';
+  @Input() value!: IStorageItem;
 
-  @Output() saveItem = new EventEmitter<IGlobalItem>();
+  @Output() saveItem = new EventEmitter<IStorageItem>();
   @Output() cancel = new EventEmitter();
 
   selectCategories = false;
@@ -96,31 +88,42 @@ export class EditGlobalItemDialogComponent implements OnInit {
   saveButtonText = '';
   currencyCode: 'EUR' | 'USD' = 'EUR';
 
-  date_event: any;
+  bestBeforeDate?: string;
 
-  datePick() {
-    console.log(this.date_event);
-    this.date_event = this.date_event.substring(0, 10);
+  datePick(ev: DatetimeCustomEvent) {
+    if (typeof ev.detail.value === 'string') {
+      this.bestBeforeDate = ev.detail.value?.substring(0, 10);
+      this.value.bestBefore = dayjs(this.bestBeforeDate).format();
+    } else {
+      this.bestBeforeDate = undefined;
+      this.value.bestBefore = undefined;
+    }
   }
+
   constructor() {
     addIcons({ closeCircle });
   }
 
   ngOnInit(): void {
     this.currencyCode = this.translate.currentLang !== 'en' ? 'EUR' : 'USD';
+
     this.saveButtonText =
       this.mode === 'create'
-        ? this.translate.instant('edit.global.item.dialog.button.create')
-        : this.translate.instant('edit.global.item.dialog.button.update');
+        ? this.translate.instant('edit.item.dialog.button.create')
+        : this.translate.instant('edit.item.dialog.button.update');
 
     this.dialogTitle =
       this.mode === 'create'
-        ? this.translate.instant('edit.global.item.dialog.title.create')
-        : this.translate.instant('edit.global.item.dialog.title.update');
+        ? this.translate.instant('edit.item.dialog.title.create')
+        : this.translate.instant('edit.item.dialog.title.update');
 
     this.value = this.item
       ? this.#database.cloneItem(this.item)
-      : createGlobalItem('');
+      : createStorageItem('');
+
+    if (this.value.bestBefore) {
+      this.bestBeforeDate = dayjs(this.value.bestBefore).format();
+    }
   }
 
   setCategories(categories?: string[]) {
@@ -134,19 +137,6 @@ export class EditGlobalItemDialogComponent implements OnInit {
     this.value.category = this.value.category
       ? [...this.value.category]
       : undefined;
-  }
-
-  setUnit(ev: SelectCustomEvent<TItemUnit>) {
-    this.value.unit = ev.detail.value;
-    if (this.value.unit === 'ml') {
-      this.value.packaging = 'bottle';
-    } else if (this.value.packaging === 'bottle') {
-      this.value.packaging = 'loose';
-    }
-  }
-
-  setPackaging(ev: SelectCustomEvent<TPackagingUnit>) {
-    this.value.packaging = ev.detail.value;
   }
 
   updatePrice(ev: InputCustomEvent<FocusEvent>) {
@@ -165,11 +155,5 @@ export class EditGlobalItemDialogComponent implements OnInit {
     // swap german , with . e.g. 1234,34 -> 1234.34
     const numberInput = cleanInput.replace(/,+/g, '.');
     this.value.price = Number.parseFloat(numberInput);
-  }
-
-  setBestBeforeTimespan(ev: SelectCustomEvent<TBestBeforeTimespan>) {
-    this.value.bestBeforeTimespan = ev.detail.value;
-    this.value.bestBeforeTimevalue =
-      this.value.bestBeforeTimespan === 'forever' ? undefined : 1;
   }
 }

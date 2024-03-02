@@ -16,7 +16,7 @@
     <ion-button (click)="setDisplayMode('categories')">Categories</ion-button>
   </ion-buttons>
 </ion-toolbar>
-<div class="local-list-body">
+<div class="shopping-list-body">
   @if (mode === 'alphabetical') {
     <ng-container *ngTemplateOutlet="listMode"></ng-container>
   } @else {
@@ -37,26 +37,26 @@
     @if ((searchTerm?.length ?? 0) > 0) {
       @if (!includedInOthers()) {
         <!--        <ion-list-header>-->
-        <!--          {{ 'local.list.notfound' | translate: { value: searchTerm } }}-->
+        <!--          {{ 'shopping.list.notfound' | translate: { value: searchTerm } }}-->
         <!--        </ion-list-header>-->
         @if (canAddTemporary) {
-          <app-create-item
+          <app-base-item
             [color]="headerColor"
             helper="{{
-              'local.list.temporary.add' | translate: { value: searchTerm }
+              'shopping.list.temporary.add' | translate: { value: searchTerm }
             }}"
             [label]="searchTerm"
             (selectItem)="addTemporary($event)"
-          ></app-create-item>
+          ></app-base-item>
         }
-        <app-create-item
+        <app-base-item
           color="global"
           helper="{{
-            'local.list.permanent.add' | translate: { value: searchTerm }
+            'shopping.list.permanent.add' | translate: { value: searchTerm }
           }}"
           [label]="searchTerm"
           (selectItem)="createItem.emit($event)"
-        ></app-create-item>
+        ></app-base-item>
       }
     }
     @if (((!!currentCategory || header) && !searchTerm) || items.length) {
@@ -85,15 +85,15 @@
             </ion-item-options>
           }
 
-          <app-local-item
+          <app-shopping-item
             [item]="item"
             [color]="itemColor"
-            [helper]="itemHelper ?? ('local.list.item.helper' | translate)"
+            [helper]="itemHelper ?? ('shopping.list.item.helper' | translate)"
             categoryAlt="{{ 'item.no-category' | translate }}"
             (selectItem)="selectItem.emit(item)"
             (increment)="changeQuantity($event, +1)"
             (decrement)="changeQuantity($event, -1)"
-          ></app-local-item>
+          ></app-shopping-item>
 
           @if (canDelete) {
             <ion-item-options side="end">
@@ -112,12 +112,14 @@
 
     @if (alternatives.length) {
       <ion-list-header color="global" class="tinted-header">
-        <ion-label>{{ 'local.list.alternates.header' | translate }}</ion-label>
+        <ion-label>{{
+          'shopping.list.alternates.header' | translate
+        }}</ion-label>
       </ion-list-header>
       @for (alternate of alternatives; track alternate.id) {
         <app-global-item
           [item]="alternate"
-          helper="{{ 'local.list.alternates.helper' | translate }}"
+          helper="{{ 'shopping.list.alternates.helper' | translate }}"
           (selectItem)="altItem.emit(alternate)"
         ></app-global-item>
       }
@@ -126,9 +128,9 @@
     @if (!searchTerm && !items.length) {
       <ion-item button (click)="emptyItem.emit()">
         <ion-label class="ion-text-wrap">
-          <h2>{{ 'local.list.empty' | translate }}</h2>
+          <h2>{{ 'shopping.list.empty' | translate }}</h2>
           <ion-note slot="end">{{
-            'local.list.empty.helper' | translate
+            'shopping.list.empty.helper' | translate
           }}</ion-note>
         </ion-label>
       </ion-item>

@@ -6,7 +6,8 @@ import {
   IDatastore,
   IGlobalItem,
   IItemList,
-  ILocalItem,
+  IShoppingItem,
+  IStorageItem,
 } from '../@types/types';
 
 const INITIAL_DATA: IGlobalItem[] = [
@@ -174,8 +175,27 @@ export class DatabaseService {
     }
     return list;
   }
-
-  async addItem(item: ILocalItem | undefined, list: IItemList<ILocalItem>) {
+  //TODO clean up
+  async addItem(item: IStorageItem | undefined, list: IItemList<IStorageItem>) {
+    let result = item;
+    if (item) {
+      // check duplicates
+      result = list.items.find((aItem) => aItem.id === item.id);
+      if (result) {
+        result.quantity++;
+      } else {
+        item.quantity = 1;
+        result = this.cloneItem(item);
+        list.items.push(result);
+      }
+      await this.save();
+    }
+    return result;
+  }
+  async addItemShopping(
+    item: IShoppingItem | undefined,
+    list: IItemList<IShoppingItem>
+  ) {
     let result = item;
     if (item) {
       // check duplicates
@@ -226,16 +246,16 @@ export class DatabaseService {
     return value ? Object.assign(value, item) : undefined;
   }
 
-  cloneItem<T extends ILocalItem | IGlobalItem>(item: T): T {
+  cloneItem<T extends IStorageItem | IGlobalItem>(item: T): T {
     return {
       ...item,
       category: item.category ? [...item.category] : undefined,
     };
   }
 
-  async addOrUpdateLocalItem(
-    item: ILocalItem | undefined,
-    list: IItemList<ILocalItem>
+  async addOrUpdateStorageItem(
+    item: IStorageItem | undefined,
+    list: IItemList<IStorageItem>
   ) {
     if (!item) return;
     const updated = this.#updateItem(item, list);

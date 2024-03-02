@@ -38,11 +38,11 @@ import {
   IGlobalItem,
   IItemCategory,
   IItemList,
-  ILocalItem,
+  IStorageItem,
   TColor,
   TIonDragEvent,
 } from '../../@types/types';
-import { createLocalItem } from '../../app.factory';
+import { createStorageItem } from '../../app.factory';
 import {
   checkItemOptionsOnDrag,
   getCategoriesFromList,
@@ -50,14 +50,14 @@ import {
 } from '../../app.utils';
 import { CategoriesPipe } from '../../pipes/categories.pipe';
 import { DatabaseService } from '../../services/database.service';
-import { CreateItemComponent } from '../create-item/create-item.component';
+import { BaseItemComponent } from '../base-item/base-item.component';
 import { GlobalItemComponent } from '../global-item/global-item.component';
-import { LocalItemComponent } from '../local-item/local-item.component';
+import { StorageItemComponent } from '../storage-item/storage-item.component';
 
 @Component({
-  selector: 'app-local-list',
-  templateUrl: 'local-list.component.html',
-  styleUrls: ['local-list.component.scss'],
+  selector: 'app-storage-list',
+  templateUrl: 'storage-list.component.html',
+  styleUrls: ['storage-list.component.scss'],
   standalone: true,
   imports: [
     IonSearchbar,
@@ -79,17 +79,17 @@ import { LocalItemComponent } from '../local-item/local-item.component';
     IonText,
     FormsModule,
     TranslateModule,
-    LocalItemComponent,
+    StorageItemComponent,
     CategoriesPipe,
     IonNote,
     GlobalItemComponent,
-    CreateItemComponent,
+    BaseItemComponent,
   ],
 })
-export class LocalListComponent implements OnInit {
+export class StorageListComponent implements OnInit {
   readonly #database = inject(DatabaseService);
 
-  @Input() itemList!: IItemList<ILocalItem>;
+  @Input() itemList!: IItemList<IStorageItem>;
   @Input() search: 'full' | 'name-only' = 'full';
 
   @Input() header?: string;
@@ -101,16 +101,16 @@ export class LocalListComponent implements OnInit {
   @Input({ transform: booleanAttribute }) canDelete = false;
   @Input({ transform: booleanAttribute }) canMove = false;
 
-  @Output() addItem = new EventEmitter<ILocalItem>();
+  @Output() addItem = new EventEmitter<IStorageItem>();
   @Output() createItem = new EventEmitter<IBaseItem>();
-  @Output() selectItem = new EventEmitter<ILocalItem>();
+  @Output() selectItem = new EventEmitter<IStorageItem>();
   @Output() altItem = new EventEmitter<IGlobalItem>();
-  @Output() deleteItem = new EventEmitter<ILocalItem>();
+  @Output() deleteItem = new EventEmitter<IStorageItem>();
   @Output() emptyItem = new EventEmitter<void>();
-  @Output() moveItem = new EventEmitter<ILocalItem>();
+  @Output() moveItem = new EventEmitter<IStorageItem>();
 
   categories: IItemCategory[] = [];
-  items: ILocalItem[] = [];
+  items: IStorageItem[] = [];
   alternatives: IGlobalItem[] = [];
   mode: 'alphabetical' | 'categories' = 'alphabetical';
   sortBy?: 'alphabetical' | 'bestbefore';
@@ -207,7 +207,7 @@ export class LocalListComponent implements OnInit {
 
   async handleItemOptionsOnDrag(
     ev: TIonDragEvent,
-    item: ILocalItem,
+    item: IStorageItem,
     list: IonList
   ) {
     switch (checkItemOptionsOnDrag(ev)) {
@@ -219,11 +219,11 @@ export class LocalListComponent implements OnInit {
         break;
     }
   }
-  async deleteItemFromList(list: IonList, item: ILocalItem) {
+  async deleteItemFromList(list: IonList, item: IStorageItem) {
     await list.closeSlidingItems();
     this.deleteItem.emit(item);
   }
-  async moveItemFromList(list: IonList, item: ILocalItem) {
+  async moveItemFromList(list: IonList, item: IStorageItem) {
     await list.closeSlidingItems();
     this.moveItem.emit(item);
   }
@@ -257,7 +257,7 @@ export class LocalListComponent implements OnInit {
     this.setDisplayMode('alphabetical');
   }
 
-  async changeQuantity(item: ILocalItem, diff: number) {
+  async changeQuantity(item: IStorageItem, diff: number) {
     item.quantity = Math.max(0, item.quantity + diff);
     await this.#database.save();
   }
@@ -288,6 +288,6 @@ export class LocalListComponent implements OnInit {
 
   addTemporary(base: IBaseItem) {
     if (!this.searchTerm) return;
-    this.addItem.emit(createLocalItem(base.name, base.category));
+    this.addItem.emit(createStorageItem(base.name, base.category));
   }
 }

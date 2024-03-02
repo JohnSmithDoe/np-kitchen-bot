@@ -13,7 +13,7 @@
 </ion-header>
 
 <ion-content>
-  <app-local-list
+  <app-storage-list
     [itemList]="inventory"
     type="extended"
     search="name-only"
@@ -28,7 +28,7 @@
     (deleteItem)="removeItemFromInventory($event)"
     (altItem)="addGlobalItemToInventory($event)"
     (emptyItem)="showEditDialog()"
-  ></app-local-list>
+  ></app-storage-list>
 </ion-content>
 
 <ion-modal [isOpen]="isAdding" (didDismiss)="isAdding = false">
@@ -43,13 +43,13 @@
 
 <ion-modal [isOpen]="isEditing" (didDismiss)="isEditing = false">
   <ng-template>
-    <app-edit-item-dialog
+    <app-edit-storage-item-dialog
       [mode]="editMode"
       (cancel)="isEditing = false"
       (saveItem)="updateInventoryItem($event)"
       [item]="editItem"
       [localList]="inventory"
-    ></app-edit-item-dialog>
+    ></app-edit-storage-item-dialog>
   </ng-template>
 </ion-modal>
 

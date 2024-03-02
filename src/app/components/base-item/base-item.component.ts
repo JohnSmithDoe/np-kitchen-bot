@@ -10,13 +10,13 @@ import { createBaseItem } from '../../app.factory';
 import { CategoriesPipe } from '../../pipes/categories.pipe';
 
 @Component({
-  selector: 'app-create-item',
+  selector: 'app-base-item',
   standalone: true,
-  templateUrl: './create-item.component.html',
-  styleUrls: ['./create-item.component.scss'],
+  templateUrl: './base-item.component.html',
+  styleUrls: ['./base-item.component.scss'],
   imports: [CategoriesPipe, IonItem, IonLabel, IonListHeader, IonNote],
 })
-export class CreateItemComponent implements OnInit {
+export class BaseItemComponent implements OnInit {
   @Input() header?: string;
   @Input() headerColor?: TColor;
 

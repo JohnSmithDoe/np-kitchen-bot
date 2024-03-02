@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { EditLocalItemDialogComponent } from './edit-local-item-dialog.component';
+import { EditStorageItemDialogComponent } from './edit-storage-item-dialog.component';
 
 describe('NewItemDialogComponent', () => {
-  let component: EditLocalItemDialogComponent;
-  let fixture: ComponentFixture<EditLocalItemDialogComponent>;
+  let component: EditStorageItemDialogComponent;
+  let fixture: ComponentFixture<EditStorageItemDialogComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [EditLocalItemDialogComponent],
+      imports: [EditStorageItemDialogComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(EditLocalItemDialogComponent);
+    fixture = TestBed.createComponent(EditStorageItemDialogComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

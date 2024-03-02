@@ -8,7 +8,7 @@ import {
   Output,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { DatetimeCustomEvent, InputCustomEvent } from '@ionic/angular';
+import { InputCustomEvent } from '@ionic/angular';
 import {
   IonAvatar,
   IonButton,
@@ -31,16 +31,15 @@ import {
   IonToolbar,
 } from '@ionic/angular/standalone';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import * as dayjs from 'dayjs';
 import { addIcons } from 'ionicons';
 import { closeCircle } from 'ionicons/icons';
-import { IItemList, ILocalItem } from '../../@types/types';
-import { createLocalItem } from '../../app.factory';
+import { IItemList, IShoppingItem } from '../../@types/types';
+import { createShoppingItem } from '../../app.factory';
 import { DatabaseService } from '../../services/database.service';
 import { CategoriesDialogComponent } from '../categories-dialog/categories-dialog.component';
 
 @Component({
-  selector: 'app-edit-item-dialog',
+  selector: 'app-edit-shopping-item-dialog',
   standalone: true,
   imports: [
     IonButton,
@@ -68,37 +67,25 @@ import { CategoriesDialogComponent } from '../categories-dialog/categories-dialo
     IonPopover,
     IonText,
   ],
-  templateUrl: './edit-local-item-dialog.component.html',
-  styleUrl: './edit-local-item-dialog.component.scss',
+  templateUrl: './edit-shopping-item-dialog.component.html',
+  styleUrl: './edit-shopping-item-dialog.component.scss',
 })
-export class EditLocalItemDialogComponent implements OnInit {
+export class EditShoppingItemDialogComponent implements OnInit {
   readonly #database = inject(DatabaseService);
   readonly translate = inject(TranslateService);
 
-  @Input() item?: ILocalItem | null;
-  @Input() localList!: IItemList<ILocalItem>;
+  @Input() item?: IShoppingItem | null;
+  @Input() localList!: IItemList<IShoppingItem>;
   @Input() mode: 'update' | 'create' = 'create';
-  @Input() value!: ILocalItem;
+  @Input() value!: IShoppingItem;
 
-  @Output() saveItem = new EventEmitter<ILocalItem>();
+  @Output() saveItem = new EventEmitter<IShoppingItem>();
   @Output() cancel = new EventEmitter();
 
   selectCategories = false;
   dialogTitle = '';
   saveButtonText = '';
   currencyCode: 'EUR' | 'USD' = 'EUR';
-
-  bestBeforeDate?: string;
-
-  datePick(ev: DatetimeCustomEvent) {
-    if (typeof ev.detail.value === 'string') {
-      this.bestBeforeDate = ev.detail.value?.substring(0, 10);
-      this.value.bestBefore = dayjs(this.bestBeforeDate).format();
-    } else {
-      this.bestBeforeDate = undefined;
-      this.value.bestBefore = undefined;
-    }
-  }
 
   constructor() {
     addIcons({ closeCircle });
@@ -119,11 +106,7 @@ export class EditLocalItemDialogComponent implements OnInit {
 
     this.value = this.item
       ? this.#database.cloneItem(this.item)
-      : createLocalItem('');
-
-    if (this.value.bestBefore) {
-      this.bestBeforeDate = dayjs(this.value.bestBefore).format();
-    }
+      : createShoppingItem('');
   }
 
   setCategories(categories?: string[]) {

@@ -19,7 +19,7 @@ import {
 import { TranslateModule } from '@ngx-translate/core';
 import { IGlobalItem, IItemList } from '../../@types/types';
 import { GlobalListComponent } from '../../components/global-list/global-list.component';
-import { LocalListComponent } from '../../components/local-list/local-list.component';
+import { StorageListComponent } from '../../components/storage-list/storage-list.component';
 import { DatabaseService } from '../../services/database.service';
 
 @Component({
@@ -28,7 +28,7 @@ import { DatabaseService } from '../../services/database.service';
   imports: [
     IonButton,
     NgTemplateOutlet,
-    LocalListComponent,
+    StorageListComponent,
     IonHeader,
     IonToolbar,
     IonTitle,
