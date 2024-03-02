@@ -34,7 +34,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import * as dayjs from 'dayjs';
 import { addIcons } from 'ionicons';
 import { closeCircle } from 'ionicons/icons';
-import { ILocalItem } from '../../@types/types';
+import { IItemList, ILocalItem } from '../../@types/types';
 import { createLocalItem } from '../../app.factory';
 import { DatabaseService } from '../../services/database.service';
 import { CategoriesDialogComponent } from '../categories-dialog/categories-dialog.component';
@@ -76,6 +76,7 @@ export class EditLocalItemDialogComponent implements OnInit {
   readonly translate = inject(TranslateService);
 
   @Input() item?: ILocalItem | null;
+  @Input() localList!: IItemList<ILocalItem>;
   @Input() mode: 'update' | 'create' = 'create';
   @Input() value!: ILocalItem;
 

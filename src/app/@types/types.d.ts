@@ -12,9 +12,9 @@ export type TColor =
 export type TTimestamp = string;
 // Todo
 export interface IItemLocation {}
-export interface IItemCategory<T extends IBaseItem = IBaseItem> {
+export interface IItemCategory {
   name: string;
-  items: T[];
+  items: IBaseItem[];
 }
 
 // Orangensaft
@@ -66,7 +66,7 @@ export interface ILocalItem extends IBaseItem {
   bestBefore?: TTimestamp;
 }
 
-export interface IItemList<T extends ILocalItem | IGlobalItem> {
+export interface IItemList<T extends IBaseItem = IBaseItem> {
   id: string;
   title: string;
   items: T[];

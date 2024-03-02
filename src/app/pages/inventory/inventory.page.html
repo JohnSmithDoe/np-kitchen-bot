@@ -46,6 +46,7 @@
       (cancel)="isEditing = false"
       (saveItem)="updateInventoryItem($event)"
       [item]="editItem"
+      [localList]="inventory"
     ></app-edit-item-dialog>
   </ng-template>
 </ion-modal>
@@ -56,6 +57,7 @@
       (cancel)="isCreating = false"
       (saveItem)="createItemAndAddToInventory($event)"
       [item]="createNewItem"
+      [localList]="inventory"
     ></app-edit-global-item-dialog>
   </ng-template>
 </ion-modal>

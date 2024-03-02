@@ -101,11 +101,11 @@ export class GlobalListComponent implements OnInit {
   @Output() emptyItem = new EventEmitter<void>();
   @Output() moveItem = new EventEmitter<IGlobalItem>();
 
-  categories: IItemCategory<IGlobalItem>[] = [];
+  categories: IItemCategory[] = [];
   items: IGlobalItem[] = [];
   mode: 'alphabetical' | 'categories' = 'alphabetical';
   searchTerm?: string | null;
-  currentCategory?: IItemCategory<IGlobalItem>;
+  currentCategory?: IItemCategory;
 
   reorderDisabled = true;
 
@@ -131,9 +131,11 @@ export class GlobalListComponent implements OnInit {
     }
   }
 
-  chooseCategory(category: IItemCategory<IGlobalItem>) {
+  chooseCategory(category: IItemCategory) {
     this.currentCategory = category;
-    this.items = category.items;
+    this.items = this.itemList.items.filter((item) =>
+      category.items.includes(item)
+    );
     this.mode = 'alphabetical';
   }
 

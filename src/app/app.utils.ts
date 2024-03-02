@@ -20,10 +20,16 @@ export function uuidv4() {
 
 // grouping items by category
 // creates a new IItemCategory array from the given list
-export function getCategoriesFromList<T extends IBaseItem = IBaseItem>(
-  itemList: IItemList<T>
-) {
-  return itemList.items.reduce((categories, item) => {
+export function getCategoriesFromList(...itemList: (IItemList | undefined)[]) {
+  const allItems = itemList.reduce((all, cur) => {
+    cur?.items.forEach((item) => {
+      if (!all.includes(item)) {
+        all.push(item);
+      }
+    });
+    return all;
+  }, [] as IBaseItem[]);
+  return allItems.reduce((categories, item) => {
     item.category?.forEach((category) => {
       // hmm: string category on item
       const found = categories.find((cat) => cat.name === category);
@@ -34,11 +40,11 @@ export function getCategoriesFromList<T extends IBaseItem = IBaseItem>(
       }
     });
     return categories;
-  }, [] as IItemCategory<T>[]);
+  }, [] as IItemCategory[]);
 }
 
 // handle the dragging from the list items
-export function checkItemOptionsOnDrag(ev: TIonDragEvent, triggerAmount = 180) {
+export function checkItemOptionsOnDrag(ev: TIonDragEvent, triggerAmount = 160) {
   return ev.detail.amount > triggerAmount
     ? 'end'
     : ev.detail.amount < -triggerAmount

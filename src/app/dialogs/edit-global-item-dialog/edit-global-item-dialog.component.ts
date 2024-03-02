@@ -36,6 +36,8 @@ import { addIcons } from 'ionicons';
 import { closeCircle } from 'ionicons/icons';
 import {
   IGlobalItem,
+  IItemList,
+  ILocalItem,
   TBestBeforeTimespan,
   TItemUnit,
   TPackagingUnit,
@@ -84,6 +86,7 @@ export class EditGlobalItemDialogComponent implements OnInit {
   @Input() item?: IGlobalItem | null;
   @Input() mode: 'update' | 'create' = 'create';
   @Input() value!: IGlobalItem;
+  @Input() localList!: IItemList<ILocalItem>;
 
   @Output() saveItem = new EventEmitter<IGlobalItem>();
   @Output() cancel = new EventEmitter();

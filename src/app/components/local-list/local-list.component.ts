@@ -105,7 +105,7 @@ export class LocalListComponent implements OnInit {
   @Output() emptyItem = new EventEmitter<void>();
   @Output() moveItem = new EventEmitter<ILocalItem>();
 
-  categories: { items: ILocalItem[]; name: string }[] = [];
+  categories: IItemCategory[] = [];
   items: ILocalItem[] = [];
   alternatives: IGlobalItem[] = [];
   mode: 'alphabetical' | 'categories' = 'alphabetical';
@@ -125,6 +125,7 @@ export class LocalListComponent implements OnInit {
     this.updateCategories();
     this.searchTerm = undefined;
   }
+
   // needs to be called on changes inside the itemList
   updateCategories() {
     this.categories = getCategoriesFromList(this.itemList);
@@ -138,7 +139,9 @@ export class LocalListComponent implements OnInit {
 
   chooseCategory(category: IItemCategory) {
     this.currentCategory = category;
-    this.items = category.items;
+    this.items = this.itemList.items.filter((item) =>
+      category.items.includes(item)
+    );
     this.mode = 'alphabetical';
   }
 
@@ -150,31 +153,35 @@ export class LocalListComponent implements OnInit {
     this.searchTerm = searchTerm;
     if (this.searchTerm) {
       const searchFor = this.searchTerm.toLowerCase();
-      this.items = this.itemList.items
-        .filter((item) => item.name.toLowerCase().indexOf(searchFor) >= 0)
-        .concat(
-          ...this.itemList.items.filter((item) => {
-            return (
-              this.search === 'full' &&
-              (item.category?.findIndex(
-                (cat) => cat.toLowerCase().indexOf(searchFor) >= 0
-              ) ?? -1) >= 0
-            );
-          })
-        );
-      const others = this.#database.all.items.filter(
-        (dbItem) => !this.items.find((aItem) => aItem.id === dbItem.id)
+      const byName = this.itemList.items.filter(
+        (item) => item.name.toLowerCase().indexOf(searchFor) >= 0
       );
-      this.alternatives = others
-        .filter((item) => item.name.toLowerCase().indexOf(searchFor) >= 0)
-        .concat(
-          ...others.filter(
-            (item) =>
-              (item.category?.findIndex(
-                (cat) => cat.toLowerCase().indexOf(searchFor) >= 0
-              ) ?? -1) >= 0
-          )
-        );
+      const byCat =
+        this.search !== 'full'
+          ? []
+          : this.itemList.items.filter(
+              (item) =>
+                !byName.includes(item) &&
+                (item.category?.findIndex(
+                  (cat) => cat.toLowerCase().indexOf(searchFor) >= 0
+                ) ?? -1) >= 0
+            );
+      this.items = [...byName, ...byCat];
+      let others = this.#database.all.items.filter(
+        (dbItem) => !this.items.find((aItem) => aItem.name === dbItem.name)
+      );
+      this.alternatives = others.filter(
+        (item) => item.name.toLowerCase().indexOf(searchFor) >= 0
+      );
+      this.alternatives = this.alternatives.concat(
+        ...others.filter(
+          (item) =>
+            !this.alternatives.includes(item) &&
+            (item.category?.findIndex(
+              (cat) => cat.toLowerCase().indexOf(searchFor) >= 0
+            ) ?? -1) >= 0
+        )
+      );
     } else {
       this.items = this.itemList.items;
       this.alternatives = [];

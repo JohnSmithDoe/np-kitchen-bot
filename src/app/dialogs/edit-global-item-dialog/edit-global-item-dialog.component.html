@@ -126,6 +126,7 @@
   <ng-template>
     <app-categories-dialog
       [item]="value"
+      [itemList]="localList"
       (confirm)="setCategories($event)"
       (cancel)="selectCategories = false"
     ></app-categories-dialog>

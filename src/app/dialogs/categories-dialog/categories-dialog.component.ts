@@ -23,7 +23,7 @@ import {
   IonToolbar,
 } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
-import { IBaseItem, IItemCategory } from '../../@types/types';
+import { IBaseItem, IItemCategory, IItemList } from '../../@types/types';
 import { getCategoriesFromList } from '../../app.utils';
 import { DatabaseService } from '../../services/database.service';
 
@@ -54,6 +54,7 @@ export class CategoriesDialogComponent implements OnInit {
   readonly #database = inject(DatabaseService);
 
   @Input() item?: IBaseItem;
+  @Input() itemList?: IItemList<IBaseItem>;
 
   @Output() confirm = new EventEmitter<string[]>();
   @Output() cancel = new EventEmitter();
@@ -69,7 +70,10 @@ export class CategoriesDialogComponent implements OnInit {
 
   ngOnInit() {
     this.searchFor = undefined;
-    this.allCategories = getCategoriesFromList(this.#database.all);
+    this.allCategories = getCategoriesFromList(
+      this.#database.all,
+      this.itemList
+    );
     if (this.item) {
       this.selection = this.item.category ?? [];
       this.selection
