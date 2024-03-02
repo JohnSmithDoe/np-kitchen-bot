@@ -26,6 +26,7 @@ import {
   IonTitle,
   IonToolbar,
 } from '@ionic/angular/standalone';
+import { DatabaseService } from './services/database.service';
 
 @Component({
   selector: 'app-root',
@@ -53,6 +54,7 @@ import {
 })
 export class AppComponent implements OnInit {
   readonly #alertController = inject(AlertController);
+  readonly #database = inject(DatabaseService);
 
   isSupported = false;
   barcodes: Barcode[] = [];
@@ -114,9 +116,13 @@ export class AppComponent implements OnInit {
   }
 
   async shareShoppingList() {
+    const text = this.#database
+      .shoppinglist()
+      .items.map((item) => item.quantity + ' x ' + item.name)
+      .join('\n');
     await Share.share({
-      title: 'See cool stuff',
-      text: 'Really awesome thing you need to see right meow',
+      title: 'Einkaufsliste',
+      text,
       dialogTitle: 'Share with buddies',
     });
   }

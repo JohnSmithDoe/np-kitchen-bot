@@ -62,9 +62,11 @@ export class InventoryPage implements OnInit {
 
   isAdding = false;
   isCreating = false;
-  isEditing = false;
   createNewItem: IGlobalItem | null | undefined;
+
+  isEditing = false;
   editItem: ILocalItem | null | undefined;
+  editMode: 'update' | 'create' = 'create';
 
   constructor() {
     addIcons({ add, remove });
@@ -81,11 +83,12 @@ export class InventoryPage implements OnInit {
     this.createNewItem = createGlobalItemFrom(newItem);
   }
 
-  showEditDialog(item: ILocalItem) {
+  showEditDialog(item?: ILocalItem) {
     this.isAdding = false;
     this.isCreating = false;
     this.isEditing = true;
     this.editItem = item;
+    this.editMode = item ? 'update' : 'create';
   }
 
   showAddDialog() {
@@ -158,10 +161,12 @@ export class InventoryPage implements OnInit {
     );
   }
 
-  async moveToShoppingList(item?: ILocalItem) {
-    this.isAdding = false;
+  async copyToShoppingList(item?: ILocalItem) {
+    if (!item) return;
+    item.quantity--;
+    item = this.#database.cloneItem(item);
+    item.quantity = 1;
     item = await this.#database.addItem(item, this.#database.shoppinglist());
-    console.log(item);
     await this.#uiService.showToast(
       this.translate.instant('inventory.page.toast.move', {
         name: item?.name,

@@ -1,8 +1,8 @@
 <ion-item button (click)="selectItem.emit(item)">
-  <ion-reorder slot="start"></ion-reorder>
   <div class="status-bar">
     <ion-text [color]="getColor(item)"></ion-text>
   </div>
+  <ion-reorder slot="start"></ion-reorder>
   <!--  <ion-avatar slot="start">-->
   <!--    <img alt="Image of the category" src="assets/avatar.svg" />-->
   <!--  </ion-avatar>-->

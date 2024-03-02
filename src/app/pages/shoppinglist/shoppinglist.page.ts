@@ -21,6 +21,7 @@ import { createGlobalItemFrom } from '../../app.factory';
 import { LocalListComponent } from '../../components/local-list/local-list.component';
 import { AddItemDialog } from '../../dialogs/add-item-dialog/add-item.dialog';
 import { EditGlobalItemDialogComponent } from '../../dialogs/edit-global-item-dialog/edit-global-item-dialog.component';
+import { EditLocalItemDialogComponent } from '../../dialogs/edit-local-item-dialog/edit-local-item-dialog.component';
 import { DatabaseService } from '../../services/database.service';
 import { UiService } from '../../services/ui.service';
 
@@ -46,6 +47,7 @@ import { UiService } from '../../services/ui.service';
     TranslateModule,
     IonModal,
     EditGlobalItemDialogComponent,
+    EditLocalItemDialogComponent,
   ],
 })
 export class ShoppinglistPage implements OnInit {
@@ -59,6 +61,7 @@ export class ShoppinglistPage implements OnInit {
   shoppingList!: IItemList<ILocalItem>;
 
   isAdding = false;
+  isEditing = false;
   isCreating = false;
   createNewItem: IGlobalItem | null | undefined;
 
@@ -81,6 +84,10 @@ export class ShoppinglistPage implements OnInit {
         total: item?.quantity,
       })
     );
+  }
+
+  showEditDialog() {
+    this.isEditing = true;
   }
 
   showCreateDialog(newItem: ILocalItem) {
@@ -114,9 +121,9 @@ export class ShoppinglistPage implements OnInit {
       })
     );
   }
-
   // what should happen if we buy an item?
   // some kind of state for now
+
   async buyItem(item: ILocalItem) {
     item.state = 'bought';
     await this.#database.save();

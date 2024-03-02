@@ -12,8 +12,7 @@
 * created timestemp
 * abteilung im supermarkt
 
-## BugTesting
-* Kategorien von der localen liste sind nicht vorhanden im kategorien dialog
+## Feedback
 
 ## ToTest
 * swipe ratio

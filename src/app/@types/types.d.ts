@@ -6,6 +6,8 @@ export type TColor =
   | Color
   | 'global'
   | 'local'
+  | 'storage'
+  | 'shopping'
   | 'low-stock-warn'
   | 'low-stock';
 

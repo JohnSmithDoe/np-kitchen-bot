@@ -1,11 +1,11 @@
 <ion-header>
-  <ion-toolbar>
+  <ion-toolbar color="storage">
     <ion-buttons slot="start">
       <ion-menu-button> </ion-menu-button>
     </ion-buttons>
     <ion-title>{{'inventory.page.title' | translate}}</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="showAddDialog()">
+      <ion-button (click)="showEditDialog()">
         <ion-icon name="add" slot="icon-only"></ion-icon>
       </ion-button>
     </ion-buttons>
@@ -17,15 +17,17 @@
     [itemList]="inventory"
     type="extended"
     search="name-only"
+    canMove="true"
     canDelete="true"
+    headerColor="storage"
     header="{{'inventory.page.header' | translate}}"
     (addItem)="addItemToInventory($event)"
-    (moveItem)="moveToShoppingList($event)"
+    (moveItem)="copyToShoppingList($event)"
     (selectItem)="showEditDialog($event)"
     (createItem)="showCreateDialog($event)"
     (deleteItem)="removeItemFromInventory($event)"
     (altItem)="addGlobalItemToInventory($event)"
-    (emptyItem)="showAddDialog()"
+    (emptyItem)="showEditDialog()"
   ></app-local-list>
 </ion-content>
 
@@ -42,7 +44,7 @@
 <ion-modal [isOpen]="isEditing" (didDismiss)="isEditing = false">
   <ng-template>
     <app-edit-item-dialog
-      mode="update"
+      [mode]="editMode"
       (cancel)="isEditing = false"
       (saveItem)="updateInventoryItem($event)"
       [item]="editItem"

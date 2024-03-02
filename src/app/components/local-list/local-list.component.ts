@@ -188,13 +188,14 @@ export class LocalListComponent implements OnInit {
     }
   }
 
-  setDisplayMode(mode: 'alphabetical' | 'categories') {
+  setDisplayMode(
+    mode: 'alphabetical' | 'categories' | 'bestbefore',
+    sortBy: 'alphabetical' | 'bestbefore' = 'alphabetical'
+  ) {
     this.items = this.itemList.items;
-    this.mode = mode;
+    this.mode = mode === 'bestbefore' ? 'alphabetical' : mode;
     this.currentCategory = undefined;
-    if (mode === 'alphabetical') {
-      this.sortList(mode);
-    }
+    this.#sortList(sortBy);
   }
 
   async handleItemOptionsOnDrag(
@@ -254,7 +255,7 @@ export class LocalListComponent implements OnInit {
     await this.#database.save();
   }
 
-  sortList(mode: 'alphabetical' | 'bestbefore') {
+  #sortList(mode: 'alphabetical' | 'bestbefore') {
     if (this.sortBy === mode) {
       this.sortDir = this.sortDir === 'asc' ? 'desc' : 'asc';
     } else {

@@ -10,7 +10,7 @@
     </ion-button>
   </ion-buttons>
   <ion-buttons slot="end">
-    <ion-button (click)="sortList('bestbefore')">Mhd</ion-button>
+    <ion-button (click)="setDisplayMode('bestbefore')">Mhd</ion-button>
     <ion-button (click)="setDisplayMode('alphabetical')">A-Z</ion-button>
     <ion-button (click)="setDisplayMode('categories')">Categories</ion-button>
   </ion-buttons>
@@ -40,7 +40,7 @@
         <!--        </ion-list-header>-->
         @if (canAddTemporary) {
           <app-create-item
-            color="local"
+            [color]="headerColor"
             helper="{{
               'local.list.temporary.add' | translate: { value: searchTerm }
             }}"
@@ -111,7 +111,7 @@
     </ion-reorder-group>
 
     @if (alternatives.length) {
-      <ion-list-header>
+      <ion-list-header color="global" class="tinted-header">
         <ion-label>{{ 'local.list.alternates.header' | translate }}</ion-label>
       </ion-list-header>
       @for (alternate of alternatives; track alternate.id) {
