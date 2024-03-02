@@ -23,9 +23,10 @@
     header="{{'shoppinglist.page.header' | translate}}"
     (addItem)="addItemToShoppingList($event)"
     (moveItem)="buyItem($event)"
-    (selectItem)="addItemToShoppingList($event)"
+    (selectItem)="showEditDialog($event)"
     (createItem)="showCreateDialog($event)"
     (deleteItem)="removeItemFromShoppingList($event)"
+    (globalItem)="addGlobalItemToShoppingList($event)"
     (emptyItem)="showEditDialog()"
   ></app-shopping-list>
 </ion-content>
@@ -40,23 +41,25 @@
   </ng-template>
 </ion-modal>
 
+<ion-modal [isOpen]="isEditing" (didDismiss)="isEditing = false">
+  <ng-template>
+    <app-edit-shopping-item-dialog
+      [mode]="editMode"
+      (cancel)="isEditing = false"
+      (saveItem)="updateShoppingItem($event)"
+      [item]="editItem"
+      [localList]="shoppingList"
+    ></app-edit-shopping-item-dialog>
+  </ng-template>
+</ion-modal>
+
 <ion-modal [isOpen]="isCreating" (didDismiss)="isCreating = false">
   <ng-template>
     <app-edit-global-item-dialog
       (cancel)="isCreating = false"
       (saveItem)="createItemAndAddToShoppingList($event)"
       [item]="createNewItem"
-    ></app-edit-global-item-dialog>
-  </ng-template>
-</ion-modal>
-
-<ion-modal [isOpen]="isEditing" (didDismiss)="isEditing = false">
-  <ng-template>
-    <app-edit-shopping-item-dialog
-      mode="create"
-      (cancel)="isEditing = false"
-      (saveItem)="addItemToShoppingList($event)"
       [localList]="shoppingList"
-    ></app-edit-shopping-item-dialog>
+    ></app-edit-global-item-dialog>
   </ng-template>
 </ion-modal>

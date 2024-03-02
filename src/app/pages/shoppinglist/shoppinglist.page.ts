@@ -15,7 +15,7 @@ import {
 } from '@ionic/angular/standalone';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
-import { add, duplicate, remove } from 'ionicons/icons';
+import { add, remove } from 'ionicons/icons';
 import {
   IBaseItem,
   IGlobalItem,
@@ -39,6 +39,7 @@ import { UiService } from '../../services/ui.service';
   styleUrls: ['shoppinglist.page.scss'],
   standalone: true,
   imports: [
+    ShoppingListComponent,
     IonHeader,
     IonToolbar,
     IonContent,
@@ -47,15 +48,14 @@ import { UiService } from '../../services/ui.service';
     IonIcon,
     IonTitle,
     AddItemDialog,
-    IonMenuButton,
     IonButtons,
+    IonMenuButton,
     IonButton,
     IonLabel,
     TranslateModule,
     IonModal,
-    EditGlobalItemDialogComponent,
     EditShoppingItemDialogComponent,
-    ShoppingListComponent,
+    EditGlobalItemDialogComponent,
   ],
 })
 export class ShoppinglistPage implements OnInit {
@@ -69,12 +69,15 @@ export class ShoppinglistPage implements OnInit {
   shoppingList!: IItemList<IShoppingItem>;
 
   isAdding = false;
-  isEditing = false;
   isCreating = false;
   createNewItem: IGlobalItem | null | undefined;
 
+  isEditing = false;
+  editItem: IShoppingItem | null | undefined;
+  editMode: 'update' | 'create' = 'create';
+
   constructor() {
-    addIcons({ add, remove, duplicate });
+    addIcons({ add, remove });
   }
 
   ngOnInit(): void {
@@ -82,13 +85,34 @@ export class ShoppinglistPage implements OnInit {
     this.createNewItem = null;
   }
 
-  async addGlobalItemToShoppingList(item?: IGlobalItem) {
-    if (!item) return;
-    let litem: IShoppingItem | undefined = createShoppingItemFromGlobal(
+  showCreateDialog(newItem: IBaseItem) {
+    this.isAdding = false;
+    this.isCreating = true;
+    this.createNewItem = createGlobalItemFrom(newItem);
+  }
+
+  showEditDialog(item?: IShoppingItem) {
+    this.isAdding = false;
+    this.isCreating = false;
+    this.isEditing = true;
+    this.editItem = item;
+    this.editMode = item ? 'update' : 'create';
+  }
+
+  async updateShoppingItem(item?: IShoppingItem) {
+    this.isEditing = false;
+    this.editItem = null;
+    await this.#database.addOrUpdateStorageItemShipping(
       item,
-      1
+      this.shoppingList
     );
-    return this.addItemToShoppingList(litem);
+    this.listComponent.refresh();
+    await this.#uiService.showToast(
+      this.translate.instant('inventory.page.toast.update', {
+        name: item?.name,
+        total: item?.quantity,
+      })
+    );
   }
 
   async addItemToShoppingList(item?: IShoppingItem) {
@@ -103,24 +127,15 @@ export class ShoppinglistPage implements OnInit {
     );
   }
 
-  showEditDialog() {
-    this.isEditing = true;
-  }
-
-  showCreateDialog(newItem: IBaseItem) {
-    this.isAdding = false;
-    this.isCreating = true;
-    this.createNewItem = createGlobalItemFrom(newItem);
-  }
-
   async createItemAndAddToShoppingList(item?: IGlobalItem) {
     this.isCreating = false;
     this.createNewItem = null;
 
     if (item?.name.length) {
       await this.#database.addOrUpdateGlobalItem(item);
-      const litem = createShoppingItemFromGlobal(item, 1);
-      await this.#database.addItem(litem, this.shoppingList);
+      const copy = createShoppingItemFromGlobal(item);
+      const litem = await this.#database.addItem(copy, this.shoppingList);
+
       this.listComponent.refresh();
       await this.#uiService.showToast(
         this.translate.instant('shoppinglist.page.toast.created', {
@@ -129,6 +144,16 @@ export class ShoppinglistPage implements OnInit {
       );
     }
   }
+
+  async addGlobalItemToShoppingList(item?: IGlobalItem) {
+    if (!item) return;
+    let litem: IShoppingItem | undefined = createShoppingItemFromGlobal(
+      item,
+      1
+    );
+    return this.addItemToShoppingList(litem);
+  }
+
   async removeItemFromShoppingList(item: IShoppingItem) {
     await this.#database.deleteItem(item, this.shoppingList);
     this.listComponent.refresh();

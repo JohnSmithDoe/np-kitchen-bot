@@ -103,7 +103,7 @@ export class ShoppingListComponent implements OnInit {
   @Output() addItem = new EventEmitter<IShoppingItem>();
   @Output() createItem = new EventEmitter<IBaseItem>();
   @Output() selectItem = new EventEmitter<IShoppingItem>();
-  @Output() altItem = new EventEmitter<IGlobalItem>();
+  @Output() globalItem = new EventEmitter<IGlobalItem>();
   @Output() deleteItem = new EventEmitter<IShoppingItem>();
   @Output() emptyItem = new EventEmitter<void>();
   @Output() moveItem = new EventEmitter<IShoppingItem>();
@@ -195,11 +195,11 @@ export class ShoppingListComponent implements OnInit {
   }
 
   setDisplayMode(
-    mode: 'alphabetical' | 'categories' | 'bestbefore',
+    mode: 'alphabetical' | 'categories',
     sortBy: 'alphabetical' = 'alphabetical'
   ) {
     this.items = this.itemList.items;
-    this.mode = mode === 'bestbefore' ? 'alphabetical' : mode;
+    this.mode = mode;
     this.currentCategory = undefined;
     this.#sortList(sortBy);
   }

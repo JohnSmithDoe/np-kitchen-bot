@@ -253,9 +253,18 @@ export class DatabaseService {
     };
   }
 
+  //TODO: clean up
   async addOrUpdateStorageItem(
     item: IStorageItem | undefined,
     list: IItemList<IStorageItem>
+  ) {
+    if (!item) return;
+    const updated = this.#updateItem(item, list);
+    return !updated ? this.addItem(item, list) : this.save();
+  }
+  async addOrUpdateStorageItemShipping(
+    item: IShoppingItem | undefined,
+    list: IItemList<IShoppingItem>
   ) {
     if (!item) return;
     const updated = this.#updateItem(item, list);

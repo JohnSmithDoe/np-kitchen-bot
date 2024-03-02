@@ -9,21 +9,21 @@
       This is the menu content. Barcode scanning is supported?
       {{ isSupported | json }}
       <main>
-        <!--        <ion-button (click)="shareShoppingList()" size="full"-->
-        <!--          >Einkaufsliste Teilen</ion-button-->
-        <!--        >-->
+        <ion-button (click)="shareShoppingList()" size="full"
+          >Einkaufsliste Teilen</ion-button
+        >
         <!--      <ion-button (click)="scan()">Scan</ion-button>-->
         <ion-list>
           <!--        <ion-list-header>Einkauf</ion-list-header>-->
-          <!--          <ion-menu-toggle>-->
-          <!--            <ion-item button routerLink="/home/shoppinglist" color="shopping">-->
-          <!--              <ion-label>Einkaufsliste</ion-label>-->
-          <!--            </ion-item>-->
-          <!--          </ion-menu-toggle>-->
+          <ion-menu-toggle>
+            <ion-item button routerLink="/home/shoppinglist" color="shopping">
+              <ion-label>Einkaufsliste</ion-label>
+            </ion-item>
+          </ion-menu-toggle>
           <!--        <ion-list-header>Lagerung</ion-list-header>-->
           <ion-menu-toggle>
             <ion-item button routerLink="/home/inventory" color="storage">
-              <ion-label>Lager Liste</ion-label>
+              <ion-label>Lagerliste</ion-label>
             </ion-item>
           </ion-menu-toggle>
           <!--        <ion-list-header>Management</ion-list-header>-->

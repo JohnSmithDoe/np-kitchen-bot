@@ -11,7 +11,6 @@
     </ion-button>
   </ion-buttons>
   <ion-buttons slot="end">
-    <ion-button (click)="setDisplayMode('bestbefore')">Mhd</ion-button>
     <ion-button (click)="setDisplayMode('alphabetical')">A-Z</ion-button>
     <ion-button (click)="setDisplayMode('categories')">Categories</ion-button>
   </ion-buttons>
@@ -120,7 +119,7 @@
         <app-global-item
           [item]="alternate"
           helper="{{ 'shopping.list.alternates.helper' | translate }}"
-          (selectItem)="altItem.emit(alternate)"
+          (selectItem)="globalItem.emit(alternate)"
         ></app-global-item>
       }
     }

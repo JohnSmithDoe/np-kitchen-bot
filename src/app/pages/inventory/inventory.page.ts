@@ -7,6 +7,7 @@ import {
   IonFabButton,
   IonHeader,
   IonIcon,
+  IonLabel,
   IonMenuButton,
   IonModal,
   IonTitle,
@@ -25,7 +26,6 @@ import {
   createGlobalItemFrom,
   createStorageItemFromGlobal,
 } from '../../app.factory';
-import { GlobalListComponent } from '../../components/global-list/global-list.component';
 import { StorageListComponent } from '../../components/storage-list/storage-list.component';
 import { AddItemDialog } from '../../dialogs/add-item-dialog/add-item.dialog';
 import { EditGlobalItemDialogComponent } from '../../dialogs/edit-global-item-dialog/edit-global-item-dialog.component';
@@ -51,11 +51,11 @@ import { UiService } from '../../services/ui.service';
     IonButtons,
     IonMenuButton,
     IonButton,
+    IonLabel,
     TranslateModule,
     IonModal,
     EditStorageItemDialogComponent,
     EditGlobalItemDialogComponent,
-    GlobalListComponent,
   ],
 })
 export class InventoryPage implements OnInit {
@@ -99,17 +99,10 @@ export class InventoryPage implements OnInit {
     this.editMode = item ? 'update' : 'create';
   }
 
-  showAddDialog() {
-    this.isAdding = true;
-    this.isEditing = false;
-    this.isCreating = false;
-  }
-
   async updateInventoryItem(item?: IStorageItem) {
     this.isEditing = false;
     this.editItem = null;
     await this.#database.addOrUpdateStorageItem(item, this.inventory);
-    console.log(item, this.inventory);
     this.listComponent.refresh();
     await this.#uiService.showToast(
       this.translate.instant('inventory.page.toast.update', {
@@ -135,10 +128,12 @@ export class InventoryPage implements OnInit {
     this.isEditing = false;
     this.isCreating = false;
     this.createNewItem = null;
+
     if (item?.name.length) {
       await this.#database.addOrUpdateGlobalItem(item);
       const copy = createStorageItemFromGlobal(item);
       const litem = await this.#database.addItem(copy, this.inventory);
+
       this.listComponent.refresh();
       await this.#uiService.showToast(
         this.translate.instant('inventory.page.toast.created', {
@@ -147,6 +142,7 @@ export class InventoryPage implements OnInit {
       );
     }
   }
+
   async addGlobalItemToInventory(item?: IGlobalItem) {
     if (!item) return;
     let litem: IStorageItem | undefined = createStorageItemFromGlobal(item);

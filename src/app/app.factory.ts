@@ -27,7 +27,7 @@ export function createBaseItem(
 export function createStorageItem(
   name: string,
   category?: string | string[],
-  quantity = 0,
+  quantity = 1,
   bestBefore?: TTimestamp
 ): IStorageItem {
   const base = createBaseItem(name, category);
@@ -35,7 +35,7 @@ export function createStorageItem(
 }
 export function createStorageItemFromGlobal(
   global: IGlobalItem,
-  quantity = 0
+  quantity = 1
 ): IStorageItem {
   let bestBefore: string | undefined;
   if (global.bestBeforeTimespan !== 'forever') {
@@ -47,20 +47,20 @@ export function createStorageItemFromGlobal(
 }
 export function createShoppingItemFromGlobal(
   global: IGlobalItem,
-  quantity = 0
+  quantity = 1
 ): IShoppingItem {
   return createShoppingItem(global.name, global.category, quantity);
 }
 export function createShoppingItemFromStorage(
   storage: IStorageItem,
-  quantity = 0
+  quantity = 1
 ): IShoppingItem {
   return createShoppingItem(storage.name, storage.category, quantity);
 }
 export function createShoppingItem(
   name: string,
   category?: string | string[],
-  quantity = 0
+  quantity = 1
 ): IShoppingItem {
   const base = createBaseItem(name, category);
   return {
