@@ -81,7 +81,6 @@ export class DatabasePage implements OnInit {
     await this.#uiService.showToast(
       this.translate.instant('database.toast.add', {
         name: item.name,
-        total: item.quantity,
       })
     );
   }

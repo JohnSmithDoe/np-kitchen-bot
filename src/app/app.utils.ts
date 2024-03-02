@@ -2,6 +2,7 @@ import {
   IBaseItem,
   IItemCategory,
   IItemList,
+  ILocalItem,
   TIonDragEvent,
 } from './@types/types';
 
@@ -18,6 +19,15 @@ export function uuidv4() {
   });
 }
 
+export function getCategoryItemsFromList(
+  category: IItemCategory | undefined,
+  itemList: IItemList<ILocalItem>
+) {
+  if (!category) return itemList.items;
+  return category.items
+    .map((base) => itemList.items.find((item) => base.id === item.id))
+    .filter((item) => !!item) as ILocalItem[];
+}
 // grouping items by category
 // creates a new IItemCategory array from the given list
 export function getCategoriesFromList(...itemList: (IItemList | undefined)[]) {

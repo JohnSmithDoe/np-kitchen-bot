@@ -43,7 +43,11 @@ import {
   TIonDragEvent,
 } from '../../@types/types';
 import { createLocalItem } from '../../app.factory';
-import { checkItemOptionsOnDrag, getCategoriesFromList } from '../../app.utils';
+import {
+  checkItemOptionsOnDrag,
+  getCategoriesFromList,
+  getCategoryItemsFromList,
+} from '../../app.utils';
 import { CategoriesPipe } from '../../pipes/categories.pipe';
 import { DatabaseService } from '../../services/database.service';
 import { CreateItemComponent } from '../create-item/create-item.component';
@@ -98,7 +102,7 @@ export class LocalListComponent implements OnInit {
   @Input({ transform: booleanAttribute }) canMove = false;
 
   @Output() addItem = new EventEmitter<ILocalItem>();
-  @Output() createItem = new EventEmitter<ILocalItem>();
+  @Output() createItem = new EventEmitter<IBaseItem>();
   @Output() selectItem = new EventEmitter<ILocalItem>();
   @Output() altItem = new EventEmitter<IGlobalItem>();
   @Output() deleteItem = new EventEmitter<ILocalItem>();
@@ -133,7 +137,10 @@ export class LocalListComponent implements OnInit {
       this.currentCategory = this.categories.find(
         (cat) => cat.name === this.currentCategory?.name
       );
-      this.items = this.currentCategory?.items ?? this.itemList.items;
+      this.items = getCategoryItemsFromList(
+        this.currentCategory,
+        this.itemList
+      );
     }
   }
 

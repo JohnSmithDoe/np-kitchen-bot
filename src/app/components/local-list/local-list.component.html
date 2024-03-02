@@ -1,4 +1,5 @@
 <ion-searchbar
+  placeholder="{{ 'searchbar.placeholder' | translate }}"
   [(ngModel)]="searchTerm"
   (ionInput)="searchTermChange($event)"
   [debounce]="250"
@@ -45,7 +46,6 @@
               'local.list.temporary.add' | translate: { value: searchTerm }
             }}"
             [label]="searchTerm"
-            [category]="'local.list.temporary.category' | translate"
             (selectItem)="addTemporary($event)"
           ></app-create-item>
         }

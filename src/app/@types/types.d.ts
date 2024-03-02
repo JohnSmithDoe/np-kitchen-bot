@@ -5,6 +5,7 @@ export type TIonDragEvent = CustomEvent<{ amount: number; ratio: number }>;
 export type TColor =
   | Color
   | 'global'
+  | 'category'
   | 'local'
   | 'storage'
   | 'shopping'
@@ -42,7 +43,6 @@ export type TBestBeforeTimespan =
 export interface IBaseItem {
   id: string;
   name: string;
-  quantity: number;
   minAmount?: number;
 
   createdAt: TTimestamp;
@@ -64,6 +64,7 @@ export interface IGlobalItem extends IBaseItem {
 }
 
 export interface ILocalItem extends IBaseItem {
+  quantity: number;
   state?: 'bought';
   bestBefore?: TTimestamp;
 }

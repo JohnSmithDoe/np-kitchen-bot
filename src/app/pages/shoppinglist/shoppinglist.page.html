@@ -21,9 +21,9 @@
     canDelete="true"
     headerColor="shopping"
     header="{{'shoppinglist.page.header' | translate}}"
-    (addItem)="addItemToShoppingList($event)"
+    (addItem)="addLocalItemToShoppingList($event)"
     (moveItem)="buyItem($event)"
-    (selectItem)="addItemToShoppingList($event)"
+    (selectItem)="addLocalItemToShoppingList($event)"
     (createItem)="showCreateDialog($event)"
     (deleteItem)="removeItemFromShoppingList($event)"
     (emptyItem)="showEditDialog()"
@@ -33,7 +33,7 @@
 <ion-modal [isOpen]="isAdding" (didDismiss)="isAdding = false">
   <ng-template>
     <app-add-item-dialog
-      (addItem)="addItemToShoppingList($event)"
+      (addItem)="addGlobalItemToShoppingList($event)"
       (cancel)="isAdding = false"
       (createItem)="showCreateDialog($event)"
     ></app-add-item-dialog>
@@ -55,7 +55,7 @@
     <app-edit-item-dialog
       mode="create"
       (cancel)="isEditing = false"
-      (saveItem)="addItemToShoppingList($event)"
+      (saveItem)="addLocalItemToShoppingList($event)"
       [localList]="shoppingList"
     ></app-edit-item-dialog>
   </ng-template>

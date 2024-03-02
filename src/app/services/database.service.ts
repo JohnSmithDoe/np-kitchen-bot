@@ -2,6 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage-angular';
 import * as dayjs from 'dayjs';
 import {
+  IBaseItem,
   IDatastore,
   IGlobalItem,
   IItemList,
@@ -11,7 +12,6 @@ import {
 const INITIAL_DATA: IGlobalItem[] = [
   {
     id: '1',
-    quantity: 0,
     name: 'Apfel',
     category: ['Obst'],
     unit: 'pieces',
@@ -21,7 +21,6 @@ const INITIAL_DATA: IGlobalItem[] = [
   },
   {
     id: '2',
-    quantity: 0,
     name: 'Banane',
     category: ['Obst'],
     unit: 'pieces',
@@ -31,7 +30,6 @@ const INITIAL_DATA: IGlobalItem[] = [
   },
   {
     id: '3',
-    quantity: 0,
     name: 'Karotte',
     category: ['Gemüse'],
     unit: 'pieces',
@@ -41,7 +39,6 @@ const INITIAL_DATA: IGlobalItem[] = [
   },
   {
     id: '4',
-    quantity: 0,
     name: 'Eier',
     category: ['Protein'],
     unit: 'pieces',
@@ -51,7 +48,6 @@ const INITIAL_DATA: IGlobalItem[] = [
   },
   {
     id: '5',
-    quantity: 0,
     name: 'Milch',
     category: ['Milchprodukte'],
     unit: 'ml',
@@ -62,7 +58,6 @@ const INITIAL_DATA: IGlobalItem[] = [
   },
   {
     id: '6',
-    quantity: 0,
     name: 'Brot',
     category: ['Getreideprodukte'],
     unit: 'pieces',
@@ -72,7 +67,6 @@ const INITIAL_DATA: IGlobalItem[] = [
   },
   {
     id: '8',
-    quantity: 0,
     name: 'Rahmspinat',
     category: ['Gemüse'],
     unit: 'g',
@@ -88,7 +82,6 @@ const INITIAL_DATA: IGlobalItem[] = [
   // {id: '15', quantity: 0, name: "Haferflocken", category: ["Getreideprodukte"]},
   {
     id: '16',
-    quantity: 0,
     name: 'Thunfisch',
     category: ['Fisch'],
     unit: 'g',
@@ -199,7 +192,7 @@ export class DatabaseService {
     return result;
   }
 
-  async deleteItem(item: ILocalItem, list: IItemList<ILocalItem>) {
+  async deleteItem(item: IBaseItem, list: IItemList) {
     list.items.splice(
       list.items.findIndex((aItem) => aItem.id === item.id),
       1
@@ -228,7 +221,7 @@ export class DatabaseService {
     return this.save();
   }
 
-  #updateItem(item: ILocalItem, list: IItemList<ILocalItem>) {
+  #updateItem(item: IBaseItem, list: IItemList) {
     const value = list.items.find((listItem) => listItem.id === item.id);
     return value ? Object.assign(value, item) : undefined;
   }

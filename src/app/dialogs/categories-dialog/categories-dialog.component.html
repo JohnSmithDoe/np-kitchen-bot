@@ -13,8 +13,10 @@
   </ion-toolbar>
   <ion-toolbar>
     <ion-searchbar
+      placeholder="{{ 'searchbar.placeholder' | translate }}"
       [(ngModel)]="searchFor"
       (ionInput)="searchbarInput($event)"
+      [debounce]="250"
     ></ion-searchbar>
   </ion-toolbar>
 </ion-header>
@@ -22,11 +24,16 @@
 <ion-content>
   <ion-list id="modal-list" [inset]="true">
     @if (!!searchFor && !isExactlyIncluded) {
-      <ion-item button (click)="addNewCategory()" [detail]="true">
+      <ion-item
+        button
+        (click)="addNewCategory()"
+        [detail]="true"
+        color="category"
+      >
         <ion-label>{{
           'categories-dialog.notfound.create' | translate: { name: searchFor }
         }}</ion-label>
-        <ion-note slot="end" class="global-item-helper">
+        <ion-note slot="end" class="global-item-helper" color="dark">
           {{
             'categories-dialog.notfound.create.helper'
               | translate: { name: searchFor }

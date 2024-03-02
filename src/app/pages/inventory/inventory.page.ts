@@ -15,7 +15,12 @@ import {
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { add, remove } from 'ionicons/icons';
-import { IGlobalItem, IItemList, ILocalItem } from '../../@types/types';
+import {
+  IBaseItem,
+  IGlobalItem,
+  IItemList,
+  ILocalItem,
+} from '../../@types/types';
 import { createGlobalItemFrom, createLocalItemFrom } from '../../app.factory';
 import { GlobalListComponent } from '../../components/global-list/global-list.component';
 import { LocalListComponent } from '../../components/local-list/local-list.component';
@@ -77,7 +82,7 @@ export class InventoryPage implements OnInit {
     this.createNewItem = null;
   }
 
-  showCreateDialog(newItem: ILocalItem) {
+  showCreateDialog(newItem: IBaseItem) {
     this.isAdding = false;
     this.isCreating = true;
     this.createNewItem = createGlobalItemFrom(newItem);
@@ -140,15 +145,9 @@ export class InventoryPage implements OnInit {
     }
   }
   async addGlobalItemToInventory(item?: IGlobalItem) {
-    if (item) {
-      const litem = await this.#database.addItem(item, this.inventory);
-      this.listComponent.refresh();
-      await this.#uiService.showToast(
-        this.translate.instant('inventory.page.toast.added', {
-          name: litem?.name,
-        })
-      );
-    }
+    if (!item) return;
+    let litem: ILocalItem | undefined = createLocalItemFrom(item);
+    return this.addItemToInventory(litem);
   }
 
   async removeItemFromInventory(item: ILocalItem) {

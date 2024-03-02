@@ -34,7 +34,7 @@
 <ion-modal [isOpen]="isAdding" (didDismiss)="isAdding = false">
   <ng-template>
     <app-add-item-dialog
-      (addItem)="addItemToInventory($event)"
+      (addItem)="addGlobalItemToInventory($event)"
       (cancel)="isAdding = false"
       (createItem)="showCreateDialog($event)"
     ></app-add-item-dialog>

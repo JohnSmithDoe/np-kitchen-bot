@@ -16,8 +16,13 @@ import {
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { add, duplicate, remove } from 'ionicons/icons';
-import { IGlobalItem, IItemList, ILocalItem } from '../../@types/types';
-import { createGlobalItemFrom } from '../../app.factory';
+import {
+  IBaseItem,
+  IGlobalItem,
+  IItemList,
+  ILocalItem,
+} from '../../@types/types';
+import { createGlobalItemFrom, createLocalItemFrom } from '../../app.factory';
 import { LocalListComponent } from '../../components/local-list/local-list.component';
 import { AddItemDialog } from '../../dialogs/add-item-dialog/add-item.dialog';
 import { EditGlobalItemDialogComponent } from '../../dialogs/edit-global-item-dialog/edit-global-item-dialog.component';
@@ -74,7 +79,13 @@ export class ShoppinglistPage implements OnInit {
     this.createNewItem = null;
   }
 
-  async addItemToShoppingList(item?: ILocalItem) {
+  async addGlobalItemToShoppingList(item?: IGlobalItem) {
+    if (!item) return;
+    let litem: ILocalItem | undefined = createLocalItemFrom(item, 1);
+    return this.addLocalItemToShoppingList(litem);
+  }
+
+  async addLocalItemToShoppingList(item?: ILocalItem) {
     this.isAdding = false;
     item = await this.#database.addItem(item, this.shoppingList);
     this.listComponent.refresh();
@@ -90,7 +101,7 @@ export class ShoppinglistPage implements OnInit {
     this.isEditing = true;
   }
 
-  showCreateDialog(newItem: ILocalItem) {
+  showCreateDialog(newItem: IBaseItem) {
     this.isAdding = false;
     this.isCreating = true;
     this.createNewItem = createGlobalItemFrom(newItem);
@@ -102,16 +113,16 @@ export class ShoppinglistPage implements OnInit {
 
     if (item?.name.length) {
       await this.#database.addOrUpdateGlobalItem(item);
-      await this.#database.addItem(item, this.shoppingList);
+      const litem = createLocalItemFrom(item, 1);
+      await this.#database.addItem(litem, this.shoppingList);
       this.listComponent.refresh();
       await this.#uiService.showToast(
         this.translate.instant('shoppinglist.page.toast.created', {
-          name: item?.name,
+          name: litem?.name,
         })
       );
     }
   }
-
   async removeItemFromShoppingList(item: ILocalItem) {
     await this.#database.deleteItem(item, this.shoppingList);
     this.listComponent.refresh();
@@ -122,6 +133,7 @@ export class ShoppinglistPage implements OnInit {
     );
   }
   // what should happen if we buy an item?
+
   // some kind of state for now
 
   async buyItem(item: ILocalItem) {

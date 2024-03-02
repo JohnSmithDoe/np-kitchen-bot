@@ -4,13 +4,11 @@ import { uuidv4 } from './app.utils';
 
 export function createBaseItem(
   name: string,
-  category?: string | string[],
-  quantity = 0
+  category?: string | string[]
 ): IBaseItem {
   return {
     id: uuidv4(),
     name,
-    quantity,
     category: category
       ? Array.isArray(category)
         ? category
@@ -26,8 +24,8 @@ export function createLocalItem(
   quantity = 0,
   bestBefore?: TTimestamp
 ): ILocalItem {
-  const base = createBaseItem(name, category, quantity);
-  return { ...base, bestBefore };
+  const base = createBaseItem(name, category);
+  return { ...base, quantity, bestBefore };
 }
 export function createLocalItemFrom(
   global: IGlobalItem,
@@ -43,10 +41,9 @@ export function createLocalItemFrom(
 }
 export function createGlobalItem(
   name: string,
-  category?: string | string[],
-  quantity = 0
+  category?: string | string[]
 ): IGlobalItem {
-  const base = createBaseItem(name, category, quantity);
+  const base = createBaseItem(name, category);
   return {
     ...base,
     unit: 'pieces',
@@ -56,6 +53,6 @@ export function createGlobalItem(
   };
 }
 
-export function createGlobalItemFrom(item: ILocalItem): IGlobalItem {
+export function createGlobalItemFrom(item: IBaseItem): IGlobalItem {
   return createGlobalItem(item.name, item.category);
 }

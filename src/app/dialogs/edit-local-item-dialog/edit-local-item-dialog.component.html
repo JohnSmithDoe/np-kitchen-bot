@@ -23,24 +23,24 @@
         [(ngModel)]="value.name"
       ></ion-input>
     </ion-item>
-    <ion-item button (click)="selectCategories = true">
-      <ion-label class="ion-text-wrap">
-        {{ 'edit.item.dialog.categories' | translate }}
-        @for (cat of value.category; track cat) {
-          <ion-chip color="category">
-            <!--                <ion-avatar>-->
-            <!--                  <img alt="Image of the category" src="assets/avatar.svg"/>-->
-            <!--                </ion-avatar>-->
-            <ion-label class="ion-text-wrap">{{ cat }}</ion-label>
-            <ion-icon
-              name="close-circle"
-              (click)="removeCategory(cat); $event.stopPropagation()"
-            ></ion-icon>
-          </ion-chip>
-        } @empty {
-          {{ 'edit.item.dialog.categories.empty' | translate }}
-        }
-      </ion-label>
+
+    <ion-item>
+      <ion-input
+        type="number"
+        class="ion-text-end"
+        label="Menge"
+        [(ngModel)]="value.quantity"
+      ></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-input
+        type="number"
+        class="ion-text-end"
+        label="Mindestmenge"
+        [clearOnEdit]="true"
+        [(ngModel)]="value.minAmount"
+      ></ion-input>
     </ion-item>
 
     <ion-item>
@@ -69,14 +69,24 @@
       </ion-modal>
     </ion-item>
 
-    <ion-item>
-      <ion-input
-        type="number"
-        class="ion-text-end"
-        label="Mindestmenge"
-        [clearOnEdit]="true"
-        [(ngModel)]="value.minAmount"
-      ></ion-input>
+    <ion-item button (click)="selectCategories = true">
+      <ion-label class="ion-text-wrap">
+        {{ 'edit.item.dialog.categories' | translate }}
+        @for (cat of value.category; track cat) {
+          <ion-chip color="category">
+            <!--                <ion-avatar>-->
+            <!--                  <img alt="Image of the category" src="assets/avatar.svg"/>-->
+            <!--                </ion-avatar>-->
+            <ion-label class="ion-text-wrap">{{ cat }}</ion-label>
+            <ion-icon
+              name="close-circle"
+              (click)="removeCategory(cat); $event.stopPropagation()"
+            ></ion-icon>
+          </ion-chip>
+        } @empty {
+          {{ 'edit.item.dialog.categories.empty' | translate }}
+        }
+      </ion-label>
     </ion-item>
   </ion-list>
 </ion-content>
