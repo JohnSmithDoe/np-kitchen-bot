@@ -1,0 +1,21 @@
+@if (canQuickAdd && !!quickAddLabel?.length) {
+  <app-base-item
+    [color]="color"
+    helper="{{
+      'shopping.list.temporary.add' | translate: { value: quickAddLabel }
+    }}"
+    [label]="quickAddLabel"
+    (selectItem)="quickAddItem.emit()"
+  ></app-base-item>
+}
+
+@if (canQuickAddGlobal && !!quickAddLabel?.length) {
+  <app-base-item
+    color="global"
+    helper="{{
+      'shopping.list.permanent.add' | translate: { value: quickAddLabel }
+    }}"
+    [label]="quickAddLabel"
+    (selectItem)="quickAddGlobal.emit($event)"
+  ></app-base-item>
+}

@@ -88,10 +88,9 @@
             [item]="item"
             [color]="itemColor"
             [helper]="itemHelper ?? ('shopping.list.item.helper' | translate)"
-            categoryAlt="{{ 'item.no-category' | translate }}"
             (selectItem)="selectItem.emit(item)"
-            (increment)="changeQuantity($event, +1)"
-            (decrement)="changeQuantity($event, -1)"
+            (increment)="changeQuantity(item, +1)"
+            (decrement)="changeQuantity(item, -1)"
           ></app-shopping-item>
 
           @if (canDelete) {

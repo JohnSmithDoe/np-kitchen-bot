@@ -38,6 +38,15 @@ export function getCategoryItemsFromListShopping(
     .map((base) => itemList.items.find((item) => base.id === item.id))
     .filter((item) => !!item) as IShoppingItem[];
 }
+export function getCategoryItemsFromListShoppingBsse(
+  category: IItemCategory | undefined,
+  itemList: IItemList
+) {
+  if (!category) return itemList.items;
+  return category.items
+    .map((base) => itemList.items.find((item) => base.id === item.id))
+    .filter((item) => !!item) as IBaseItem[];
+}
 // grouping items by category
 // creates a new IItemCategory array from the given list
 export function getCategoriesFromList(...itemList: (IItemList | undefined)[]) {

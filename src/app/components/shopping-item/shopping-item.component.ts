@@ -1,13 +1,5 @@
 import { DatePipe, NgTemplateOutlet } from '@angular/common';
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  OnInit,
-  Output,
-  SimpleChanges,
-} from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import {
   IonAvatar,
   IonButton,
@@ -15,6 +7,9 @@ import {
   IonChip,
   IonIcon,
   IonItem,
+  IonItemOption,
+  IonItemOptions,
+  IonItemSliding,
   IonLabel,
   IonListHeader,
   IonNote,
@@ -23,8 +18,8 @@ import {
   IonText,
 } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
-import { IShoppingItem, TColor } from '../../@types/types';
-import { createShoppingItem } from '../../app.factory';
+import { IShoppingItem, TColor, TIonDragEvent } from '../../@types/types';
+import { checkItemOptionsOnDrag } from '../../app.utils';
 import { CategoriesPipe } from '../../pipes/categories.pipe';
 
 @Component({
@@ -49,51 +44,49 @@ import { CategoriesPipe } from '../../pipes/categories.pipe';
     IonRippleEffect,
     DatePipe,
     IonText,
+    IonItemSliding,
+    IonItemOptions,
+    IonItemOption,
   ],
 })
-export class ShoppingItemComponent implements OnInit, OnChanges {
+export class ShoppingItemComponent implements OnInit {
   @Input() item!: IShoppingItem;
-  @Input() label?: string;
+
   @Input() color?: TColor;
-  @Input() category?: string;
-  @Input() categoryAlt?: string;
   @Input() helper?: string;
 
-  @Output() selectItem = new EventEmitter<IShoppingItem>();
-  @Output() increment = new EventEmitter<IShoppingItem>();
-  @Output() decrement = new EventEmitter<IShoppingItem>();
+  @Output() increment = new EventEmitter<void>();
+  @Output() decrement = new EventEmitter<void>();
+  @Output() selectItem = new EventEmitter<void>();
+  @Output() deleteItem = new EventEmitter<void>();
+  @Output() cartItem = new EventEmitter<void>();
 
   constructor() {}
 
   ngOnInit() {
-    if (!this.item && !this.label)
-      throw new Error('Either label or item must be set');
-    if (!this.item) {
-      this.#updateItem();
-    }
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes.hasOwnProperty('label') && this.label) {
-      this.#updateItem();
-    }
-  }
-
-  #updateItem() {
-    if (this.label) {
-      this.item = createShoppingItem(this.label, this.category);
-    }
+    if (!this.item) throw new Error('Item must be set');
   }
 
   // inner button click
   incrementQuantity(ev: MouseEvent) {
-    this.increment.emit(this.item);
+    this.increment.emit();
     ev.stopPropagation();
   }
 
   // inner button click
   decrementQuantity(ev: MouseEvent) {
-    this.decrement.emit(this.item);
+    this.decrement.emit();
     ev.stopPropagation();
+  }
+
+  handleItemOptionsOnDrag(ev: TIonDragEvent) {
+    switch (checkItemOptionsOnDrag(ev)) {
+      case 'end':
+        this.deleteItem.emit();
+        break;
+      case 'start':
+        this.cartItem.emit();
+        break;
+    }
   }
 }

@@ -1,0 +1,35 @@
+<div class="item-list-body">
+  <ion-list #ionList>
+    @if (mode === 'alphabetical') {
+      <ng-container *ngTemplateOutlet="listMode"></ng-container>
+    } @else {
+      <ng-container *ngTemplateOutlet="categoryMode"></ng-container>
+    }
+  </ion-list>
+</div>
+
+<ng-template #categoryMode>
+  @for (category of categories; track category.name) {
+    <ion-button class="item-category" (click)="selectCategory.emit(category)">
+      {{ category.name }}
+    </ion-button>
+  }
+</ng-template>
+
+<ng-template #listMode>
+  @if (header) {
+    <ion-list-header [color]="headerColor"> {{ header }}</ion-list-header>
+  }
+
+  <!-- Casting $event to $any is a temporary fix for this bug https://github.com/ionic-team/ionic-framework/issues/24245 -->
+  <ion-reorder-group
+    [disabled]="reorderDisabled"
+    (ionItemReorder)="handleReorder($any($event))"
+  >
+    @for (item of items; track item.id) {
+      <ng-container
+        *ngTemplateOutlet="itemTemplate; context: { $implicit: item }"
+      ></ng-container>
+    }
+  </ion-reorder-group>
+</ng-template>

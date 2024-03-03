@@ -113,6 +113,10 @@ export class DatabaseService {
     all: { title: 'All Items', id: '_all', items: [] },
     storage: { title: 'Storage', id: '_storage', items: [] },
     shoppinglists: [],
+    settings: {
+      showQuickAdd: true,
+      showQuickAddGlobal: false,
+    },
   };
 
   async initialize() {
@@ -153,6 +157,10 @@ export class DatabaseService {
     //     }
     //   });
     // });
+  }
+
+  get settings() {
+    return this.#store.settings;
   }
 
   get all() {
@@ -205,7 +213,7 @@ export class DatabaseService {
       } else {
         item.quantity = 1;
         result = this.cloneItem(item);
-        list.items.push(result);
+        list.items.unshift(result);
       }
       await this.save();
     }

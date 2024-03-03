@@ -13,22 +13,50 @@
 </ion-header>
 
 <ion-content>
-  <app-shopping-list
-    [itemList]="shoppingList"
-    type="extended"
-    search="name-only"
-    canMove="true"
-    canDelete="true"
+  <app-item-list-searchbar
+    (searchItem)="searchFor($event)"
+  ></app-item-list-searchbar>
+  <app-item-list-toolbar></app-item-list-toolbar>
+  <app-item-list-quickadd
+    [quickAddLabel]="searchResult?.searchTerm"
+    (quickAddItem)="addItemFromSearchTerm()"
+    (quickAddGlobal)="showCreateDialog($event)"
+  ></app-item-list-quickadd>
+  <app-item-list
+    #shoppinglist
     headerColor="shopping"
     header="{{'shoppinglist.page.header' | translate}}"
-    (addItem)="addItemToShoppingList($event)"
-    (moveItem)="buyItem($event)"
-    (selectItem)="showEditDialog($event)"
-    (createItem)="showCreateDialog($event)"
-    (deleteItem)="removeItemFromShoppingList($event)"
-    (globalItem)="addGlobalItemToShoppingList($event)"
+    [items]="items"
+    [itemTemplate]="shoppingItem"
     (emptyItem)="showEditDialog()"
-  ></app-shopping-list>
+  ></app-item-list>
+  <ng-template #shoppingItem let-item>
+    <app-shopping-item
+      [item]="item"
+      [helper]="'shopping.list.item.helper' | translate"
+      (selectItem)="showEditDialog(item)"
+      (increment)="changeQuantity(item, +1)"
+      (decrement)="changeQuantity(item, -1)"
+      (cartItem)="buyItem(item)"
+      (deleteItem)="removeItemFromShoppingList(item)"
+    ></app-shopping-item>
+  </ng-template>
+
+  @if (searchResult?.storageItems) {
+  <app-item-list
+    header="{{'storage.page.header' | translate}}"
+    headerColor="storage"
+    [items]="searchResult?.storageItems??[]"
+    [itemTemplate]="storageItem"
+  ></app-item-list>
+  } @if (searchResult?.globalItems) {
+  <app-item-list
+    header="{{'database.page.header' | translate}}"
+    headerColor="global"
+    [items]="searchResult?.globalItems??[]"
+    [itemTemplate]="globalItem"
+  ></app-item-list>
+  }
 </ion-content>
 
 <ion-modal [isOpen]="isAdding" (didDismiss)="isAdding = false">
@@ -63,3 +91,19 @@
     ></app-edit-global-item-dialog>
   </ng-template>
 </ion-modal>
+
+<ng-template #storageItem let-item>
+  <app-storage-item
+    [item]="item"
+    [helper]="'shopping.list.item.helper' | translate"
+    (selectItem)="addStorageItemToShoppingList($event)"
+  ></app-storage-item>
+</ng-template>
+
+<ng-template #globalItem let-item>
+  <app-global-item
+    [item]="item"
+    [helper]="'shopping.list.item.helper' | translate"
+    (selectItem)="addGlobalItemToShoppingList($event)"
+  ></app-global-item>
+</ng-template>

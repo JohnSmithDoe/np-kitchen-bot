@@ -87,4 +87,8 @@ export interface IDatastore {
     title: 'Storage';
   };
   shoppinglists: IItemList<IShoppingItem>[];
+  settings: {
+    showQuickAdd: boolean;
+    showQuickAddGlobal: boolean;
+  };
 }

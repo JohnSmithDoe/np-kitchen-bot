@@ -10,6 +10,7 @@ import {
   IonLabel,
   IonMenuButton,
   IonModal,
+  IonSearchbar,
   IonTitle,
   IonToolbar,
 } from '@ionic/angular/standalone';
@@ -21,12 +22,22 @@ import {
   IGlobalItem,
   IItemList,
   IShoppingItem,
+  IStorageItem,
 } from '../../@types/types';
 import {
   createGlobalItemFrom,
+  createShoppingItem,
   createShoppingItemFromGlobal,
+  createShoppingItemFromStorage,
 } from '../../app.factory';
+import { GlobalItemComponent } from '../../components/global-item/global-item.component';
+import { ItemListQuickaddComponent } from '../../components/item-list-quick-add/item-list-quickadd.component';
+import { ItemListSearchbarComponent } from '../../components/item-list-searchbar/item-list-searchbar.component';
+import { ItemListToolbarComponent } from '../../components/item-list-toolbar/item-list-toolbar.component';
+import { ItemListComponent } from '../../components/item-list/item-list.component';
+import { ShoppingItemComponent } from '../../components/shopping-item/shopping-item.component';
 import { ShoppingListComponent } from '../../components/shopping-list/shopping-list.component';
+import { StorageItemComponent } from '../../components/storage-item/storage-item.component';
 import { AddItemDialog } from '../../dialogs/add-item-dialog/add-item.dialog';
 import { EditGlobalItemDialogComponent } from '../../dialogs/edit-global-item-dialog/edit-global-item-dialog.component';
 import { EditShoppingItemDialogComponent } from '../../dialogs/edit-shopping-item-dialog/edit-shopping-item-dialog.component';
@@ -56,11 +67,22 @@ import { UiService } from '../../services/ui.service';
     IonModal,
     EditShoppingItemDialogComponent,
     EditGlobalItemDialogComponent,
+    ShoppingItemComponent,
+    ItemListComponent,
+    GlobalItemComponent,
+    StorageItemComponent,
+    IonSearchbar,
+    ItemListToolbarComponent,
+    ItemListSearchbarComponent,
+    ItemListQuickaddComponent,
   ],
 })
 export class ShoppinglistPage implements OnInit {
-  @ViewChild(ShoppingListComponent, { static: true })
-  listComponent!: ShoppingListComponent;
+  @ViewChild(ItemListSearchbarComponent, { static: true })
+  listSearchbar?: ItemListSearchbarComponent;
+
+  @ViewChild('shoppinglist', { static: true })
+  listComponent!: ItemListComponent;
 
   readonly #database = inject(DatabaseService);
   readonly #uiService = inject(UiService);
@@ -75,6 +97,15 @@ export class ShoppinglistPage implements OnInit {
   isEditing = false;
   editItem: IShoppingItem | null | undefined;
   editMode: 'update' | 'create' = 'create';
+  items: IShoppingItem[] = [];
+
+  searchResult?: {
+    listItems: IShoppingItem[];
+    hasSearchTerm: boolean;
+    searchTerm: string;
+    globalItems: IGlobalItem[];
+    storageItems: IStorageItem[];
+  };
 
   constructor() {
     addIcons({ add, remove });
@@ -82,6 +113,7 @@ export class ShoppinglistPage implements OnInit {
 
   ngOnInit(): void {
     this.shoppingList = this.#database.shoppinglist();
+    this.items = this.shoppingList.items;
     this.createNewItem = null;
   }
 
@@ -95,7 +127,8 @@ export class ShoppinglistPage implements OnInit {
     this.isAdding = false;
     this.isCreating = false;
     this.isEditing = true;
-    this.editItem = item;
+    this.editItem =
+      item ?? createShoppingItem(this.searchResult?.searchTerm ?? '');
     this.editMode = item ? 'update' : 'create';
   }
 
@@ -106,19 +139,21 @@ export class ShoppinglistPage implements OnInit {
       item,
       this.shoppingList
     );
-    this.listComponent.refresh();
+    // this.listComponent.refresh();
     await this.#uiService.showToast(
       this.translate.instant('inventory.page.toast.update', {
         name: item?.name,
         total: item?.quantity,
       })
     );
+    this.clearSearch();
   }
 
   async addItemToShoppingList(item?: IShoppingItem) {
     this.isAdding = false;
     item = await this.#database.addItemShopping(item, this.shoppingList);
-    this.listComponent.refresh();
+    this.refreshItems();
+    // this.listComponent.refresh();
     await this.#uiService.showToast(
       this.translate.instant('shoppinglist.page.toast.add', {
         name: item?.name,
@@ -136,13 +171,18 @@ export class ShoppinglistPage implements OnInit {
       const copy = createShoppingItemFromGlobal(item);
       const litem = await this.#database.addItem(copy, this.shoppingList);
 
-      this.listComponent.refresh();
+      // this.listComponent.refresh();
       await this.#uiService.showToast(
         this.translate.instant('shoppinglist.page.toast.created', {
           name: litem?.name,
         })
       );
     }
+  }
+
+  addStorageItemToShoppingList(item: IStorageItem) {
+    const litem = createShoppingItemFromStorage(item);
+    return this.addItemToShoppingList(litem);
   }
 
   async addGlobalItemToShoppingList(item?: IGlobalItem) {
@@ -153,21 +193,28 @@ export class ShoppinglistPage implements OnInit {
     );
     return this.addItemToShoppingList(litem);
   }
+  addItemFromSearchTerm() {
+    if (!this.searchResult?.hasSearchTerm) return;
+    const litem = createShoppingItem(this.searchResult.searchTerm);
+    return this.addItemToShoppingList(litem);
+  }
 
   async removeItemFromShoppingList(item: IShoppingItem) {
     await this.#database.deleteItem(item, this.shoppingList);
-    this.listComponent.refresh();
+    this.listComponent?.closeSlidingItems();
+    this.refreshItems();
+    // this.listComponent.refresh();
     await this.#uiService.showToast(
       this.translate.instant('shoppinglist.page.toast.remove', {
         name: item?.name,
       })
     );
   }
+
   // what should happen if we buy an item?
-
-  // some kind of state for now
-
   async buyItem(item: IShoppingItem) {
+    console.log(this.listComponent, 'kdsfj');
+    this.listComponent?.closeSlidingItems();
     item.state = 'bought';
     await this.#database.save();
     await this.#uiService.showToast(
@@ -176,5 +223,42 @@ export class ShoppinglistPage implements OnInit {
         total: item?.quantity,
       })
     );
+  }
+
+  changeQuantity(item: IShoppingItem, diff: number) {
+    item.quantity = Math.max(0, item.quantity + diff);
+    return this.#database.save();
+  }
+
+  searchFor(searchTerm: string) {
+    const listItems = this.shoppingList.items.filter((item) =>
+      item.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    const globalItems = this.#database.all.items.filter((item) =>
+      item.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    const storageItems = this.#database.storage.items.filter((item) =>
+      item.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    this.searchResult = searchTerm.length
+      ? {
+          searchTerm,
+          hasSearchTerm: !!searchTerm.length,
+          listItems,
+          globalItems,
+          storageItems,
+        }
+      : undefined;
+  }
+
+  private clearSearch() {
+    this.searchResult = undefined;
+    this.listSearchbar?.clear();
+    this.items = [...this.shoppingList.items];
+  }
+
+  private refreshItems() {
+    this.clearSearch();
   }
 }

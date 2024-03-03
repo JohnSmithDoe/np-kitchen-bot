@@ -104,8 +104,8 @@ export class ShoppingListComponent implements OnInit {
   @Output() createItem = new EventEmitter<IBaseItem>();
   @Output() selectItem = new EventEmitter<IShoppingItem>();
   @Output() globalItem = new EventEmitter<IGlobalItem>();
-  @Output() deleteItem = new EventEmitter<IShoppingItem>();
   @Output() emptyItem = new EventEmitter<void>();
+  @Output() deleteItem = new EventEmitter<IShoppingItem>();
   @Output() moveItem = new EventEmitter<IShoppingItem>();
 
   categories: IItemCategory[] = [];
