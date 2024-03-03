@@ -18,8 +18,6 @@ import {
 } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
 import { IGlobalItem, IItemList } from '../../@types/types';
-import { GlobalListComponent } from '../../components/global-list/global-list.component';
-import { StorageListComponent } from '../../components/storage-list/storage-list.component';
 import { DatabaseService } from '../../services/database.service';
 
 @Component({
@@ -28,7 +26,6 @@ import { DatabaseService } from '../../services/database.service';
   imports: [
     IonButton,
     NgTemplateOutlet,
-    StorageListComponent,
     IonHeader,
     IonToolbar,
     IonTitle,
@@ -36,7 +33,6 @@ import { DatabaseService } from '../../services/database.service';
     IonButtons,
     IonContent,
     TranslateModule,
-    GlobalListComponent,
   ],
   templateUrl: './add-item.dialog.html',
   styleUrl: './add-item.dialog.scss',

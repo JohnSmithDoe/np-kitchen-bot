@@ -1,0 +1,23 @@
+@if (canQuickAdd && !!quickAddLabel?.length) {
+  <app-text-item
+    [color]="color"
+    helper="{{
+      'item-list.quickadd.add'
+        | translate: { value: quickAddLabel, list: listName }
+    }}"
+    [label]="quickAddLabel"
+    (selectItem)="quickAddItem.emit()"
+  ></app-text-item>
+}
+
+@if (canQuickAddGlobal && !!quickAddLabel?.length) {
+  <app-text-item
+    color="global"
+    helper="{{
+      'item-list.quickadd.add.global'
+        | translate: { value: quickAddLabel, list: listName }
+    }}"
+    [label]="quickAddLabel"
+    (selectItem)="quickCreateGlobal.emit()"
+  ></app-text-item>
+}

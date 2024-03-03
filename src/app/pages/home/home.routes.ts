@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { HomePage } from './home.page';
 
-const redirectToStartPage = '/home/inventory';
+const redirectToStartPage = '/home/storage';
 export const routes: Routes = [
   {
     path: 'home',
@@ -15,9 +15,9 @@ export const routes: Routes = [
           ),
       },
       {
-        path: 'inventory',
+        path: 'storage',
         loadComponent: () =>
-          import('../inventory/inventory.page').then((m) => m.InventoryPage),
+          import('../storage/storage.page').then((m) => m.StoragePage),
       },
       {
         path: 'tasks',

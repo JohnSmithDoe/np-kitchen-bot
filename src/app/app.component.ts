@@ -26,6 +26,7 @@ import {
   IonTitle,
   IonToolbar,
 } from '@ionic/angular/standalone';
+import { TranslateModule } from '@ngx-translate/core';
 import { DatabaseService } from './services/database.service';
 
 @Component({
@@ -50,6 +51,7 @@ import { DatabaseService } from './services/database.service';
     IonLabel,
     RouterLink,
     IonMenuToggle,
+    TranslateModule,
   ],
 })
 export class AppComponent implements OnInit {

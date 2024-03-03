@@ -1,0 +1,94 @@
+<app-page-header
+  color="storage"
+  label="{{'page-title.storage' | translate}}"
+  (addItem)="showEditDialog()"
+>
+  <app-item-list-searchbar
+    (searchItem)="searchFor($event)"
+    (hitEnter)="quickAddItem()"
+  ></app-item-list-searchbar>
+  <app-item-list-toolbar (selectDisplayMode)="setDisplayMode($event)">
+    <ion-button (click)="setDisplayMode('bestBefore')">Mhd</ion-button>
+  </app-item-list-toolbar>
+</app-page-header>
+
+<ion-content>
+  <app-item-list-quickadd
+    color="storage"
+    listName="{{'list-header.storage' | translate}}"
+    [quickAddLabel]="searchResult?.searchTerm"
+    (quickAddItem)="quickAddItem()"
+    (quickCreateGlobal)="showCreateGlobalDialog()"
+  ></app-item-list-quickadd>
+
+  <app-item-list
+    #storageListComponent
+    headerColor="storage"
+    header="{{'list-header.storage' | translate}}"
+    [mode]="mode"
+    [items]="items"
+    [itemTemplate]="storageItem"
+    (selectCategory)="selectCategory($event)"
+  ></app-item-list>
+  <ng-template #storageItem let-item>
+    <app-storage-item
+      [item]="item"
+      (selectItem)="showEditDialog(item)"
+      (increment)="changeQuantity(item, +1)"
+      (decrement)="changeQuantity(item, -1)"
+      (cartItem)="copyToShoppingList(item)"
+      (deleteItem)="removeItem(item)"
+    ></app-storage-item>
+  </ng-template>
+
+  <app-item-list-empty
+    [isEmptyList]="!items.length"
+    [isSearching]="searchResult?.hasSearchTerm"
+    [searchTerm]="searchResult?.searchTerm"
+    (emptyItem)="showEditDialog()"
+  ></app-item-list-empty>
+
+  <!--  global search result-->
+  @if (searchResult?.globalItems?.length) {
+  <app-item-list
+    header="{{'list-header.global.search' | translate}}"
+    headerColor="global"
+    [items]="searchResult?.globalItems??[]"
+    [itemTemplate]="globalItem"
+  ></app-item-list>
+  <ng-template #globalItem let-item>
+    <app-text-item
+      color="global"
+      class="tinted"
+      [label]="item.name"
+      [note]="item | appCategories"
+      [helper]="'item-helper.search' | translate"
+      (selectItem)="addGlobalItem(item)"
+    ></app-text-item>
+  </ng-template>
+
+  }
+</ion-content>
+
+<ion-modal [isOpen]="isEditing" (didDismiss)="isEditing = false">
+  <ng-template>
+    <app-edit-storage-item-dialog
+      [mode]="editMode"
+      (cancel)="isEditing = false"
+      (saveItem)="updateItem($event)"
+      [item]="editItem"
+      [localList]="itemList"
+    ></app-edit-storage-item-dialog>
+  </ng-template>
+</ion-modal>
+
+<ion-modal [isOpen]="isCreating" (didDismiss)="isCreating = false">
+  <ng-template>
+    <app-edit-global-item-dialog
+      (cancel)="isCreating = false"
+      (saveItem)="createGlobalItem($event)"
+      [item]="createNewItem"
+      [localList]="itemList"
+    ></app-edit-global-item-dialog>
+  </ng-template>
+</ion-modal>

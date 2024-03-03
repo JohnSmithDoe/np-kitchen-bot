@@ -1,11 +1,12 @@
 import { Pipe, PipeTransform } from '@angular/core';
+import { IBaseItem } from '../@types/types';
 
 @Pipe({
   name: 'appCategories',
   standalone: true,
 })
 export class CategoriesPipe implements PipeTransform {
-  transform(value: string[] | undefined, altText?: string) {
-    return !value ? altText ?? '' : value.join(', ');
+  transform(value: IBaseItem | undefined, altText?: string) {
+    return !value?.category ? altText ?? '' : value.category.join(', ');
   }
 }

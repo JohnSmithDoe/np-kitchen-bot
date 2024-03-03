@@ -1,101 +1,58 @@
-import { Component, inject, OnInit, ViewChild } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import {
-  IonButton,
-  IonButtons,
   IonContent,
-  IonFab,
-  IonFabButton,
-  IonHeader,
-  IonIcon,
-  IonMenuButton,
-  IonModal,
-  IonTitle,
-  IonToolbar,
+  IonItem,
+  IonList,
+  IonListHeader,
+  IonToggle,
 } from '@ionic/angular/standalone';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { add, remove } from 'ionicons/icons';
-import { IGlobalItem, IItemList } from '../../@types/types';
-import { GlobalListComponent } from '../../components/global-list/global-list.component';
-import { StorageListComponent } from '../../components/storage-list/storage-list.component';
-import { AddItemDialog } from '../../dialogs/add-item-dialog/add-item.dialog';
-import { EditGlobalItemDialogComponent } from '../../dialogs/edit-global-item-dialog/edit-global-item-dialog.component';
-import { EditStorageItemDialogComponent } from '../../dialogs/edit-storage-item-dialog/edit-storage-item-dialog.component';
+import { ISettings } from '../../@types/types';
+import { PageHeaderComponent } from '../../components/page-header/page-header.component';
 import { DatabaseService } from '../../services/database.service';
 import { UiService } from '../../services/ui.service';
 
 @Component({
-  selector: 'app-page-database',
+  selector: 'app-page-settings',
   templateUrl: 'settings.page.html',
   styleUrls: ['settings.page.scss'],
   standalone: true,
   imports: [
-    StorageListComponent,
-    IonHeader,
-    IonToolbar,
+    PageHeaderComponent,
     IonContent,
-    IonFab,
-    IonFabButton,
-    IonIcon,
-    IonTitle,
-    AddItemDialog,
-    IonButtons,
-    IonMenuButton,
-    IonButton,
     TranslateModule,
-    IonModal,
-    EditStorageItemDialogComponent,
-    EditGlobalItemDialogComponent,
-    GlobalListComponent,
+    IonList,
+    IonItem,
+    IonToggle,
+    IonListHeader,
   ],
 })
 export class SettingsPage implements OnInit {
-  @ViewChild(StorageListComponent, { static: true })
-  listComponent!: StorageListComponent;
-
   readonly #database = inject(DatabaseService);
   readonly #uiService = inject(UiService);
   readonly translate = inject(TranslateService);
-
-  items!: IItemList<IGlobalItem>;
-
-  isEditing = false;
-  editItem: IGlobalItem | null | undefined;
-  mode: 'update' | 'create' = 'create';
+  readonly settings: ISettings;
 
   constructor() {
     addIcons({ add, remove });
+    this.settings = this.#database.settings;
   }
 
-  ngOnInit(): void {
-    this.items = this.#database.all;
-    this.editItem = null;
+  ngOnInit(): void {}
+
+  save() {
+    this.#uiService.showToast(this.translate.instant('toast.save.setting'));
+    return this.#database.save();
   }
 
-  async saveItemToDatabase(item?: IGlobalItem) {
-    this.isEditing = false;
-    if (!item) return;
-
-    await this.#database.addOrUpdateGlobalItem(item);
-    this.listComponent.refresh();
-    await this.#uiService.showToast(
-      this.translate.instant('database.toast.add', {
-        name: item.name,
-      })
-    );
+  toggleQuickAdd() {
+    this.settings.showQuickAdd = !this.settings.showQuickAdd;
+    return this.save();
   }
-
-  showEditDialog(item: IGlobalItem | null, mode: 'update' | 'create') {
-    this.mode = mode;
-    this.isEditing = true;
-    this.editItem = item;
-  }
-
-  async removeItemFromDatabase(item: IGlobalItem) {
-    await this.#database.deleteItem(item, this.items);
-    this.listComponent.refresh();
-    await this.#uiService.showToast(
-      this.translate.instant('database.toast.remove', { name: item.name })
-    );
+  toggleQuickAddGlobal() {
+    this.settings.showQuickAddGlobal = !this.settings.showQuickAddGlobal;
+    return this.save();
   }
 }

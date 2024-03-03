@@ -8,6 +8,7 @@ export type TColor =
   | 'category'
   | 'storage'
   | 'shopping'
+  | 'settings'
   | 'low-stock-warn'
   | 'low-stock';
 
@@ -77,6 +78,11 @@ export interface IItemList<T extends IBaseItem = IBaseItem> {
   items: T[];
 }
 
+export interface ISettings {
+  showQuickAdd: boolean;
+  showQuickAddGlobal: boolean;
+}
+
 export interface IDatastore {
   all: IItemList<IGlobalItem> & {
     id: '_all';
@@ -87,8 +93,13 @@ export interface IDatastore {
     title: 'Storage';
   };
   shoppinglists: IItemList<IShoppingItem>[];
-  settings: {
-    showQuickAdd: boolean;
-    showQuickAddGlobal: boolean;
-  };
+  settings: ISettings;
+}
+
+export interface ISearchResult<T extends IBaseItem> {
+  listItems: T[];
+  hasSearchTerm: boolean;
+  searchTerm: string;
+  globalItems: IGlobalItem[];
+  storageItems: IStorageItem[];
 }

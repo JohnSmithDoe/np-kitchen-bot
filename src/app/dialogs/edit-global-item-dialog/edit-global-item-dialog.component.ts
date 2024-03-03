@@ -96,12 +96,6 @@ export class EditGlobalItemDialogComponent implements OnInit {
   saveButtonText = '';
   currencyCode: 'EUR' | 'USD' = 'EUR';
 
-  date_event: any;
-
-  datePick() {
-    console.log(this.date_event);
-    this.date_event = this.date_event.substring(0, 10);
-  }
   constructor() {
     addIcons({ closeCircle });
   }

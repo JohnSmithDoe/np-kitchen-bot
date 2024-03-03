@@ -1,82 +1,102 @@
-<ion-header>
-  <ion-toolbar color="shopping">
-    <ion-buttons slot="start">
-      <ion-menu-button> </ion-menu-button>
-    </ion-buttons>
-    <ion-title>{{'shoppinglist.page.title' | translate}}</ion-title>
-    <ion-buttons slot="end">
-      <ion-button (click)="showEditDialog()">
-        <ion-icon name="add" slot="icon-only"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
-
-<ion-content>
+<app-page-header
+  color="shopping"
+  label="{{'page-title.shoppinglist' | translate}}"
+  (addItem)="showEditDialog()"
+>
   <app-item-list-searchbar
     (searchItem)="searchFor($event)"
+    (hitEnter)="quickAddItem()"
   ></app-item-list-searchbar>
-  <app-item-list-toolbar></app-item-list-toolbar>
+  <app-item-list-toolbar
+    (selectDisplayMode)="setDisplayMode($event)"
+  ></app-item-list-toolbar>
+</app-page-header>
+
+<ion-content>
   <app-item-list-quickadd
+    color="shopping"
+    listName="{{'list-header.shoppinglist' | translate}}"
     [quickAddLabel]="searchResult?.searchTerm"
-    (quickAddItem)="addItemFromSearchTerm()"
-    (quickAddGlobal)="showCreateDialog($event)"
+    (quickAddItem)="quickAddItem()"
+    (quickCreateGlobal)="showCreateGlobalDialog()"
   ></app-item-list-quickadd>
   <app-item-list
-    #shoppinglist
+    flex-item
+    #shoppinglistComponent
     headerColor="shopping"
-    header="{{'shoppinglist.page.header' | translate}}"
+    header="{{'list-header.shoppinglist' | translate}}"
+    [mode]="mode"
     [items]="items"
     [itemTemplate]="shoppingItem"
-    (emptyItem)="showEditDialog()"
+    (selectCategory)="selectCategory($event)"
   ></app-item-list>
   <ng-template #shoppingItem let-item>
     <app-shopping-item
       [item]="item"
-      [helper]="'shopping.list.item.helper' | translate"
       (selectItem)="showEditDialog(item)"
       (increment)="changeQuantity(item, +1)"
       (decrement)="changeQuantity(item, -1)"
       (cartItem)="buyItem(item)"
-      (deleteItem)="removeItemFromShoppingList(item)"
+      (deleteItem)="removeItem(item)"
     ></app-shopping-item>
   </ng-template>
 
-  @if (searchResult?.storageItems) {
+  <app-item-list-empty
+    [isEmptyList]="!items.length"
+    [isSearching]="searchResult?.hasSearchTerm"
+    [searchTerm]="searchResult?.searchTerm"
+    (emptyItem)="showEditDialog()"
+  ></app-item-list-empty>
+
+  <!--  storage search results-->
+  @if (searchResult?.storageItems?.length) {
   <app-item-list
-    header="{{'storage.page.header' | translate}}"
+    header="{{'list-header.storage.search' | translate}}"
     headerColor="storage"
     [items]="searchResult?.storageItems??[]"
     [itemTemplate]="storageItem"
   ></app-item-list>
-  } @if (searchResult?.globalItems) {
+  <ng-template #storageItem let-item>
+    <app-text-item
+      color="storage"
+      class="tinted"
+      [label]="item.name"
+      [note]="item | appCategories"
+      [helper]="'item-helper.search' | translate"
+      (selectItem)="addStorageItem(item)"
+    ></app-text-item>
+  </ng-template>
+  }
+  <!--  global search result-->
+  @if (searchResult?.globalItems?.length) {
   <app-item-list
-    header="{{'database.page.header' | translate}}"
+    header="{{'list-header.global.search' | translate}}"
     headerColor="global"
     [items]="searchResult?.globalItems??[]"
     [itemTemplate]="globalItem"
   ></app-item-list>
+  <ng-template #globalItem let-item>
+    <app-text-item
+      color="global"
+      class="tinted"
+      [label]="item.name"
+      [note]="item | appCategories"
+      [helper]="'item-helper.search' | translate"
+      (selectItem)="addGlobalItem(item)"
+    ></app-text-item>
+  </ng-template>
+
   }
 </ion-content>
-
-<ion-modal [isOpen]="isAdding" (didDismiss)="isAdding = false">
-  <ng-template>
-    <app-add-item-dialog
-      (addItem)="addGlobalItemToShoppingList($event)"
-      (cancel)="isAdding = false"
-      (createItem)="showCreateDialog($event)"
-    ></app-add-item-dialog>
-  </ng-template>
-</ion-modal>
 
 <ion-modal [isOpen]="isEditing" (didDismiss)="isEditing = false">
   <ng-template>
     <app-edit-shopping-item-dialog
       [mode]="editMode"
       (cancel)="isEditing = false"
-      (saveItem)="updateShoppingItem($event)"
+      (saveItem)="updateItem($event)"
       [item]="editItem"
-      [localList]="shoppingList"
+      [localList]="itemList"
     ></app-edit-shopping-item-dialog>
   </ng-template>
 </ion-modal>
@@ -85,25 +105,9 @@
   <ng-template>
     <app-edit-global-item-dialog
       (cancel)="isCreating = false"
-      (saveItem)="createItemAndAddToShoppingList($event)"
+      (saveItem)="createGlobalItem($event)"
       [item]="createNewItem"
-      [localList]="shoppingList"
+      [localList]="itemList"
     ></app-edit-global-item-dialog>
   </ng-template>
 </ion-modal>
-
-<ng-template #storageItem let-item>
-  <app-storage-item
-    [item]="item"
-    [helper]="'shopping.list.item.helper' | translate"
-    (selectItem)="addStorageItemToShoppingList($event)"
-  ></app-storage-item>
-</ng-template>
-
-<ng-template #globalItem let-item>
-  <app-global-item
-    [item]="item"
-    [helper]="'shopping.list.item.helper' | translate"
-    (selectItem)="addGlobalItemToShoppingList($event)"
-  ></app-global-item>
-</ng-template>

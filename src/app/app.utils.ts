@@ -2,8 +2,6 @@ import {
   IBaseItem,
   IItemCategory,
   IItemList,
-  IShoppingItem,
-  IStorageItem,
   TIonDragEvent,
 } from './@types/types';
 
@@ -19,36 +17,20 @@ export function uuidv4() {
     );
   });
 }
-//TODO clean up
-export function getCategoryItemsFromList(
+
+// maps the categore base item ids to items from the list
+// filters out not found ones
+export function getItemsFromCategory<T extends IBaseItem>(
   category: IItemCategory | undefined,
-  itemList: IItemList<IStorageItem>
+  itemList: IItemList<T>
 ) {
   if (!category) return itemList.items;
   return category.items
     .map((base) => itemList.items.find((item) => base.id === item.id))
-    .filter((item) => !!item) as IStorageItem[];
-}
-export function getCategoryItemsFromListShopping(
-  category: IItemCategory | undefined,
-  itemList: IItemList<IShoppingItem>
-) {
-  if (!category) return itemList.items;
-  return category.items
-    .map((base) => itemList.items.find((item) => base.id === item.id))
-    .filter((item) => !!item) as IShoppingItem[];
-}
-export function getCategoryItemsFromListShoppingBsse(
-  category: IItemCategory | undefined,
-  itemList: IItemList
-) {
-  if (!category) return itemList.items;
-  return category.items
-    .map((base) => itemList.items.find((item) => base.id === item.id))
-    .filter((item) => !!item) as IBaseItem[];
+    .filter((item) => !!item) as T[];
 }
 // grouping items by category
-// creates a new IItemCategory array from the given list
+// creates a new IItemCategory array from the given lists
 export function getCategoriesFromList(...itemList: (IItemList | undefined)[]) {
   const allItems = itemList.reduce((all, cur) => {
     cur?.items.forEach((item) => {

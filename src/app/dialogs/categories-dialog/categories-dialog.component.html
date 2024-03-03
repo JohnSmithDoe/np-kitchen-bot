@@ -16,6 +16,7 @@
       placeholder="{{ 'searchbar.placeholder' | translate }}"
       [(ngModel)]="searchFor"
       (ionInput)="searchbarInput($event)"
+      (keyup.enter)="addNewCategory()"
       [debounce]="250"
     ></ion-searchbar>
   </ion-toolbar>

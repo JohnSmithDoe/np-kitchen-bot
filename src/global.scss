@@ -36,12 +36,6 @@ body.scanner-active {
   --background: transparent;
   --ion-background-color: transparent;
 }
-.global-item-helper {
-  align-self: center;
-  text-align: end;
-  padding: 0;
-  max-width: consts.$gc-smaller;
-}
 
 .trigger {
   cursor: pointer;

@@ -1,11 +1,12 @@
 import { NgTemplateOutlet } from '@angular/common';
 import {
-  booleanAttribute,
   Component,
   EventEmitter,
   Input,
+  OnChanges,
   OnInit,
   Output,
+  SimpleChanges,
   TemplateRef,
   ViewChild,
 } from '@angular/core';
@@ -34,9 +35,9 @@ import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { add, cart, list, remove } from 'ionicons/icons';
 import { IBaseItem, IItemCategory, TColor } from '../../@types/types';
-import { CategoriesPipe } from '../../pipes/categories.pipe';
-import { BaseItemComponent } from '../base-item/base-item.component';
-import { GlobalItemComponent } from '../global-item/global-item.component';
+import { getCategoriesFromList } from '../../app.utils';
+import { GlobalItemComponent } from '../item-list-items/global-item/global-item.component';
+import { TextItemComponent } from '../item-list-items/text-item/text-item.component';
 
 @Component({
   selector: 'app-item-list',
@@ -63,21 +64,19 @@ import { GlobalItemComponent } from '../global-item/global-item.component';
     IonText,
     FormsModule,
     TranslateModule,
-    CategoriesPipe,
     IonNote,
     GlobalItemComponent,
-    BaseItemComponent,
+    TextItemComponent,
   ],
 })
-export class ItemListComponent implements OnInit {
+export class ItemListComponent implements OnInit, OnChanges {
   @ViewChild('ionList', { static: true }) ionList?: IonList;
 
   @Input() itemTemplate!: TemplateRef<any>;
   @Input() items: IBaseItem[] = [];
-  @Input({ transform: booleanAttribute }) showEmpty = true;
+  @Input() mode: 'alphabetical' | 'categories' = 'alphabetical';
 
   categories: IItemCategory[] = [];
-  mode: 'alphabetical' | 'categories' = 'alphabetical';
   // searchTerm?: string | null;
 
   @Output() selectCategory = new EventEmitter<IItemCategory>();
@@ -85,8 +84,6 @@ export class ItemListComponent implements OnInit {
 
   @Input() header?: string;
   @Input() headerColor?: TColor;
-
-  @Output() emptyItem = new EventEmitter<void>();
 
   reorderDisabled = true;
 
@@ -96,6 +93,16 @@ export class ItemListComponent implements OnInit {
 
   ngOnInit(): void {
     //
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.hasOwnProperty('items')) {
+      this.categories = getCategoriesFromList({
+        items: this.items,
+        id: '',
+        title: '',
+      });
+    }
   }
 
   async closeSlidingItems() {

@@ -1,13 +1,13 @@
 import { inject, Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage-angular';
 import * as dayjs from 'dayjs';
+import { BehaviorSubject } from 'rxjs';
 import {
   IBaseItem,
   IDatastore,
   IGlobalItem,
   IItemList,
-  IShoppingItem,
-  IStorageItem,
+  ISearchResult,
 } from '../@types/types';
 
 const INITIAL_DATA: IGlobalItem[] = [
@@ -119,6 +119,8 @@ export class DatabaseService {
     },
   };
 
+  readonly save$ = new BehaviorSubject<boolean>(false);
+
   async initialize() {
     await this.#storageService.create();
     const stored = await this.#storageService.get(
@@ -128,36 +130,125 @@ export class DatabaseService {
     if (!stored) {
       this.all.items = INITIAL_DATA;
       this.all.items = [];
-      this.updateDatabase();
+    }
+    if (!this.#store.settings) {
+      this.#store.settings = {
+        showQuickAdd: true,
+        showQuickAddGlobal: false,
+      };
     }
   }
 
   async save() {
-    this.updateDatabase();
     await this.#storageService.set(
       DatabaseService.CNP_STORAGE_KEY,
       this.#store
     );
+    this.save$.next(true);
   }
 
-  private updateDatabase() {
-    // // reset item references
-    // this.categories.forEach((cat) => (cat.items = []));
-    // // add all categories from all and link the items
-    // this.all.items.forEach((item) => {
-    //   item.category?.forEach((category) => {
-    //     let cat = this.categories.find(
-    //       (aCategory) => category === aCategory.name
-    //     );
-    //     if (!cat && item.category) {
-    //       cat = { items: [item], name: category };
-    //       this.categories.push(cat);
-    //     } else {
-    //       cat?.items.push(item);
-    //     }
-    //   });
-    // });
+  async addItem<T extends IBaseItem>(item: T | undefined, list: IItemList<T>) {
+    let result = item;
+    if (item) {
+      // check duplicates
+      result = list.items.find((aItem) => aItem.id === item.id);
+      if (!result) {
+        result = this.cloneItem(item);
+        list.items.push(result);
+      }
+      await this.save();
+    }
+    return result;
   }
+
+  #updateItem<T extends IBaseItem>(item: T, list: IItemList<T>) {
+    const idx = list.items.findIndex((listItem) => listItem.id === item.id);
+    if (idx >= 0) {
+      list.items.splice(
+        idx,
+        1,
+        this.cloneItem(Object.assign(list.items[idx], item))
+      );
+    }
+    return idx >= 0 ? list.items[idx] : undefined;
+  }
+
+  async deleteItem(item: IBaseItem, list: IItemList) {
+    list.items.splice(
+      list.items.findIndex((aItem) => aItem.id === item.id),
+      1
+    );
+    return this.save();
+  }
+
+  async addOrUpdateItem<T extends IBaseItem>(
+    item: T | undefined,
+    list: IItemList<T>
+  ) {
+    if (!item) return;
+    const updated = this.#updateItem(item, list);
+    return !updated ? this.addItem(item, list) : this.save();
+  }
+
+  cloneItem<T extends IBaseItem>(item: T): T {
+    return {
+      ...item,
+      category: item.category ? [...item.category] : undefined,
+    };
+  }
+
+  search<T extends IBaseItem>(
+    itemList: IItemList<T>,
+    searchTerm?: string
+  ): ISearchResult<T> | undefined {
+    if (!searchTerm || !searchTerm.length) return;
+
+    const matchesName = (item: IBaseItem, other: IBaseItem) =>
+      item.name.toLowerCase() === other.name.toLowerCase();
+    const matchesSearch = (item: IBaseItem) =>
+      item.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = (item: IBaseItem) =>
+      (item.category?.findIndex(
+        (cat) => cat.toLowerCase().indexOf(searchTerm) >= 0
+      ) ?? -1) >= 0;
+
+    const listItems = itemList.items.filter((item) => matchesSearch(item));
+    const globalItemsByName = this.all.items.filter(
+      (item) =>
+        !listItems.find((litem) => matchesName(item, litem)) &&
+        matchesSearch(item)
+    );
+    const globalItemsByCat = this.all.items.filter(
+      (item) =>
+        !listItems.find((litem) => matchesName(item, litem)) &&
+        !globalItemsByName.includes(item) &&
+        matchesCategory(item)
+    );
+    const globalItems = [...globalItemsByName, ...globalItemsByCat];
+    // .filter((item, idx, curr) => matchesCategory(item, curr));
+    const storageItems = this.storage.items.filter(
+      (item) =>
+        !listItems.find((litem) => matchesName(item, litem)) &&
+        !globalItems.find((gitem) => matchesName(item, gitem)) &&
+        matchesSearch(item)
+    );
+
+    return {
+      searchTerm,
+      hasSearchTerm: !!searchTerm.length,
+      listItems,
+      globalItems,
+      storageItems,
+    };
+  }
+
+  async reorder(list: IItemList<any>, from: number, to: number) {
+    const item = list.items.splice(from, 1);
+    list.items.splice(to, 0, ...item);
+    return this.save();
+  }
+
+  // Getter
 
   get settings() {
     return this.#store.settings;
@@ -182,100 +273,5 @@ export class DatabaseService {
       this.#store.shoppinglists.push(list);
     }
     return list;
-  }
-  //TODO clean up
-  async addItem(item: IStorageItem | undefined, list: IItemList<IStorageItem>) {
-    let result = item;
-    if (item) {
-      // check duplicates
-      result = list.items.find((aItem) => aItem.id === item.id);
-      if (result) {
-        result.quantity++;
-      } else {
-        item.quantity = 1;
-        result = this.cloneItem(item);
-        list.items.push(result);
-      }
-      await this.save();
-    }
-    return result;
-  }
-  async addItemShopping(
-    item: IShoppingItem | undefined,
-    list: IItemList<IShoppingItem>
-  ) {
-    let result = item;
-    if (item) {
-      // check duplicates
-      result = list.items.find((aItem) => aItem.id === item.id);
-      if (result) {
-        result.quantity++;
-      } else {
-        item.quantity = 1;
-        result = this.cloneItem(item);
-        list.items.unshift(result);
-      }
-      await this.save();
-    }
-    return result;
-  }
-
-  async deleteItem(item: IBaseItem, list: IItemList) {
-    list.items.splice(
-      list.items.findIndex((aItem) => aItem.id === item.id),
-      1
-    );
-    return this.save();
-  }
-
-  async reorder(list: IItemList<any>, from: number, to: number) {
-    const item = list.items.splice(from, 1);
-    list.items.splice(to, 0, ...item);
-    return this.save();
-  }
-
-  async addOrUpdateGlobalItem(item: IGlobalItem) {
-    const gItemIdx = this.#store.all.items.findIndex(
-      (aItem) => aItem.id === item.id
-    );
-    // remove old if it exists and update copies
-    if (gItemIdx >= 0) {
-      this.#store.all.items.splice(gItemIdx, 1, item);
-      this.#updateItem(item, this.#store.storage);
-      this.#store.shoppinglists.forEach((list) => this.#updateItem(item, list));
-    } else {
-      this.#store.all.items.push(item);
-    }
-    return this.save();
-  }
-
-  #updateItem(item: IBaseItem, list: IItemList) {
-    const value = list.items.find((listItem) => listItem.id === item.id);
-    return value ? Object.assign(value, item) : undefined;
-  }
-
-  cloneItem<T extends IStorageItem | IGlobalItem>(item: T): T {
-    return {
-      ...item,
-      category: item.category ? [...item.category] : undefined,
-    };
-  }
-
-  //TODO: clean up
-  async addOrUpdateStorageItem(
-    item: IStorageItem | undefined,
-    list: IItemList<IStorageItem>
-  ) {
-    if (!item) return;
-    const updated = this.#updateItem(item, list);
-    return !updated ? this.addItem(item, list) : this.save();
-  }
-  async addOrUpdateStorageItemShipping(
-    item: IShoppingItem | undefined,
-    list: IItemList<IShoppingItem>
-  ) {
-    if (!item) return;
-    const updated = this.#updateItem(item, list);
-    return !updated ? this.addItem(item, list) : this.save();
   }
 }

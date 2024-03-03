@@ -16,7 +16,7 @@
 
 
 ## Feedback
-
+* Return im Searchbar should trigger something
 ## ToTest
 * swipe ratio
 

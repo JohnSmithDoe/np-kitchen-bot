@@ -1,38 +1,26 @@
-<ion-header>
-  <ion-toolbar color="global">
-    <ion-buttons slot="start">
-      <ion-menu-button> </ion-menu-button>
-    </ion-buttons>
-    <ion-title>{{'database.page.title' | translate}}</ion-title>
-    <ion-buttons slot="end">
-      <ion-button (click)="showEditDialog(null, 'create')">
-        <ion-icon name="add" slot="icon-only"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
+<app-page-header
+  color="settings"
+  [label]="'page-title.settings' | translate"
+  hideButtons="true"
+></app-page-header>
 
 <ion-content>
-  <app-global-list
-    [itemList]="items"
-    itemHelper="{{ 'database.page.itemHelper' | translate }}"
-    header="{{ 'database.page.header' | translate }}"
-    itemType="simple"
-    canDelete="true"
-    (createItem)="showEditDialog($event, 'create')"
-    (selectItem)="showEditDialog($event, 'update')"
-    (emptyItem)="showEditDialog(null, 'create')"
-    (deleteItem)="removeItemFromDatabase($event)"
-  ></app-global-list>
+  <ion-list>
+    <ion-list-header>Schnell-Hinzufügen</ion-list-header>
+    <ion-item>
+      <ion-toggle
+        [checked]="settings.showQuickAdd"
+        (ionChange)="toggleQuickAdd()"
+        >"{{ 'item-list.quickadd.add'|translate:{list:
+        'list-header.base'|translate} }}" anzeigen</ion-toggle
+      >
+    </ion-item>
+    <ion-item>
+      <ion-toggle
+        [checked]="settings.showQuickAddGlobal"
+        (ionChange)="toggleQuickAddGlobal()"
+        >"{{'item-list.quickadd.add.global'|translate}}" anzeigen</ion-toggle
+      >
+    </ion-item>
+  </ion-list>
 </ion-content>
-
-<ion-modal [isOpen]="isEditing">
-  <ng-template>
-    <app-edit-global-item-dialog
-      [item]="editItem"
-      [mode]="mode"
-      (saveItem)="saveItemToDatabase($event)"
-      (cancel)="isEditing = false"
-    ></app-edit-global-item-dialog>
-  </ng-template>
-</ion-modal>

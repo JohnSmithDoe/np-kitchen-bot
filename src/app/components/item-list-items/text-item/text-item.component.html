@@ -1,0 +1,17 @@
+<ion-item
+  [button]="true"
+  (click)="selectCurrent()"
+  [color]="color"
+  detail="true"
+  lines="full"
+>
+  <ion-label class="ion-text-wrap">
+    <h2>{{ label }}</h2>
+    @if (note) {
+      <ion-note slot="end">{{ note }}</ion-note>
+    }
+  </ion-label>
+  @if (helper) {
+    <ion-note slot="end" class="text-item-helper">{{ helper }} </ion-note>
+  }
+</ion-item>
