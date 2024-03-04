@@ -103,8 +103,8 @@ export class DatabasePage implements OnInit {
   }
 
   async removeItem(item: IGlobalItem) {
+    await this.listComponent?.closeSlidingItems();
     await this.#database.deleteItem(item, this.itemList);
-    this.listComponent?.closeSlidingItems();
     this.#refreshItems();
     await this.#uiService.showToast(
       this.translate.instant('toast.remove.item', {

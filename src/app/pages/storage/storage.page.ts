@@ -116,8 +116,8 @@ export class StoragePage implements OnInit {
   }
 
   async removeItem(item: IStorageItem) {
+    await this.listComponent?.closeSlidingItems();
     await this.#database.deleteItem(item, this.itemList);
-    this.listComponent?.closeSlidingItems();
     this.#refreshItems();
     await this.#uiService.showToast(
       this.translate.instant('toast.remove.item', {
@@ -156,9 +156,8 @@ export class StoragePage implements OnInit {
   }
 
   async copyToShoppingList(item?: IStorageItem) {
-    this.listComponent?.closeSlidingItems();
+    await this.listComponent?.closeSlidingItems();
     if (!item) return;
-    item.quantity--;
     item = this.#database.cloneItem(item);
     item.quantity = 0;
     item = await this.#database.addItem(item, this.#database.shoppinglist());
@@ -175,9 +174,9 @@ export class StoragePage implements OnInit {
   }
 
   setDisplayMode(mode: 'alphabetical' | 'categories' | 'bestBefore') {
-    this.#refreshItems();
     this.mode = mode === 'bestBefore' ? 'alphabetical' : mode;
     this.#sortList(mode === 'categories' ? 'alphabetical' : mode);
+    this.#refreshItems();
   }
 
   selectCategory(category: IItemCategory) {
@@ -213,8 +212,8 @@ export class StoragePage implements OnInit {
   }
 
   #refreshItems() {
-    this.#clearSearch();
     this.items = [...this.itemList.items];
+    this.#clearSearch();
   }
 
   #sortList(mode: 'alphabetical' | 'bestBefore') {
@@ -224,7 +223,7 @@ export class StoragePage implements OnInit {
       this.sortDir = 'asc';
     }
     this.sortBy = mode;
-    this.items.sort((a, b) => {
+    const sortFn = (a: IStorageItem, b: IStorageItem) => {
       const MAXDATE = '5000-1-1';
       switch (mode) {
         case 'alphabetical':
@@ -238,6 +237,7 @@ export class StoragePage implements OnInit {
             : dayjs(b.bestBefore ?? MAXDATE).unix() -
                 dayjs(a.bestBefore ?? MAXDATE).unix();
       }
-    });
+    };
+    this.itemList.items.sort(sortFn);
   }
 }

@@ -78,6 +78,9 @@ export class ShoppinglistPage implements OnInit {
   searchResult?: ISearchResult<IShoppingItem>;
   mode: 'alphabetical' | 'categories' = 'alphabetical';
 
+  sortBy?: 'alphabetical';
+  sortDir: 'asc' | 'desc' = 'asc';
+
   constructor() {
     addIcons({ add, remove });
   }
@@ -113,8 +116,8 @@ export class ShoppinglistPage implements OnInit {
   }
 
   async removeItem(item: IShoppingItem) {
+    await this.listComponent?.closeSlidingItems();
     await this.#database.deleteItem(item, this.itemList);
-    this.listComponent?.closeSlidingItems();
     this.#refreshItems();
     await this.#uiService.showToast(
       this.translate.instant('toast.remove.item', {
@@ -160,7 +163,7 @@ export class ShoppinglistPage implements OnInit {
   // what should happen if we buy an item?
 
   async buyItem(item: IShoppingItem) {
-    this.listComponent?.closeSlidingItems();
+    await this.listComponent?.closeSlidingItems();
     item.state = 'bought';
     await this.#database.save();
     await this.#uiService.showToast(
@@ -172,9 +175,8 @@ export class ShoppinglistPage implements OnInit {
   }
 
   setDisplayMode(mode: 'alphabetical' | 'categories') {
-    if (mode === 'categories') {
-      this.items = [...this.itemList.items];
-    }
+    this.#sortList('alphabetical');
+    this.#refreshItems();
     this.mode = mode;
   }
 
@@ -213,5 +215,19 @@ export class ShoppinglistPage implements OnInit {
 
   #refreshItems() {
     this.#clearSearch();
+  }
+
+  #sortList(mode: 'alphabetical') {
+    this.sortDir = this.sortDir === 'asc' ? 'desc' : 'asc';
+    this.sortBy = mode;
+    const sortFn = (a: IStorageItem, b: IStorageItem) => {
+      switch (mode) {
+        case 'alphabetical':
+          return this.sortDir === 'asc'
+            ? a.name.localeCompare(b.name)
+            : b.name.localeCompare(a.name);
+      }
+    };
+    this.itemList.items.sort(sortFn);
   }
 }

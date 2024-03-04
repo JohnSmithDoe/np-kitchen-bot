@@ -3,25 +3,21 @@
 ### [Github-page](https://johnsmithdoe.github.io/np-kitchen-bot/)
 
 ## Todos:
-* ShoppingList -> local item -> storage item; shopping item from base item?
-  * Base list mit item template?! slot?!! ngContent...
+* parentID??? 
+  * storage from global
+  * shopping from global, storage
 * Units: 3 x Kartoffeln, 3 x Spaghetti, 3 x Mehl ...
   * Besser? 500 g Kartoffeln ..., 3 Packungen Spaghetti, 2 kg Mehl ...
-  * Alt UI: Bestandsregler (viel - wenig) mit min max ...
+  * Alternative UI: Bestandsregler (viel - wenig) mit min max ...
 * min amount and warning -> background as well...
 * name, zusatz
-* multi search
-* clear category on search or search only category
-* sort
-* created timestemp
+* multi term search
 * abteilung im supermarkt
 
 
 ## Feedback
-* Return im Searchbar should trigger something
-## ToTest
-* swipe ratio
 
+## ToTest
 
 
 ## Barcode scanning
@@ -55,8 +51,10 @@ https://ionicframework.com/docs/angular/your-first-app/saving-photos
 ### Shopping
 * Rezept-Inhalte (fehlende) oder Artikel hinzufügen
 * Übertragen, anzeigen, abhaken
+* Zum Lager hinzufügen und entfernen
 
-
+### Recipes
+* Liste von Rezepten mit Zutaten
 
 Android
 =======
