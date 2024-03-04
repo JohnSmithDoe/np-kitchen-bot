@@ -3,16 +3,16 @@
 ### [Github-page](https://johnsmithdoe.github.io/np-kitchen-bot/)
 
 ## Todos:
-* parentID??? 
-  * storage from global
-  * shopping from global, storage
+* uniqueness by name
+  * keine gleichnamigen Einträge innerhalb einer liste erlauben
+  * trim name
 * Units: 3 x Kartoffeln, 3 x Spaghetti, 3 x Mehl ...
   * Besser? 500 g Kartoffeln ..., 3 Packungen Spaghetti, 2 kg Mehl ...
   * Alternative UI: Bestandsregler (viel - wenig) mit min max ...
 * min amount and warning -> background as well...
 * name, zusatz
 * multi term search
-* abteilung im supermarkt
+* abteilung im supermarkt, lagerstandort (oder einfach kategorie)
 
 
 ## Feedback
@@ -62,7 +62,7 @@ Android
 Build
 ----
 
-"buildOptimizer": false, in production.. modals not showing
+"buildOptimizer": false, in production.. modals not showing coz of tree shaking
 https://github.com/ionic-team/ionic-framework/issues/28385
 > ionic serve --prod
 

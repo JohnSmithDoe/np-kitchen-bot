@@ -92,14 +92,28 @@ export class ShoppinglistPage implements OnInit {
   }
 
   async addItem(item?: IShoppingItem) {
-    item = await this.#database.addItem(item, this.itemList);
-    this.#refreshItems();
-    await this.#uiService.showToast(
-      this.translate.instant('toast.add.item', {
-        name: item?.name,
-        total: item?.quantity,
-      })
-    );
+    // do not add an already contained item (could be triggered by a shortcut)
+    if (
+      this.itemList.items.find(
+        (aItem) => aItem.name.toLowerCase() === item?.name
+      )
+    ) {
+      await this.#uiService.showToast(
+        this.translate.instant('toast.add.item.error.contained', {
+          name: item?.name,
+        }),
+        'shopping'
+      );
+    } else {
+      item = await this.#database.addItem(item, this.itemList);
+      this.#refreshItems();
+      await this.#uiService.showToast(
+        this.translate.instant('toast.add.item', {
+          name: item?.name,
+          total: item?.quantity,
+        })
+      );
+    }
   }
 
   async updateItem(item?: IShoppingItem) {
@@ -165,7 +179,8 @@ export class ShoppinglistPage implements OnInit {
   async buyItem(item: IShoppingItem) {
     await this.listComponent?.closeSlidingItems();
     item.state = 'bought';
-    await this.#database.save();
+    await this.#database.addOrUpdateItem(item, this.itemList);
+    this.#sortList('alphabetical', false);
     await this.#uiService.showToast(
       this.translate.instant('shoppinglist.page.toast.move', {
         name: item?.name,
@@ -205,6 +220,7 @@ export class ShoppinglistPage implements OnInit {
   searchFor(searchTerm: string) {
     this.searchResult = this.#database.search(this.itemList, searchTerm);
     this.items = this.searchResult?.listItems || [...this.itemList.items];
+    this.#sortList('alphabetical', false);
   }
 
   #clearSearch() {
@@ -217,15 +233,19 @@ export class ShoppinglistPage implements OnInit {
     this.#clearSearch();
   }
 
-  #sortList(mode: 'alphabetical') {
-    this.sortDir = this.sortDir === 'asc' ? 'desc' : 'asc';
+  #sortList(mode: 'alphabetical', toggleDir = true) {
+    if (toggleDir) this.sortDir = this.sortDir === 'asc' ? 'desc' : 'asc';
     this.sortBy = mode;
-    const sortFn = (a: IStorageItem, b: IStorageItem) => {
-      switch (mode) {
-        case 'alphabetical':
-          return this.sortDir === 'asc'
-            ? a.name.localeCompare(b.name)
-            : b.name.localeCompare(a.name);
+    const sortFn = (a: IShoppingItem, b: IShoppingItem) => {
+      if (!(a.state === 'bought' || b.state === 'bought')) {
+        switch (mode) {
+          case 'alphabetical':
+            return this.sortDir === 'asc'
+              ? a.name.localeCompare(b.name)
+              : b.name.localeCompare(a.name);
+        }
+      } else {
+        return a.state === 'bought' ? 1 : -1;
       }
     };
     this.itemList.items.sort(sortFn);

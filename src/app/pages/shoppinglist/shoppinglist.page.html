@@ -1,6 +1,7 @@
 <app-page-header
   color="shopping"
   label="{{'page-title.shoppinglist' | translate}}"
+  [disabled]="!!searchResult?.foundInList"
   (addItem)="showEditDialog()"
 >
   <app-item-list-searchbar
@@ -16,6 +17,8 @@
   <app-item-list-quickadd
     color="shopping"
     listName="{{'list-header.shoppinglist' | translate}}"
+    [showQuickAdd]="!searchResult?.foundInList"
+    [showQuickAddGlobal]="!searchResult?.foundInList && !searchResult?.foundInGlobal"
     [quickAddLabel]="searchResult?.searchTerm"
     (quickAddItem)="quickAddItem()"
     (quickCreateGlobal)="showCreateGlobalDialog()"

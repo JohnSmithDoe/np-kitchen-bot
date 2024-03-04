@@ -1,6 +1,7 @@
 <app-page-header
   color="storage"
   label="{{'page-title.storage' | translate}}"
+  [disabled]="!!searchResult?.foundInList"
   (addItem)="showEditDialog()"
 >
   <app-item-list-searchbar
@@ -16,6 +17,7 @@
   <app-item-list-quickadd
     color="storage"
     listName="{{'list-header.storage' | translate}}"
+    [hidden]="(searchResult?.searchTerm && searchResult?.foundInList)"
     [quickAddLabel]="searchResult?.searchTerm"
     (quickAddItem)="quickAddItem()"
     (quickCreateGlobal)="showCreateGlobalDialog()"

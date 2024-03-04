@@ -154,7 +154,7 @@ export class DatabaseService {
       result = list.items.find((aItem) => aItem.id === item.id);
       if (!result) {
         result = this.cloneItem(item);
-        list.items.push(result);
+        list.items.unshift(result);
       }
       await this.save();
     }
@@ -207,15 +207,25 @@ export class DatabaseService {
       item.name.toLowerCase() === other.name.toLowerCase();
     const matchesSearch = (item: IBaseItem) =>
       item.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearchExactly = (item: IBaseItem) =>
+      item.name.toLowerCase() === searchTerm.toLowerCase();
     const matchesCategory = (item: IBaseItem) =>
       (item.category?.findIndex(
         (cat) => cat.toLowerCase().indexOf(searchTerm) >= 0
       ) ?? -1) >= 0;
 
     const listItems = itemList.items.filter((item) => matchesSearch(item));
+
+    const storageItems = this.storage.items.filter(
+      (item) =>
+        !listItems.find((litem) => matchesName(item, litem)) &&
+        matchesSearch(item)
+    );
+
     const globalItemsByName = this.all.items.filter(
       (item) =>
         !listItems.find((litem) => matchesName(item, litem)) &&
+        !storageItems.find((sitem) => matchesName(item, sitem)) &&
         matchesSearch(item)
     );
     const globalItemsByCat = this.all.items.filter(
@@ -225,17 +235,20 @@ export class DatabaseService {
         matchesCategory(item)
     );
     const globalItems = [...globalItemsByName, ...globalItemsByCat];
-    // .filter((item, idx, curr) => matchesCategory(item, curr));
-    const storageItems = this.storage.items.filter(
-      (item) =>
-        !listItems.find((litem) => matchesName(item, litem)) &&
-        !globalItems.find((gitem) => matchesName(item, gitem)) &&
-        matchesSearch(item)
-    );
+
+    const all: IBaseItem[] = ([] as IBaseItem[])
+      .concat(listItems)
+      .concat(globalItems)
+      .concat(storageItems);
 
     return {
       searchTerm,
       hasSearchTerm: !!searchTerm.length,
+      foundInList: listItems.find((base) => matchesSearchExactly(base)),
+      foundInGlobal: this.all.items.find((global) =>
+        matchesSearchExactly(global)
+      ),
+      all,
       listItems,
       globalItems,
       storageItems,

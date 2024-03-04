@@ -1,5 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { ToastController } from '@ionic/angular/standalone';
+import { TColor } from '../@types/types';
 
 @Injectable({
   providedIn: 'root',
@@ -7,11 +8,11 @@ import { ToastController } from '@ionic/angular/standalone';
 export class UiService {
   readonly #toastController = inject(ToastController);
 
-  async showToast(message: string) {
+  async showToast(message: string, color: TColor = 'success') {
     const toast = await this.#toastController.create({
       position: 'bottom',
       duration: 1500,
-      color: 'success',
+      color,
       message,
     });
     await toast.present();

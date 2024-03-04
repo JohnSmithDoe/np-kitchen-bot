@@ -6,7 +6,7 @@
     <ion-title>{{ label | translate }}</ion-title>
     @if (!hideButtons) {
       <ion-buttons slot="end">
-        <ion-button (click)="addItem.emit()">
+        <ion-button (click)="addItem.emit()" [disabled]="disabled">
           <ion-icon name="add" slot="icon-only"></ion-icon>
         </ion-button>
       </ion-buttons>

@@ -40,6 +40,7 @@ export class PageHeaderComponent implements OnInit {
   @Input() label = '';
   @Input() color?: TColor;
   @Input({ transform: booleanAttribute }) hideButtons = false;
+  @Input({ transform: booleanAttribute }) disabled = false;
   @Output() addItem = new EventEmitter<void>();
 
   constructor() {

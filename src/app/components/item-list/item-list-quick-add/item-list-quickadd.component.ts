@@ -1,4 +1,5 @@
 import {
+  booleanAttribute,
   Component,
   EventEmitter,
   inject,
@@ -32,7 +33,9 @@ export class ItemListQuickaddComponent implements OnInit, OnDestroy {
   @Output() quickAddItem = new EventEmitter<void>();
   @Output() quickCreateGlobal = new EventEmitter<void>();
 
+  @Input({ transform: booleanAttribute }) showQuickAdd = true;
   canQuickAdd = true;
+  @Input({ transform: booleanAttribute }) showQuickAddGlobal = true;
   canQuickAddGlobal = true;
 
   #settingsChangedSub?: Subscription;

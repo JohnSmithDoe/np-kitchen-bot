@@ -1,4 +1,4 @@
-@if (canQuickAdd && !!quickAddLabel?.length) {
+@if (showQuickAdd && canQuickAdd && !!quickAddLabel?.length) {
   <app-text-item
     [color]="color"
     helper="{{
@@ -10,7 +10,7 @@
   ></app-text-item>
 }
 
-@if (canQuickAddGlobal && !!quickAddLabel?.length) {
+@if (showQuickAddGlobal && canQuickAddGlobal && !!quickAddLabel?.length) {
   <app-text-item
     color="global"
     helper="{{

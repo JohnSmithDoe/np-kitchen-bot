@@ -92,14 +92,24 @@ export class StoragePage implements OnInit {
   }
 
   async addItem(item?: IStorageItem) {
-    item = await this.#database.addItem(item, this.itemList);
-    this.#refreshItems();
-    await this.#uiService.showToast(
-      this.translate.instant('toast.add.item', {
-        name: item?.name,
-        total: item?.quantity,
-      })
-    );
+    // do not add an already contained item (could be triggered by a shortcut)
+    if (this.searchResult?.foundInList) {
+      await this.#uiService.showToast(
+        this.translate.instant('toast.add.item.error.contained', {
+          name: this.searchResult?.foundInList.name,
+        }),
+        'storage'
+      );
+    } else {
+      item = await this.#database.addItem(item, this.itemList);
+      this.#refreshItems();
+      await this.#uiService.showToast(
+        this.translate.instant('toast.add.item', {
+          name: item?.name,
+          total: item?.quantity,
+        })
+      );
+    }
   }
 
   async updateItem(item?: IStorageItem) {

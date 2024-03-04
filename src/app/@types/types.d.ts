@@ -98,8 +98,11 @@ export interface IDatastore {
 
 export interface ISearchResult<T extends IBaseItem> {
   listItems: T[];
-  hasSearchTerm: boolean;
+  hasSearchTerm: boolean; // length of the searchTerm > 0
   searchTerm: string;
+  foundInList?: T; // the item from the list where the name matches exactly
+  foundInGlobal?: IGlobalItem; // the global item where name matches exactly
+  all: IBaseItem[];
   globalItems: IGlobalItem[];
   storageItems: IStorageItem[];
 }
