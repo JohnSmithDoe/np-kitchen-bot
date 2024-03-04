@@ -175,9 +175,7 @@ export class StoragePage implements OnInit {
   }
 
   setDisplayMode(mode: 'alphabetical' | 'categories' | 'bestBefore') {
-    if (mode === 'categories') {
-      this.items = [...this.itemList.items];
-    }
+    this.#refreshItems();
     this.mode = mode === 'bestBefore' ? 'alphabetical' : mode;
     this.#sortList(mode === 'categories' ? 'alphabetical' : mode);
   }
