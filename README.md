@@ -1,5 +1,7 @@
 # NP-Kitchen-Bot
 
+### [Github-page](https://johnsmithdoe.github.io/np-kitchen-bot/)
+
 ## Todos:
 * ShoppingList -> local item -> storage item; shopping item from base item?
   * Base list mit item template?! slot?!! ngContent...
