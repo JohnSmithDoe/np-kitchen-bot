@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import {
   IonContent,
   IonItem,
@@ -29,7 +29,7 @@ import { UiService } from '../../services/ui.service';
     IonListHeader,
   ],
 })
-export class SettingsPage implements OnInit {
+export class SettingsPage {
   readonly #database = inject(DatabaseService);
   readonly #uiService = inject(UiService);
   readonly translate = inject(TranslateService);
@@ -40,10 +40,10 @@ export class SettingsPage implements OnInit {
     this.settings = this.#database.settings;
   }
 
-  ngOnInit(): void {}
-
-  save() {
-    this.#uiService.showToast(this.translate.instant('toast.save.setting'));
+  async save() {
+    await this.#uiService.showToast(
+      this.translate.instant('toast.save.setting')
+    );
     return this.#database.save();
   }
 

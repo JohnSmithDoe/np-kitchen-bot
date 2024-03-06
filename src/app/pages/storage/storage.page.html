@@ -28,7 +28,7 @@
     headerColor="storage"
     header="{{'list-header.storage' | translate}}"
     [mode]="mode"
-    [items]="items"
+    [items]="rxItems$ | async"
     [itemTemplate]="storageItem"
     (selectCategory)="selectCategory($event)"
   ></app-item-list>

@@ -4,7 +4,6 @@ import {
   EventEmitter,
   Input,
   OnChanges,
-  OnInit,
   Output,
   SimpleChanges,
   TemplateRef,
@@ -69,11 +68,11 @@ import { TextItemComponent } from '../item-list-items/text-item/text-item.compon
     TextItemComponent,
   ],
 })
-export class ItemListComponent implements OnInit, OnChanges {
+export class ItemListComponent implements OnChanges {
   @ViewChild('ionList', { static: true }) ionList?: IonList;
 
   @Input() itemTemplate!: TemplateRef<any>;
-  @Input({ required: true }) items: IBaseItem[] | null = [];
+  @Input({ required: true }) items!: ReadonlyArray<IBaseItem> | null;
   @Input() mode: 'alphabetical' | 'categories' = 'alphabetical';
 
   categories: IItemCategory[] = [];
@@ -91,14 +90,10 @@ export class ItemListComponent implements OnInit, OnChanges {
     addIcons({ add, remove, cart, list });
   }
 
-  ngOnInit(): void {
-    //
-  }
-
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.hasOwnProperty('items')) {
       this.categories = getCategoriesFromList({
-        items: this.items ?? [],
+        items: [...(this.items ?? [])],
         id: '',
         title: '',
       });

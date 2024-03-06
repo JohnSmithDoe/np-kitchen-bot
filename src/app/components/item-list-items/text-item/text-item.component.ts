@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import {
   IonItem,
   IonLabel,
@@ -14,7 +14,7 @@ import { TColor } from '../../../@types/types';
   styleUrls: ['./text-item.component.scss'],
   imports: [IonItem, IonLabel, IonListHeader, IonNote],
 })
-export class TextItemComponent implements OnInit {
+export class TextItemComponent {
   @Input() label?: string | null;
   @Input() color?: TColor;
   @Input() helper?: string;
@@ -23,8 +23,6 @@ export class TextItemComponent implements OnInit {
   @Output() selectItem = new EventEmitter<void>();
 
   constructor() {}
-
-  ngOnInit() {}
 
   selectCurrent() {
     this.selectItem.emit();

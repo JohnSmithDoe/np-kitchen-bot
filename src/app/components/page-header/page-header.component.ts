@@ -3,7 +3,6 @@ import {
   Component,
   EventEmitter,
   Input,
-  OnInit,
   Output,
 } from '@angular/core';
 import {
@@ -36,7 +35,7 @@ import { TColor } from '../../@types/types';
     TranslateModule,
   ],
 })
-export class PageHeaderComponent implements OnInit {
+export class PageHeaderComponent {
   @Input() label = '';
   @Input() color?: TColor;
   @Input({ transform: booleanAttribute }) hideButtons = false;
@@ -46,6 +45,4 @@ export class PageHeaderComponent implements OnInit {
   constructor() {
     addIcons({ add });
   }
-
-  ngOnInit() {}
 }

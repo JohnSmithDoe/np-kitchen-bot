@@ -54,7 +54,7 @@ export class CategoriesDialogComponent implements OnInit {
   readonly #database = inject(DatabaseService);
 
   @Input() item?: IBaseItem;
-  @Input() itemList?: IItemList<IBaseItem>;
+  @Input() itemList?: IItemList;
 
   @Output() confirm = new EventEmitter<string[]>();
   @Output() cancel = new EventEmitter();

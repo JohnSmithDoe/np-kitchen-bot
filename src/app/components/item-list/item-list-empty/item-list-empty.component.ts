@@ -3,7 +3,6 @@ import {
   Component,
   EventEmitter,
   Input,
-  OnInit,
   Output,
 } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
@@ -18,7 +17,7 @@ import { TextItemComponent } from '../../item-list-items/text-item/text-item.com
   standalone: true,
   imports: [TextItemComponent, TranslateModule],
 })
-export class ItemListEmptyComponent implements OnInit {
+export class ItemListEmptyComponent {
   @Input({ transform: booleanAttribute }) isEmptyList = true;
   @Input({ transform: booleanAttribute }) isSearching = false;
   @Input() searchTerm?: string;
@@ -28,6 +27,4 @@ export class ItemListEmptyComponent implements OnInit {
   constructor() {
     addIcons({ add, remove, cart, list });
   }
-
-  ngOnInit(): void {}
 }

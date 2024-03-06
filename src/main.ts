@@ -12,12 +12,14 @@ import {
   provideIonicAngular,
 } from '@ionic/angular/standalone';
 import { IonicStorageModule } from '@ionic/storage-angular';
+import { provideStore } from '@ngrx/store';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { AppComponent } from './app/app.component';
 
 import { routes } from './app/app.routes';
 import { DatabaseService } from './app/services/database.service';
+import { databaseReducer, storageReducer } from './app/state/storage.reducer';
 import { environment } from './environments/environment';
 
 if (environment.production) {
@@ -52,6 +54,7 @@ void bootstrapApplication(AppComponent, {
         },
       })
     ),
+    provideStore({ storage: storageReducer, database: databaseReducer }),
     {
       provide: LOCALE_ID,
       useValue: 'de-DE',

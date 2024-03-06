@@ -3,7 +3,6 @@ import {
   Component,
   EventEmitter,
   Input,
-  OnInit,
   Output,
 } from '@angular/core';
 import {
@@ -22,7 +21,7 @@ import { add, cart, list, remove } from 'ionicons/icons';
   standalone: true,
   imports: [IonToolbar, IonButtons, IonButton, IonIcon],
 })
-export class ItemListToolbarComponent implements OnInit {
+export class ItemListToolbarComponent {
   @Input({ transform: booleanAttribute }) showToolbar = true;
   @Input({ transform: booleanAttribute }) showReorder = false;
 
@@ -34,6 +33,4 @@ export class ItemListToolbarComponent implements OnInit {
   constructor() {
     addIcons({ add, remove, cart, list });
   }
-
-  ngOnInit(): void {}
 }

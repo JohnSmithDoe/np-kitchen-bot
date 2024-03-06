@@ -1,5 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage-angular';
+import { Store } from '@ngrx/store';
 import * as dayjs from 'dayjs';
 import { BehaviorSubject } from 'rxjs';
 import {
@@ -9,6 +10,7 @@ import {
   IItemList,
   ISearchResult,
 } from '../@types/types';
+import { DatabaseActions } from '../state/storage.actions';
 
 const INITIAL_DATA: IGlobalItem[] = [
   {
@@ -108,8 +110,9 @@ export class DatabaseService {
   static readonly CNP_STORAGE_KEY = 'np-kitchen-helper';
 
   readonly #storageService = inject(Storage);
+  readonly store = inject(Store);
 
-  #store: IDatastore = {
+  #datastore: IDatastore = {
     all: { title: 'All Items', id: '_all', items: [] },
     storage: { title: 'Storage', id: '_storage', items: [] },
     shoppinglists: [],
@@ -126,23 +129,24 @@ export class DatabaseService {
     const stored = await this.#storageService.get(
       DatabaseService.CNP_STORAGE_KEY
     );
-    if (stored) this.#store = stored;
+    if (stored) this.#datastore = stored;
     if (!stored) {
       this.all.items = INITIAL_DATA;
       this.all.items = [];
     }
-    if (!this.#store.settings) {
-      this.#store.settings = {
+    if (!this.#datastore.settings) {
+      this.#datastore.settings = {
         showQuickAdd: true,
         showQuickAddGlobal: false,
       };
     }
+    this.store.dispatch(DatabaseActions.load(this.#datastore));
   }
 
   async save() {
     await this.#storageService.set(
       DatabaseService.CNP_STORAGE_KEY,
-      this.#store
+      this.#datastore
     );
     this.save$.next(true);
   }
@@ -264,26 +268,26 @@ export class DatabaseService {
   // Getter
 
   get settings() {
-    return this.#store.settings;
+    return this.#datastore.settings;
   }
 
   get all() {
-    return this.#store.all;
+    return this.#datastore.all;
   }
 
   get storage() {
-    return this.#store.storage;
+    return this.#datastore.storage;
   }
 
   shoppinglist(id = 'default') {
-    let list = this.#store.shoppinglists.find((list) => list.id === id);
+    let list = this.#datastore.shoppinglists.find((list) => list.id === id);
     if (!list) {
       list = {
         id,
         items: [],
         title: '',
       };
-      this.#store.shoppinglists.push(list);
+      this.#datastore.shoppinglists.push(list);
     }
     return list;
   }

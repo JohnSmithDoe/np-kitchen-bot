@@ -1,5 +1,7 @@
+import { AsyncPipe } from '@angular/common';
 import { Component, inject, OnInit, ViewChild } from '@angular/core';
 import { IonButton, IonContent, IonModal } from '@ionic/angular/standalone';
+import { Store } from '@ngrx/store';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import * as dayjs from 'dayjs';
 import { addIcons } from 'ionicons';
@@ -30,6 +32,7 @@ import { EditStorageItemDialogComponent } from '../../dialogs/edit-storage-item-
 import { CategoriesPipe } from '../../pipes/categories.pipe';
 import { DatabaseService } from '../../services/database.service';
 import { UiService } from '../../services/ui.service';
+import { selectStorageList } from '../../state/storage.selector';
 
 @Component({
   selector: 'app-page-storage',
@@ -52,6 +55,7 @@ import { UiService } from '../../services/ui.service';
     EditStorageItemDialogComponent,
     CategoriesPipe,
     IonButton,
+    AsyncPipe,
   ],
 })
 export class StoragePage implements OnInit {
@@ -64,6 +68,7 @@ export class StoragePage implements OnInit {
   readonly #database = inject(DatabaseService);
   readonly #uiService = inject(UiService);
   readonly translate = inject(TranslateService);
+  readonly #store = inject(Store);
 
   itemList!: IItemList<IStorageItem>;
 
@@ -81,6 +86,8 @@ export class StoragePage implements OnInit {
   sortBy?: 'alphabetical' | 'bestBefore';
   sortDir: 'asc' | 'desc' = 'asc';
 
+  rxItems$ = this.#store.select(selectStorageList);
+
   constructor() {
     addIcons({ add, remove });
   }
@@ -89,6 +96,7 @@ export class StoragePage implements OnInit {
     this.itemList = this.#database.storage;
     this.items = this.itemList.items;
     this.createNewItem = null;
+    console.log(this.#store);
   }
 
   async addItem(item?: IStorageItem) {
