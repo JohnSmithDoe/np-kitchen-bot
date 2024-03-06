@@ -1,8 +1,10 @@
+import { AsyncPipe } from '@angular/common';
 import { Component, inject, OnInit, ViewChild } from '@angular/core';
 import { IonContent, IonModal } from '@ionic/angular/standalone';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { add, remove } from 'ionicons/icons';
+import { BehaviorSubject, Observable } from 'rxjs';
 import {
   IGlobalItem,
   IItemCategory,
@@ -52,6 +54,7 @@ import { UiService } from '../../services/ui.service';
     ShoppingItemComponent,
     EditShoppingItemDialogComponent,
     CategoriesPipe,
+    AsyncPipe,
   ],
 })
 export class ShoppinglistPage implements OnInit {
@@ -73,7 +76,9 @@ export class ShoppinglistPage implements OnInit {
   isEditing = false;
   editItem: IShoppingItem | null | undefined;
   editMode: 'update' | 'create' = 'create';
-  items: IShoppingItem[] = [];
+
+  #items = new BehaviorSubject<IShoppingItem[]>([]);
+  items$: Observable<IShoppingItem[]> = this.#items.asObservable();
 
   searchResult?: ISearchResult<IShoppingItem>;
   mode: 'alphabetical' | 'categories' = 'alphabetical';
@@ -87,7 +92,7 @@ export class ShoppinglistPage implements OnInit {
 
   ngOnInit(): void {
     this.itemList = this.#database.shoppinglist();
-    this.items = this.itemList.items;
+    this.#items.next([...this.itemList.items]); // TODO: sub here and pipe search?
     this.createNewItem = null;
   }
 
@@ -180,7 +185,9 @@ export class ShoppinglistPage implements OnInit {
     await this.listComponent?.closeSlidingItems();
     item.state = 'bought';
     await this.#database.addOrUpdateItem(item, this.itemList);
-    this.#sortList('alphabetical', false);
+    this.#items.next(
+      this.#sortList([...this.itemList.items], 'alphabetical', false)
+    );
     await this.#uiService.showToast(
       this.translate.instant('shoppinglist.page.toast.move', {
         name: item?.name,
@@ -190,13 +197,15 @@ export class ShoppinglistPage implements OnInit {
   }
 
   setDisplayMode(mode: 'alphabetical' | 'categories') {
-    this.#sortList('alphabetical');
+    this.#items.next(
+      this.#sortList([...this.itemList.items], 'alphabetical', true)
+    );
     this.#refreshItems();
     this.mode = mode;
   }
 
   selectCategory(category: IItemCategory) {
-    this.items = getItemsFromCategory(category, this.itemList);
+    this.#items.next([...getItemsFromCategory(category, this.itemList)]);
     this.mode = 'alphabetical';
   }
 
@@ -219,21 +228,27 @@ export class ShoppinglistPage implements OnInit {
 
   searchFor(searchTerm: string) {
     this.searchResult = this.#database.search(this.itemList, searchTerm);
-    this.items = this.searchResult?.listItems || [...this.itemList.items];
-    this.#sortList('alphabetical', false);
+
+    this.#items.next(
+      this.#sortList(
+        this.searchResult?.listItems || [...this.itemList.items],
+        'alphabetical',
+        false
+      )
+    );
   }
 
   #clearSearch() {
     this.searchResult = undefined;
     this.listSearchbar?.clear();
-    this.items = [...this.itemList.items];
+    this.#items.next([...this.itemList.items]);
   }
 
   #refreshItems() {
     this.#clearSearch();
   }
 
-  #sortList(mode: 'alphabetical', toggleDir = true) {
+  #sortList(items: IShoppingItem[], mode: 'alphabetical', toggleDir = true) {
     if (toggleDir) this.sortDir = this.sortDir === 'asc' ? 'desc' : 'asc';
     this.sortBy = mode;
     const sortFn = (a: IShoppingItem, b: IShoppingItem) => {
@@ -248,6 +263,6 @@ export class ShoppinglistPage implements OnInit {
         return a.state === 'bought' ? 1 : -1;
       }
     };
-    this.itemList.items.sort(sortFn);
+    return items.sort(sortFn);
   }
 }

@@ -29,7 +29,7 @@
     headerColor="shopping"
     header="{{'list-header.shoppinglist' | translate}}"
     [mode]="mode"
-    [items]="items"
+    [items]="items$ | async"
     [itemTemplate]="shoppingItem"
     (selectCategory)="selectCategory($event)"
   ></app-item-list>
@@ -45,7 +45,7 @@
   </ng-template>
 
   <app-item-list-empty
-    [isEmptyList]="!items.length"
+    [isEmptyList]="!((items$ | async)?.length)"
     [isSearching]="searchResult?.hasSearchTerm"
     [searchTerm]="searchResult?.searchTerm"
     (emptyItem)="showEditDialog()"

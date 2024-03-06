@@ -73,7 +73,7 @@ export class ItemListComponent implements OnInit, OnChanges {
   @ViewChild('ionList', { static: true }) ionList?: IonList;
 
   @Input() itemTemplate!: TemplateRef<any>;
-  @Input() items: IBaseItem[] = [];
+  @Input({ required: true }) items: IBaseItem[] | null = [];
   @Input() mode: 'alphabetical' | 'categories' = 'alphabetical';
 
   categories: IItemCategory[] = [];
@@ -98,7 +98,7 @@ export class ItemListComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.hasOwnProperty('items')) {
       this.categories = getCategoriesFromList({
-        items: this.items,
+        items: this.items ?? [],
         id: '',
         title: '',
       });
