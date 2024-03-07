@@ -1,11 +1,12 @@
 <app-page-header
   color="shopping"
   label="{{'page-title.shoppinglist' | translate}}"
-  [disabled]="!!searchResult?.foundInList"
+  [disabled]="!!searchResult?.exactMatch"
   (addItem)="showEditDialog()"
 >
   <app-item-list-searchbar
-    (searchItem)="searchFor($event)"
+    [query]="(rxState$ | async)?.searchQuery"
+    (queryChange)="searchFor($event)"
     (hitEnter)="quickAddItem()"
   ></app-item-list-searchbar>
   <app-item-list-toolbar
@@ -17,8 +18,8 @@
   <app-item-list-quickadd
     color="shopping"
     listName="{{'list-header.shoppinglist' | translate}}"
-    [showQuickAdd]="!searchResult?.foundInList"
-    [showQuickAddGlobal]="!searchResult?.foundInList && !searchResult?.foundInGlobal"
+    [showQuickAdd]="!searchResult?.exactMatch"
+    [showQuickAddGlobal]="!searchResult?.exactMatch && !searchResult?.foundInGlobal"
     [quickAddLabel]="searchResult?.searchTerm"
     (quickAddItem)="quickAddItem()"
     (quickCreateGlobal)="showCreateGlobalDialog()"
@@ -111,7 +112,7 @@
       (cancel)="isCreating = false"
       (saveItem)="createGlobalItem($event)"
       [item]="createNewItem"
-      [localList]="itemList"
+      [categories]="[]"
     ></app-edit-global-item-dialog>
   </ng-template>
 </ion-modal>

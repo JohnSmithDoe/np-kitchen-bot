@@ -23,8 +23,7 @@ import {
   IonToolbar,
 } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
-import { IBaseItem, IItemCategory, IItemList } from '../../@types/types';
-import { getCategoriesFromList } from '../../app.utils';
+import { IBaseItem, TItemListCategory } from '../../@types/types';
 import { DatabaseService } from '../../services/database.service';
 
 @Component({
@@ -54,14 +53,14 @@ export class CategoriesDialogComponent implements OnInit {
   readonly #database = inject(DatabaseService);
 
   @Input() item?: IBaseItem;
-  @Input() itemList?: IItemList;
+  @Input() categories: TItemListCategory[] = [];
 
   @Output() confirm = new EventEmitter<string[]>();
   @Output() cancel = new EventEmitter();
 
-  items: IItemCategory[] = [];
-  allCategories: IItemCategory[] = [];
-  newCategories: IItemCategory[] = [];
+  items: TItemListCategory[] = [];
+  allCategories: TItemListCategory[] = [];
+  newCategories: TItemListCategory[] = [];
   selection: string[] = [];
   searchFor?: string;
   isExactlyIncluded = false;
@@ -70,18 +69,15 @@ export class CategoriesDialogComponent implements OnInit {
 
   ngOnInit() {
     this.searchFor = undefined;
-    this.allCategories = getCategoriesFromList(
-      // this.#database.all,
-      this.itemList
-    );
+    this.allCategories = this.categories;
     if (this.item) {
       this.selection = this.item.category ?? [];
       this.selection
         .filter(
           (category) =>
-            !this.allCategories.find((allCat) => allCat.name === category)
+            !this.allCategories.find((allCat) => allCat === category)
         )
-        .forEach((name) => this.allCategories.push({ name, items: [] }));
+        .forEach((name) => this.allCategories.push(name));
     }
     this.items = [...this.allCategories];
   }
@@ -93,16 +89,16 @@ export class CategoriesDialogComponent implements OnInit {
       this.isExactlyIncluded = false;
     } else {
       this.items = [...this.newCategories, ...this.allCategories].filter(
-        (cat) => cat.name.toLowerCase().includes(this.searchFor!.toLowerCase())
+        (cat) => cat.toLowerCase().includes(this.searchFor!.toLowerCase())
       );
       this.isExactlyIncluded = !!this.items.find(
-        (item) => item.name.toLowerCase() === this.searchFor?.toLowerCase()
+        (item) => item.toLowerCase() === this.searchFor?.toLowerCase()
       );
     }
   }
 
-  isChecked(item: IItemCategory) {
-    return this.selection.find((selected) => selected === item.name);
+  isChecked(item: TItemListCategory) {
+    return this.selection.find((selected) => selected === item);
   }
 
   selectionChange(ev: any) {
@@ -116,7 +112,7 @@ export class CategoriesDialogComponent implements OnInit {
 
   addNewCategory() {
     if (this.searchFor && !!this.searchFor.length) {
-      this.newCategories.push({ name: this.searchFor, items: [] });
+      this.newCategories.push(this.searchFor);
       this.selection = [...this.selection, this.searchFor];
       this.searchbarInput({ target: { value: null } });
     }

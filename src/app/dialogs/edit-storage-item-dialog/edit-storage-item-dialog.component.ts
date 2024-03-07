@@ -34,7 +34,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import * as dayjs from 'dayjs';
 import { addIcons } from 'ionicons';
 import { closeCircle } from 'ionicons/icons';
-import { IItemList, IStorageItem } from '../../@types/types';
+import { IStorageItem } from '../../@types/types';
 import { DatabaseService } from '../../services/database.service';
 import { CategoriesDialogComponent } from '../categories-dialog/categories-dialog.component';
 
@@ -74,11 +74,11 @@ export class EditStorageItemDialogComponent implements OnInit {
   readonly #database = inject(DatabaseService);
   readonly translate = inject(TranslateService);
 
-  @Input() item?: IStorageItem | null;
-  @Input() localList!: IItemList<IStorageItem>;
+  @Input() item?: Partial<IStorageItem> | null;
+  @Input() categories: string[] = [];
   @Input() mode: 'update' | 'create' = 'create';
 
-  @Output() saveItem = new EventEmitter<IStorageItem>();
+  @Output() saveItem = new EventEmitter<Partial<IStorageItem>>();
   @Output() cancel = new EventEmitter();
 
   selectCategories = false;
@@ -110,6 +110,8 @@ export class EditStorageItemDialogComponent implements OnInit {
 
   ngOnInit(): void {
     this.currencyCode = this.translate.currentLang !== 'en' ? 'EUR' : 'USD';
+
+    this.nameValue = this.item?.name;
 
     this.saveButtonText =
       this.mode === 'create'
@@ -159,6 +161,6 @@ export class EditStorageItemDialogComponent implements OnInit {
   }
 
   submitChanges() {
-    //this.saveItem.emit({})
+    this.saveItem.emit({ ...this.item, name: this.nameValue });
   }
 }

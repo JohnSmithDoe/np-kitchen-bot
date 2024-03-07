@@ -7,9 +7,9 @@ import { addIcons } from 'ionicons';
 import { add, remove } from 'ionicons/icons';
 import {
   IGlobalItem,
-  IItemCategory,
   IItemList,
   ISearchResult,
+  TItemListCategory,
 } from '../../@types/types';
 import { createGlobalItem } from '../../app.factory';
 import { GlobalItemComponent } from '../../components/item-list-items/global-item/global-item.component';
@@ -25,7 +25,10 @@ import { EditStorageItemDialogComponent } from '../../dialogs/edit-storage-item-
 import { DatabaseService } from '../../services/database.service';
 import { UiService } from '../../services/ui.service';
 import { GlobalsActions } from '../../state/globals/globals.actions';
-import { selectGlobalsList } from '../../state/globals/globals.selector';
+import {
+  selectGlobalsList,
+  selectGlobalsState,
+} from '../../state/globals/globals.selector';
 
 @Component({
   selector: 'app-page-database',
@@ -74,6 +77,7 @@ export class GlobalsPage implements OnInit {
   sortDir: 'asc' | 'desc' = 'asc';
 
   rxItems$ = this.#store.select(selectGlobalsList);
+  rxState$ = this.#store.select(selectGlobalsState);
 
   constructor() {
     addIcons({ add, remove });
@@ -85,7 +89,7 @@ export class GlobalsPage implements OnInit {
 
   async addItem(item?: IGlobalItem) {
     // do not add an already contained item (could be triggered by a shortcut)
-    if (this.searchResult?.foundInList) {
+    if (this.searchResult?.exactMatch) {
       await this.#uiService.showToast(
         this.translate.instant('toast.add.item.error.contained', {
           name: item?.name,
@@ -144,7 +148,7 @@ export class GlobalsPage implements OnInit {
     this.#clearSearch();
   }
 
-  selectCategory(category: IItemCategory) {
+  selectCategory(category: TItemListCategory) {
     //TODO: dispatch select category
     //this.items = getItemsFromCategory(category, this.itemList);
     //this.mode = 'alphabetical';
@@ -163,8 +167,8 @@ export class GlobalsPage implements OnInit {
   }
 
   #clearSearch() {
-    this.searchResult = undefined;
-    this.listSearchbar?.clear();
+    // this.searchResult = undefined;
+    // this.listSearchbar?.clear();
   }
 
   #sortList(mode: 'alphabetical', toggleDir = true) {

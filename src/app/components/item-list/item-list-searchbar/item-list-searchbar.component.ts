@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { SearchbarCustomEvent } from '@ionic/angular';
 import { IonSearchbar } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
@@ -13,9 +13,9 @@ import { add, cart, list, remove } from 'ionicons/icons';
   imports: [IonSearchbar, TranslateModule],
 })
 export class ItemListSearchbarComponent {
-  @ViewChild(IonSearchbar, { static: true }) ionSearchbar?: IonSearchbar;
+  @Input() query?: string;
 
-  @Output() searchItem = new EventEmitter<string>();
+  @Output() queryChange = new EventEmitter<string>();
   @Output() hitEnter = new EventEmitter<void>();
 
   constructor() {
@@ -23,11 +23,6 @@ export class ItemListSearchbarComponent {
   }
 
   searchTermChange(ev: SearchbarCustomEvent) {
-    this.searchItem.emit(ev.detail.value ?? undefined);
-  }
-
-  clear() {
-    if (!this.ionSearchbar) return;
-    this.ionSearchbar.value = '';
+    this.queryChange.emit(ev.detail.value ?? undefined);
   }
 }

@@ -42,13 +42,13 @@
         </ion-note>
       </ion-item>
     }
-    @for (item of items; track item.name) {
+    @for (item of items; track item) {
       <ion-item>
         <ion-checkbox
           [value]="item"
           [checked]="isChecked(item)"
           (ionChange)="selectionChange($event)"
-          >{{ item.name }}
+          >{{ item }}
         </ion-checkbox>
       </ion-item>
     } @empty {

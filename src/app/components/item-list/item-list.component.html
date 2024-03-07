@@ -10,10 +10,10 @@
 </ion-list>
 
 <ng-template #categoryMode>
-  @for (category of categories; track category.name) {
+  @for (category of categories; track category) {
     <app-text-item
       color="category"
-      [label]="category.name"
+      [label]="category"
       (selectItem)="selectCategory.emit(category)"
     ></app-text-item>
   }

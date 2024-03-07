@@ -2,10 +2,8 @@ import { inject, Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage-angular';
 import { Store } from '@ngrx/store';
 import {
-  IBaseItem,
   IDatastore,
   IItemList,
-  ISearchResult,
   ISettings,
   IStorageItem,
 } from '../@types/types';
@@ -57,65 +55,6 @@ export class DatabaseService {
 
   removeStorageItem(item: IStorageItem) {
     this.store.dispatch(StorageActions.removeItem(item));
-  }
-
-  search<T extends IBaseItem>(
-    itemList: IItemList<T>,
-    searchTerm?: string
-  ): ISearchResult<T> | undefined {
-    return;
-    // if (!searchTerm || !searchTerm.length) return;
-    //
-    // const matchesName = (item: IBaseItem, other: IBaseItem) =>
-    //   item.name.toLowerCase() === other.name.toLowerCase();
-    // const matchesSearch = (item: IBaseItem) =>
-    //   item.name.toLowerCase().includes(searchTerm.toLowerCase());
-    // const matchesSearchExactly = (item: IBaseItem) =>
-    //   item.name.toLowerCase() === searchTerm.toLowerCase();
-    // const matchesCategory = (item: IBaseItem) =>
-    //   (item.category?.findIndex(
-    //     (cat) => cat.toLowerCase().indexOf(searchTerm) >= 0
-    //   ) ?? -1) >= 0;
-    //
-    // const listItems = itemList.items.filter((item) => matchesSearch(item));
-    //
-    // const storageItems = this.storage.items.filter(
-    //   (item) =>
-    //     !listItems.find((litem) => matchesName(item, litem)) &&
-    //     matchesSearch(item)
-    // );
-    //
-    // const globalItemsByName = this.all.items.filter(
-    //   (item) =>
-    //     !listItems.find((litem) => matchesName(item, litem)) &&
-    //     !storageItems.find((sitem) => matchesName(item, sitem)) &&
-    //     matchesSearch(item)
-    // );
-    // const globalItemsByCat = this.all.items.filter(
-    //   (item) =>
-    //     !listItems.find((litem) => matchesName(item, litem)) &&
-    //     !globalItemsByName.includes(item) &&
-    //     matchesCategory(item)
-    // );
-    // const globalItems = [...globalItemsByName, ...globalItemsByCat];
-    //
-    // const all: IBaseItem[] = ([] as IBaseItem[])
-    //   .concat(listItems)
-    //   .concat(globalItems)
-    //   .concat(storageItems);
-    //
-    // return {
-    //   searchTerm,
-    //   hasSearchTerm: !!searchTerm.length,
-    //   foundInList: listItems.find((base) => matchesSearchExactly(base)),
-    //   foundInGlobal: this.all.items.find((global) =>
-    //     matchesSearchExactly(global)
-    //   ),
-    //   all,
-    //   listItems,
-    //   globalItems,
-    //   storageItems,
-    // };
   }
 
   reorder(list: IItemList<any>, from: number, to: number) {

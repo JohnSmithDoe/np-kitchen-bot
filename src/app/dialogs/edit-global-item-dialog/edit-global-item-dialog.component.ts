@@ -36,9 +36,8 @@ import { addIcons } from 'ionicons';
 import { closeCircle } from 'ionicons/icons';
 import {
   IGlobalItem,
-  IItemList,
-  IStorageItem,
   TBestBeforeTimespan,
+  TItemListCategory,
   TItemUnit,
   TPackagingUnit,
 } from '../../@types/types';
@@ -82,10 +81,10 @@ export class EditGlobalItemDialogComponent implements OnInit {
   readonly #database = inject(DatabaseService);
   readonly translate = inject(TranslateService);
 
-  @Input() item?: IGlobalItem | null;
+  @Input() item?: Partial<IGlobalItem> | null;
   @Input() mode: 'update' | 'create' = 'create';
   @Input() value!: IGlobalItem;
-  @Input() localList!: IItemList<IStorageItem>;
+  @Input() categories: TItemListCategory[] = [];
 
   @Output() saveItem = new EventEmitter<IGlobalItem>();
   @Output() cancel = new EventEmitter();

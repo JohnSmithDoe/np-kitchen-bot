@@ -1,11 +1,12 @@
 <app-page-header
   color="storage"
   label="{{'page-title.storage' | translate}}"
-  [disabled]="!!searchResult?.foundInList"
+  [disabled]="!!(rxSearchResult$ | async)?.exactMatch"
   (addItem)="showEditDialog()"
 >
   <app-item-list-searchbar
-    (searchItem)="searchFor($event)"
+    [query]="(rxState$ | async)?.searchQuery"
+    (queryChange)="searchFor($event)"
     (hitEnter)="quickAddItem()"
   ></app-item-list-searchbar>
   <app-item-list-toolbar (selectDisplayMode)="setDisplayMode($event)">
@@ -17,19 +18,18 @@
   <app-item-list-quickadd
     color="storage"
     listName="{{'list-header.storage' | translate}}"
-    [showQuickAdd]="!searchResult?.foundInList"
-    [showQuickAddGlobal]="!searchResult?.foundInList && !searchResult?.foundInGlobal"
-    [quickAddLabel]="searchResult?.searchTerm"
+    [showQuickAdd]="(rxSearchResult$ | async)?.showQuickAdd"
+    [showQuickAddGlobal]="(rxSearchResult$ | async)?.showQuickAddGlobal"
+    [quickAddLabel]="(rxSearchResult$ | async)?.searchTerm"
     (quickAddItem)="quickAddItem()"
     (quickCreateGlobal)="showCreateGlobalDialog()"
   ></app-item-list-quickadd>
-
   <app-item-list
     #storageListComponent
     headerColor="storage"
     header="{{'list-header.storage' | translate}}"
-    [mode]="mode"
-    [items]="rxItems$ | async"
+    [mode]="(rxState$ | async)?.mode ?? 'alphabetical'"
+    [items]="(rxItems$ | async)"
     [itemTemplate]="storageItem"
     (selectCategory)="selectCategory($event)"
   ></app-item-list>
@@ -44,20 +44,19 @@
       (deleteItem)="removeItem(item)"
     ></app-storage-item>
   </ng-template>
-
   <app-item-list-empty
-    [isEmptyList]="!(rxItems$ | async)?.length"
-    [isSearching]="searchResult?.hasSearchTerm"
-    [searchTerm]="searchResult?.searchTerm"
+    [isEmptyList]="!((rxItems$ | async)?.length)"
+    [isSearching]="(rxSearchResult$ |async)?.hasSearchTerm"
+    [searchTerm]="(rxSearchResult$ |async)?.searchTerm"
     (emptyItem)="showEditDialog()"
   ></app-item-list-empty>
 
   <!--  global search result-->
-  @if (searchResult?.globalItems?.length) {
+  @if ((rxSearchResult$| async)?.globalItems?.length) {
   <app-item-list
     header="{{'list-header.global.search' | translate}}"
     headerColor="global"
-    [items]="searchResult?.globalItems??[]"
+    [items]="(rxSearchResult$| async)?.globalItems??[]"
     [itemTemplate]="globalItem"
   ></app-item-list>
   <ng-template #globalItem let-item>
@@ -74,25 +73,31 @@
   }
 </ion-content>
 
-<ion-modal [isOpen]="isEditing" (didDismiss)="isEditing = false">
+<ion-modal
+  [isOpen]="(rxState$|async)?.isEditing === true"
+  (didDismiss)="closeEditDialog()"
+>
   <ng-template>
     <app-edit-storage-item-dialog
-      [mode]="editMode"
-      (cancel)="isEditing = false"
+      [mode]="(rxState$|async)?.editMode ?? 'create'"
+      (cancel)="closeEditDialog()"
       (saveItem)="updateItem($event)"
-      [item]="editItem"
-      [localList]="itemList"
+      [item]="(rxState$|async)?.data"
+      [categories]="(rxCategories$ | async) ?? []"
     ></app-edit-storage-item-dialog>
   </ng-template>
 </ion-modal>
 
-<ion-modal [isOpen]="isCreating" (didDismiss)="isCreating = false">
+<ion-modal
+  [isOpen]="(rxState$|async)?.isCreating === true"
+  (didDismiss)="closeCreateGlobalDialog()"
+>
   <ng-template>
     <app-edit-global-item-dialog
-      (cancel)="isCreating = false"
+      (cancel)="closeCreateGlobalDialog()"
       (saveItem)="createGlobalItem($event)"
-      [item]="createNewItem"
-      [localList]="itemList"
+      [item]="(rxState$|async)?.data"
+      [categories]="(rxCategories$|async)??[]"
     ></app-edit-global-item-dialog>
   </ng-template>
 </ion-modal>

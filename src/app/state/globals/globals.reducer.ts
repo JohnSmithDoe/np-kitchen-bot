@@ -8,6 +8,7 @@ export type IGlobalsState = Readonly<TGlobalsList>;
 export const initialState: IGlobalsState = {
   title: 'Global Items',
   id: '_globals',
+  mode: 'alphabetical',
   items: [],
 };
 

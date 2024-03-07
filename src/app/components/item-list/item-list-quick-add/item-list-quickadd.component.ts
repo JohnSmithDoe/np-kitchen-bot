@@ -4,8 +4,10 @@ import {
   EventEmitter,
   inject,
   Input,
+  OnChanges,
   OnDestroy,
   Output,
+  SimpleChanges,
 } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
@@ -22,7 +24,7 @@ import { TextItemComponent } from '../../item-list-items/text-item/text-item.com
   standalone: true,
   imports: [TextItemComponent, TranslateModule],
 })
-export class ItemListQuickaddComponent implements OnDestroy {
+export class ItemListQuickaddComponent implements OnDestroy, OnChanges {
   readonly #database = inject(DatabaseService);
 
   @Input() quickAddLabel?: string;
@@ -41,6 +43,10 @@ export class ItemListQuickaddComponent implements OnDestroy {
 
   constructor() {
     addIcons({ add, remove, cart, list });
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    console.log(changes);
   }
 
   // ngOnInit(): void {

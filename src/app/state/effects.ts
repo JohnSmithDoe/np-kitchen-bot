@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { ActionCreator, Store } from '@ngrx/store';
-import { exhaustMap, map } from 'rxjs';
+import { exhaustMap, map, take } from 'rxjs';
 import { fromPromise } from 'rxjs/internal/observable/innerFrom';
 import { IDatastore } from '../@types/types';
 import { DatabaseService } from '../services/database.service';
@@ -74,13 +74,12 @@ export class Effects {
         return this.actions$.pipe(
           ofType(...events),
           exhaustMap(() =>
-            this.store
-              .select(select)
-              .pipe(
-                map((value) =>
-                  fromPromise(this.database.save(storageKey, value))
-                )
-              )
+            this.store.select(select).pipe(
+              map((value) =>
+                fromPromise(this.database.save(storageKey, value))
+              ),
+              take(1)
+            )
           )
         );
       },

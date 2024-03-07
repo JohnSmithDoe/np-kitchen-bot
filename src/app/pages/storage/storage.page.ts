@@ -1,20 +1,17 @@
 import { AsyncPipe, JsonPipe } from '@angular/common';
-import { Component, inject, OnInit, ViewChild } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { IonButton, IonContent, IonModal } from '@ionic/angular/standalone';
 import { Store } from '@ngrx/store';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import * as dayjs from 'dayjs';
 import { addIcons } from 'ionicons';
 import { add, remove } from 'ionicons/icons';
 import {
   IGlobalItem,
-  IItemCategory,
-  IItemList,
-  ISearchResult,
   IStorageItem,
+  TItemListCategory,
+  TItemListMode,
 } from '../../@types/types';
 import {
-  createGlobalItem,
   createStorageItem,
   createStorageItemFromGlobal,
 } from '../../app.factory';
@@ -32,7 +29,12 @@ import { CategoriesPipe } from '../../pipes/categories.pipe';
 import { DatabaseService } from '../../services/database.service';
 import { UiService } from '../../services/ui.service';
 import { StorageActions } from '../../state/storage/storage.actions';
-import { selectStorageList } from '../../state/storage/storage.selector';
+import {
+  selectStorageListCategories,
+  selectStorageListItems,
+  selectStorageListSearchResult,
+  selectStorageState,
+} from '../../state/storage/storage.selector';
 
 @Component({
   selector: 'app-page-storage',
@@ -60,49 +62,35 @@ import { selectStorageList } from '../../state/storage/storage.selector';
   ],
 })
 export class StoragePage implements OnInit {
-  @ViewChild(ItemListSearchbarComponent, { static: true })
-  listSearchbar?: ItemListSearchbarComponent;
-
   readonly #dataService = inject(DatabaseService);
   readonly #uiService = inject(UiService);
   readonly translate = inject(TranslateService);
   readonly #store = inject(Store);
 
-  itemList!: IItemList<IStorageItem>;
-
-  isCreating = false;
-  createNewItem: IGlobalItem | null | undefined;
-
-  isEditing = false;
-  editItem: IStorageItem | null | undefined;
-  editMode: 'update' | 'create' = 'create';
-
-  searchResult?: ISearchResult<IStorageItem>;
-  mode: 'alphabetical' | 'categories' = 'alphabetical';
-
-  sortBy?: 'alphabetical' | 'bestBefore';
-  sortDir: 'asc' | 'desc' = 'asc';
-
-  rxItems$ = this.#store.select(selectStorageList);
+  rxState$ = this.#store.select(selectStorageState);
+  rxItems$ = this.#store.select(selectStorageListItems);
+  rxCategories$ = this.#store.select(selectStorageListCategories);
+  rxSearchResult$ = this.#store.select(selectStorageListSearchResult);
 
   constructor() {
     addIcons({ add, remove });
   }
 
   ngOnInit(): void {
-    this.createNewItem = null;
+    console.log('init');
   }
 
   async addItem(item?: IStorageItem) {
     // do not add an already contained item (could be triggered by a shortcut)
-    if (this.searchResult?.foundInList) {
-      await this.#uiService.showToast(
-        this.translate.instant('toast.add.item.error.contained', {
-          name: item?.name,
-        }),
-        'storage'
-      );
-    } else if (!!item) {
+    // if (this.searchResult?.exactMatch) {
+    //   await this.#uiService.showToast(
+    //     this.translate.instant('toast.add.item.error.contained', {
+    //       name: item?.name,
+    //     }),
+    //     'storage'
+    //   );
+    // } else
+    if (!!item) {
       console.log('dispatch addddddddddddddddd');
       this.#store.dispatch(StorageActions.addItem(item));
 
@@ -115,11 +103,9 @@ export class StoragePage implements OnInit {
     }
   }
 
-  async updateItem(item?: IStorageItem) {
-    this.isEditing = false;
-    this.editItem = null;
-    console.log('hmmmmmmm what item', item);
-    this.#store.dispatch(StorageActions.updateItem(item));
+  async updateItem(item?: Partial<IStorageItem>) {
+    console.log('updateItem dispatch ennnnnnnnnnnnnnnnd');
+    this.#store.dispatch(StorageActions.endEditItem(item));
     await this.#uiService.showToast(
       this.translate.instant('toast.update.item', {
         name: item?.name,
@@ -127,7 +113,6 @@ export class StoragePage implements OnInit {
       })
     );
   }
-
   async removeItem(item: IStorageItem) {
     this.#store.dispatch(StorageActions.removeItem(item));
     // await this.#database.deleteItem(item, this.itemList);
@@ -147,14 +132,11 @@ export class StoragePage implements OnInit {
 
   async quickAddItem() {
     // if (!this.searchResult?.hasSearchTerm) return;
-    const litem = createStorageItem(this.searchResult?.searchTerm ?? 'dskfj');
+    const litem = createStorageItem('hmm');
     return this.addItem(litem);
   }
 
   async createGlobalItem(item?: IGlobalItem) {
-    this.isCreating = false;
-    this.createNewItem = null;
-
     if (item?.name.length) {
       // await this.#database.addOrUpdateItem(item, this.#database.all);
       const copy = createStorageItemFromGlobal(item);
@@ -185,67 +167,47 @@ export class StoragePage implements OnInit {
     );
   }
 
-  setDisplayMode(mode: 'alphabetical' | 'categories' | 'bestBefore') {
-    this.mode = mode === 'bestBefore' ? 'alphabetical' : mode;
-    this.#sortList(mode === 'categories' ? 'alphabetical' : mode);
-    this.#clearSearch();
+  setDisplayMode(mode: TItemListMode | 'bestBefore') {
+    console.log('dispatch mode');
+    mode = mode === 'bestBefore' ? 'alphabetical' : mode;
+    this.#store.dispatch(StorageActions.updateMode(mode));
   }
 
-  selectCategory(category: IItemCategory) {
-    //TODO: dispatch select category
-    //this.items = getItemsFromCategory(category, this.itemList);
-    //this.mode = 'alphabetical';
+  selectCategory(category: TItemListCategory) {
+    this.#store.dispatch(StorageActions.updateFilter(category));
   }
 
   changeQuantity(item: IStorageItem, diff: number) {
-    item.quantity = Math.max(0, item.quantity + diff);
-    // return this.#database.save();
+    this.#store.dispatch(
+      StorageActions.updateItem({
+        id: item.id,
+        quantity: Math.max(0, item.quantity + diff),
+      })
+    );
   }
 
   showCreateGlobalDialog() {
-    this.isCreating = true; // show create dialog with the new item
-    this.createNewItem = createGlobalItem(this.searchResult?.searchTerm ?? '');
+    // this.isCreating = true; // show create dialog with the new item
+    // this.createNewItem = createGlobalItem('');
   }
 
   showEditDialog(item?: IStorageItem) {
-    this.isEditing = true;
-    this.editItem =
-      item ?? createStorageItem(this.searchResult?.searchTerm ?? '');
-    this.editMode = item ? 'update' : 'create';
+    this.#store.dispatch(StorageActions.startEditItem(item));
+  }
+
+  closeEditDialog(data?: Partial<IStorageItem>) {
+    this.#store.dispatch(StorageActions.endEditItem(data));
   }
 
   searchFor(searchTerm: string) {
-    // this.searchResult = this.#database.search(this.itemList, searchTerm);
-    // this.items = this.searchResult?.listItems || [...this.itemList.items];
+    this.#store.dispatch(StorageActions.updateSearch(searchTerm));
   }
 
   #clearSearch() {
-    this.searchResult = undefined;
-    this.listSearchbar?.clear();
+    this.#store.dispatch(StorageActions.updateSearch());
   }
 
-  #sortList(mode: 'alphabetical' | 'bestBefore') {
-    if (this.sortBy === mode) {
-      this.sortDir = this.sortDir === 'asc' ? 'desc' : 'asc';
-    } else {
-      this.sortDir = 'asc';
-    }
-    this.sortBy = mode;
-    const sortFn = (a: IStorageItem, b: IStorageItem) => {
-      const MAXDATE = '5000-1-1';
-      switch (mode) {
-        case 'alphabetical':
-          return this.sortDir === 'asc'
-            ? a.name.localeCompare(b.name)
-            : b.name.localeCompare(a.name);
-        case 'bestBefore':
-          return this.sortDir === 'asc'
-            ? dayjs(a.bestBefore ?? MAXDATE).unix() -
-                dayjs(b.bestBefore ?? MAXDATE).unix()
-            : dayjs(b.bestBefore ?? MAXDATE).unix() -
-                dayjs(a.bestBefore ?? MAXDATE).unix();
-      }
-    };
-    this.itemList.items.sort(sortFn);
+  closeCreateGlobalDialog() {
+    //
   }
 }

@@ -8,6 +8,7 @@ export type IShoppinglistsState = Readonly<TShoppingList>;
 export const initialState: IShoppinglistsState = {
   title: 'Shopping Items',
   id: '_shopping',
+  mode: 'alphabetical',
   items: [],
 };
 
