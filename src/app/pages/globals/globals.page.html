@@ -1,42 +1,49 @@
 <app-page-header
   color="global"
   label="{{'page-title.global' | translate}}"
+  [disabled]="!!searchResult?.foundInList"
   (addItem)="showEditDialog()"
-></app-page-header>
-
-<ion-content>
+>
   <app-item-list-searchbar
     (searchItem)="searchFor($event)"
+    (hitEnter)="quickAddItem()"
   ></app-item-list-searchbar>
   <app-item-list-toolbar
     (selectDisplayMode)="setDisplayMode($event)"
   ></app-item-list-toolbar>
+</app-page-header>
+
+<ion-content>
   <app-item-list-quickadd
     color="global"
     listName="{{'list-header.global' | translate}}"
+    [showQuickAdd]="!searchResult?.foundInList"
+    [showQuickAddGlobal]="!searchResult?.foundInList && !searchResult?.foundInGlobal"
     [quickAddLabel]="searchResult?.searchTerm"
     (quickAddItem)="quickAddItem()"
     (quickCreateGlobal)="showGlobalEditDialog()"
   ></app-item-list-quickadd>
+
   <app-item-list
     #globalListComponent
     headerColor="global"
     header="{{'list-header.global' | translate}}"
     [mode]="mode"
-    [items]="items"
-    [itemTemplate]="storageItem"
+    [items]="rxItems$ | async"
+    [itemTemplate]="globalItem"
     (selectCategory)="selectCategory($event)"
   ></app-item-list>
-  <ng-template #storageItem let-item>
+  <ng-template #globalItem let-item>
     <app-global-item
       [item]="item"
+      [itemList]="globalListComponent"
       (selectItem)="showEditDialog(item)"
       (deleteItem)="removeItem(item)"
     ></app-global-item>
   </ng-template>
 
   <app-item-list-empty
-    [isEmptyList]="!items.length"
+    [isEmptyList]="!(rxItems$ | async)?.length"
     [isSearching]="searchResult?.hasSearchTerm"
     [searchTerm]="searchResult?.searchTerm"
     (emptyItem)="showEditDialog()"

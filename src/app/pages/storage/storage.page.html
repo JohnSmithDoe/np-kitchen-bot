@@ -17,7 +17,8 @@
   <app-item-list-quickadd
     color="storage"
     listName="{{'list-header.storage' | translate}}"
-    [hidden]="(searchResult?.searchTerm && searchResult?.foundInList)"
+    [showQuickAdd]="!searchResult?.foundInList"
+    [showQuickAddGlobal]="!searchResult?.foundInList && !searchResult?.foundInGlobal"
     [quickAddLabel]="searchResult?.searchTerm"
     (quickAddItem)="quickAddItem()"
     (quickCreateGlobal)="showCreateGlobalDialog()"
@@ -35,6 +36,7 @@
   <ng-template #storageItem let-item>
     <app-storage-item
       [item]="item"
+      [itemList]="storageListComponent"
       (selectItem)="showEditDialog(item)"
       (increment)="changeQuantity(item, +1)"
       (decrement)="changeQuantity(item, -1)"
@@ -44,7 +46,7 @@
   </ng-template>
 
   <app-item-list-empty
-    [isEmptyList]="!items.length"
+    [isEmptyList]="!(rxItems$ | async)?.length"
     [isSearching]="searchResult?.hasSearchTerm"
     [searchTerm]="searchResult?.searchTerm"
     (emptyItem)="showEditDialog()"

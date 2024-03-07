@@ -71,7 +71,7 @@ export class CategoriesDialogComponent implements OnInit {
   ngOnInit() {
     this.searchFor = undefined;
     this.allCategories = getCategoriesFromList(
-      this.#database.all,
+      // this.#database.all,
       this.itemList
     );
     if (this.item) {

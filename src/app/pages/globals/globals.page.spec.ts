@@ -1,13 +1,13 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { DatabasePage } from './database.page';
+import { GlobalsPage } from './globals.page';
 
 describe('Tab1Page', () => {
-  let component: DatabasePage;
-  let fixture: ComponentFixture<DatabasePage>;
+  let component: GlobalsPage;
+  let fixture: ComponentFixture<GlobalsPage>;
 
   beforeEach(async () => {
-    fixture = TestBed.createComponent(DatabasePage);
+    fixture = TestBed.createComponent(GlobalsPage);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

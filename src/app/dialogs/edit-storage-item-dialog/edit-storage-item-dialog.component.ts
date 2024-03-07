@@ -35,7 +35,6 @@ import * as dayjs from 'dayjs';
 import { addIcons } from 'ionicons';
 import { closeCircle } from 'ionicons/icons';
 import { IItemList, IStorageItem } from '../../@types/types';
-import { createStorageItem } from '../../app.factory';
 import { DatabaseService } from '../../services/database.service';
 import { CategoriesDialogComponent } from '../categories-dialog/categories-dialog.component';
 
@@ -78,7 +77,6 @@ export class EditStorageItemDialogComponent implements OnInit {
   @Input() item?: IStorageItem | null;
   @Input() localList!: IItemList<IStorageItem>;
   @Input() mode: 'update' | 'create' = 'create';
-  @Input() value!: IStorageItem;
 
   @Output() saveItem = new EventEmitter<IStorageItem>();
   @Output() cancel = new EventEmitter();
@@ -89,14 +87,20 @@ export class EditStorageItemDialogComponent implements OnInit {
   currencyCode: 'EUR' | 'USD' = 'EUR';
 
   bestBeforeDate?: string;
+  bestBeforeValue?: string;
+  categoryValue: string[] | undefined;
+  priceValue?: number;
+  minAmountValue?: number;
+  quantityValue?: number;
+  nameValue?: string;
 
   datePick(ev: DatetimeCustomEvent) {
     if (typeof ev.detail.value === 'string') {
       this.bestBeforeDate = ev.detail.value?.substring(0, 10);
-      this.value.bestBefore = dayjs(this.bestBeforeDate).format();
+      this.bestBeforeValue = dayjs(this.bestBeforeDate).format();
     } else {
       this.bestBeforeDate = undefined;
-      this.value.bestBefore = undefined;
+      this.bestBeforeValue = undefined;
     }
   }
 
@@ -117,25 +121,22 @@ export class EditStorageItemDialogComponent implements OnInit {
         ? this.translate.instant('edit.item.dialog.title.create')
         : this.translate.instant('edit.item.dialog.title.update');
 
-    this.value = this.item
-      ? this.#database.cloneItem(this.item)
-      : createStorageItem('');
-
-    if (this.value.bestBefore) {
-      this.bestBeforeDate = dayjs(this.value.bestBefore).format();
+    this.bestBeforeValue = this.item?.bestBefore;
+    if (this.bestBeforeValue) {
+      this.bestBeforeDate = dayjs(this.bestBeforeValue).format();
     }
   }
 
   setCategories(categories?: string[]) {
     this.selectCategories = false;
-    this.value.category = categories;
+    this.categoryValue = categories;
   }
 
   removeCategory(cat: string) {
-    this.value.category?.splice(this.value.category?.indexOf(cat), 1);
+    this.categoryValue?.splice(this.categoryValue?.indexOf(cat), 1);
     // update object reference
-    this.value.category = this.value.category
-      ? [...this.value.category]
+    this.categoryValue = this.categoryValue
+      ? [...this.categoryValue]
       : undefined;
   }
 
@@ -154,6 +155,10 @@ export class EditStorageItemDialogComponent implements OnInit {
     const cleanInput = inputValue.replace(/[^0-9,-]+/g, '');
     // swap german , with . e.g. 1234,34 -> 1234.34
     const numberInput = cleanInput.replace(/,+/g, '.');
-    this.value.price = Number.parseFloat(numberInput);
+    this.priceValue = Number.parseFloat(numberInput);
+  }
+
+  submitChanges() {
+    //this.saveItem.emit({})
   }
 }

@@ -12,6 +12,7 @@ import {
   provideIonicAngular,
 } from '@ionic/angular/standalone';
 import { IonicStorageModule } from '@ionic/storage-angular';
+import { provideEffects } from '@ngrx/effects';
 import { provideStore } from '@ngrx/store';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
@@ -19,7 +20,11 @@ import { AppComponent } from './app/app.component';
 
 import { routes } from './app/app.routes';
 import { DatabaseService } from './app/services/database.service';
-import { databaseReducer, storageReducer } from './app/state/storage.reducer';
+import { Effects } from './app/state/effects';
+import { globalsReducer } from './app/state/globals/globals.reducer';
+import { settingsReducer } from './app/state/settings/settings.reducer';
+import { shoppingListsReducer } from './app/state/shoppinglist/shopping-lists.reducer';
+import { storageReducer } from './app/state/storage/storage.reducer';
 import { environment } from './environments/environment';
 
 if (environment.production) {
@@ -38,7 +43,7 @@ void bootstrapApplication(AppComponent, {
       IonicStorageModule.forRoot({
         name: 'np-kitchen-helper',
         dbKey: 'npKitchenHelper',
-        description: 'np-kitchen-helper storage',
+        description: 'np-kitchen-helper storage and shopping management',
         storeName: 'npKitchenHelper',
       })
     ),
@@ -54,7 +59,12 @@ void bootstrapApplication(AppComponent, {
         },
       })
     ),
-    provideStore({ storage: storageReducer, database: databaseReducer }),
+    provideStore({
+      settings: settingsReducer,
+      storage: storageReducer,
+      shoppinglist: shoppingListsReducer,
+      globals: globalsReducer,
+    }),
     {
       provide: LOCALE_ID,
       useValue: 'de-DE',
@@ -65,5 +75,6 @@ void bootstrapApplication(AppComponent, {
       multi: true,
       deps: [DatabaseService],
     },
+    provideEffects(Effects),
   ],
 });

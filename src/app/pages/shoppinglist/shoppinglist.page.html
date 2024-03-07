@@ -23,19 +23,20 @@
     (quickAddItem)="quickAddItem()"
     (quickCreateGlobal)="showCreateGlobalDialog()"
   ></app-item-list-quickadd>
+
   <app-item-list
-    flex-item
     #shoppinglistComponent
     headerColor="shopping"
     header="{{'list-header.shoppinglist' | translate}}"
     [mode]="mode"
-    [items]="items$ | async"
+    [items]="rxItems$ | async"
     [itemTemplate]="shoppingItem"
     (selectCategory)="selectCategory($event)"
   ></app-item-list>
   <ng-template #shoppingItem let-item>
     <app-shopping-item
       [item]="item"
+      [itemList]="shoppinglistComponent"
       (selectItem)="showEditDialog(item)"
       (increment)="changeQuantity(item, +1)"
       (decrement)="changeQuantity(item, -1)"
@@ -45,7 +46,7 @@
   </ng-template>
 
   <app-item-list-empty
-    [isEmptyList]="!((items$ | async)?.length)"
+    [isEmptyList]="!(rxItems$ | async)?.length"
     [isSearching]="searchResult?.hasSearchTerm"
     [searchTerm]="searchResult?.searchTerm"
     (emptyItem)="showEditDialog()"

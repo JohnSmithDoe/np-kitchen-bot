@@ -27,7 +27,7 @@ export const routes: Routes = [
       {
         path: 'database',
         loadComponent: () =>
-          import('../database/database.page').then((m) => m.DatabasePage),
+          import('../globals/globals.page').then((m) => m.GlobalsPage),
       },
       {
         path: '',

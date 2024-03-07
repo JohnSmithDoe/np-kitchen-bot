@@ -1,3 +1,4 @@
+import { AsyncPipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import {
   IonContent,
@@ -6,13 +7,14 @@ import {
   IonListHeader,
   IonToggle,
 } from '@ionic/angular/standalone';
+import { Store } from '@ngrx/store';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { add, remove } from 'ionicons/icons';
-import { ISettings } from '../../@types/types';
 import { PageHeaderComponent } from '../../components/page-header/page-header.component';
 import { DatabaseService } from '../../services/database.service';
 import { UiService } from '../../services/ui.service';
+import { selectSettingsState } from '../../state/settings/settings.selector';
 
 @Component({
   selector: 'app-page-settings',
@@ -27,32 +29,33 @@ import { UiService } from '../../services/ui.service';
     IonItem,
     IonToggle,
     IonListHeader,
+    AsyncPipe,
   ],
 })
 export class SettingsPage {
   readonly #database = inject(DatabaseService);
+  readonly #store = inject(Store);
   readonly #uiService = inject(UiService);
   readonly translate = inject(TranslateService);
-  readonly settings: ISettings;
+  readonly settings$ = this.#store.select(selectSettingsState);
 
   constructor() {
     addIcons({ add, remove });
-    this.settings = this.#database.settings;
   }
 
   async save() {
     await this.#uiService.showToast(
       this.translate.instant('toast.save.setting')
     );
-    return this.#database.save();
+    // this.#database.saveSettings();
   }
 
   toggleQuickAdd() {
-    this.settings.showQuickAdd = !this.settings.showQuickAdd;
+    // this.settings.showQuickAdd = !this.settings.showQuickAdd;
     return this.save();
   }
   toggleQuickAddGlobal() {
-    this.settings.showQuickAddGlobal = !this.settings.showQuickAddGlobal;
+    // this.settings.showQuickAddGlobal = !this.settings.showQuickAddGlobal;
     return this.save();
   }
 }

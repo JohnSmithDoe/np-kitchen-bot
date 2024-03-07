@@ -27,7 +27,10 @@
   >
     @for (item of items; track item.id) {
       <ng-container
-        *ngTemplateOutlet="itemTemplate; context: { $implicit: item }"
+        *ngTemplateOutlet="
+          itemTemplate;
+          context: { $implicit: item, ionList: ionList }
+        "
       ></ng-container>
     }
   </ion-reorder-group>

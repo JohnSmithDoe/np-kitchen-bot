@@ -9,7 +9,7 @@
     <ion-list-header>Schnell-Hinzufügen</ion-list-header>
     <ion-item>
       <ion-toggle
-        [checked]="settings.showQuickAdd"
+        [checked]="(settings$ |async)?.showQuickAdd"
         (ionChange)="toggleQuickAdd()"
         >"{{ 'item-list.quickadd.add'|translate:{list:
         'list-header.base'|translate} }}" anzeigen</ion-toggle
@@ -17,7 +17,7 @@
     </ion-item>
     <ion-item>
       <ion-toggle
-        [checked]="settings.showQuickAddGlobal"
+        [checked]="(settings$ |async)?.showQuickAddGlobal"
         (ionChange)="toggleQuickAddGlobal()"
         >"{{'item-list.quickadd.add.global'|translate}}" anzeigen</ion-toggle
       >

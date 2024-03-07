@@ -20,6 +20,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { IGlobalItem, TColor, TIonDragEvent } from '../../../@types/types';
 import { checkItemOptionsOnDrag } from '../../../app.utils';
 import { CategoryNoteDirective } from '../../../directives/category-note.directive';
+import { ItemListComponent } from '../../item-list/item-list.component';
 
 @Component({
   selector: 'app-global-item',
@@ -50,6 +51,7 @@ export class GlobalItemComponent implements OnInit {
   @Input() item!: IGlobalItem;
 
   @Input() color?: TColor;
+  @Input({ required: true }) itemList!: ItemListComponent;
 
   @Output() selectItem = new EventEmitter<void>();
   @Output() deleteItem = new EventEmitter<void>();
@@ -60,9 +62,10 @@ export class GlobalItemComponent implements OnInit {
     if (!this.item) throw new Error('Item must be set');
   }
 
-  handleItemOptionsOnDrag(ev: TIonDragEvent) {
+  async handleItemOptionsOnDrag(ev: TIonDragEvent) {
     switch (checkItemOptionsOnDrag(ev)) {
       case 'end':
+        await this.itemList.closeSlidingItems();
         this.deleteItem.emit();
         break;
       case 'start':

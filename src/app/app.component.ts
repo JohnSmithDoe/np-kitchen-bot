@@ -26,8 +26,11 @@ import {
   IonTitle,
   IonToolbar,
 } from '@ionic/angular/standalone';
+import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
+import { firstValueFrom } from 'rxjs';
 import { DatabaseService } from './services/database.service';
+import { selectShoppingList } from './state/shoppinglist/shopping-list.selector';
 
 @Component({
   selector: 'app-root',
@@ -56,6 +59,7 @@ import { DatabaseService } from './services/database.service';
 })
 export class AppComponent implements OnInit {
   readonly #alertController = inject(AlertController);
+  readonly #store = inject(Store);
   readonly #database = inject(DatabaseService);
 
   isSupported = false;
@@ -118,9 +122,9 @@ export class AppComponent implements OnInit {
   }
 
   async shareShoppingList() {
-    const text = this.#database
-      .shoppinglist()
-      .items.map((item) => item.quantity + ' x ' + item.name)
+    const list = await firstValueFrom(this.#store.select(selectShoppingList));
+    const text = list
+      .map((item) => item.quantity + ' x ' + item.name)
       .join('\n');
     await Share.share({
       title: 'Einkaufsliste',

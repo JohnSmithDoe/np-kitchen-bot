@@ -5,7 +5,6 @@ import {
   inject,
   Input,
   OnDestroy,
-  OnInit,
   Output,
 } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
@@ -23,7 +22,7 @@ import { TextItemComponent } from '../../item-list-items/text-item/text-item.com
   standalone: true,
   imports: [TextItemComponent, TranslateModule],
 })
-export class ItemListQuickaddComponent implements OnInit, OnDestroy {
+export class ItemListQuickaddComponent implements OnDestroy {
   readonly #database = inject(DatabaseService);
 
   @Input() quickAddLabel?: string;
@@ -44,12 +43,12 @@ export class ItemListQuickaddComponent implements OnInit, OnDestroy {
     addIcons({ add, remove, cart, list });
   }
 
-  ngOnInit(): void {
-    this.#settingsChangedSub = this.#database.save$.subscribe(() => {
-      this.canQuickAdd = this.#database.settings.showQuickAdd;
-      this.canQuickAddGlobal = this.#database.settings.showQuickAddGlobal;
-    });
-  }
+  // ngOnInit(): void {
+  // this.#settingsChangedSub = this.#database.save$.subscribe(() => {
+  //   this.canQuickAdd = this.#database.settings.showQuickAdd;
+  //   this.canQuickAddGlobal = this.#database.settings.showQuickAddGlobal;
+  // });
+  // }
 
   ngOnDestroy(): void {
     this.#settingsChangedSub?.unsubscribe();

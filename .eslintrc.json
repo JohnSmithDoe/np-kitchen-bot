@@ -3,6 +3,7 @@
   "ignorePatterns": [
     "projects/**/*"
   ],
+  "plugins": ["functional"],
   "overrides": [
     {
       "files": [
@@ -61,7 +62,7 @@
         "*.ts"
       ],
       "extends": [
-        "plugin:@ngrx/recommended-requiring-type-checking"
+        "plugin:@ngrx/all-requiring-type-checking"
       ]
     }
   ]

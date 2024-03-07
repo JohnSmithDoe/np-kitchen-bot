@@ -1,10 +1,10 @@
 import { AsyncPipe } from '@angular/common';
 import { Component, inject, OnInit, ViewChild } from '@angular/core';
 import { IonContent, IonModal } from '@ionic/angular/standalone';
+import { Store } from '@ngrx/store';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { add, remove } from 'ionicons/icons';
-import { BehaviorSubject, Observable } from 'rxjs';
 import {
   IGlobalItem,
   IItemCategory,
@@ -19,7 +19,6 @@ import {
   createShoppingItemFromGlobal,
   createShoppingItemFromStorage,
 } from '../../app.factory';
-import { getItemsFromCategory } from '../../app.utils';
 import { ShoppingItemComponent } from '../../components/item-list-items/shopping-item/shopping-item.component';
 import { TextItemComponent } from '../../components/item-list-items/text-item/text-item.component';
 import { ItemListEmptyComponent } from '../../components/item-list/item-list-empty/item-list-empty.component';
@@ -33,6 +32,8 @@ import { EditShoppingItemDialogComponent } from '../../dialogs/edit-shopping-ite
 import { CategoriesPipe } from '../../pipes/categories.pipe';
 import { DatabaseService } from '../../services/database.service';
 import { UiService } from '../../services/ui.service';
+import { ShoppingListActions } from '../../state/shoppinglist/shopping-list.actions';
+import { selectShoppingList } from '../../state/shoppinglist/shopping-list.selector';
 
 @Component({
   selector: 'app-page-shopping-list',
@@ -61,12 +62,10 @@ export class ShoppinglistPage implements OnInit {
   @ViewChild(ItemListSearchbarComponent, { static: true })
   listSearchbar?: ItemListSearchbarComponent;
 
-  @ViewChild('shoppinglistComponent', { static: true })
-  listComponent!: ItemListComponent;
-
-  readonly #database = inject(DatabaseService);
+  readonly #dataService = inject(DatabaseService);
   readonly #uiService = inject(UiService);
   readonly translate = inject(TranslateService);
+  readonly #store = inject(Store);
 
   itemList!: IItemList<IShoppingItem>;
 
@@ -77,41 +76,35 @@ export class ShoppinglistPage implements OnInit {
   editItem: IShoppingItem | null | undefined;
   editMode: 'update' | 'create' = 'create';
 
-  #items = new BehaviorSubject<IShoppingItem[]>([]);
-  items$: Observable<IShoppingItem[]> = this.#items.asObservable();
-
   searchResult?: ISearchResult<IShoppingItem>;
   mode: 'alphabetical' | 'categories' = 'alphabetical';
 
   sortBy?: 'alphabetical';
   sortDir: 'asc' | 'desc' = 'asc';
 
+  rxItems$ = this.#store.select(selectShoppingList);
+
   constructor() {
     addIcons({ add, remove });
   }
 
   ngOnInit(): void {
-    this.itemList = this.#database.shoppinglist();
-    this.#items.next([...this.itemList.items]); // TODO: sub here and pipe search?
     this.createNewItem = null;
   }
 
   async addItem(item?: IShoppingItem) {
     // do not add an already contained item (could be triggered by a shortcut)
-    if (
-      this.itemList.items.find(
-        (aItem) => aItem.name.toLowerCase() === item?.name
-      )
-    ) {
+    if (this.searchResult?.foundInList) {
       await this.#uiService.showToast(
         this.translate.instant('toast.add.item.error.contained', {
           name: item?.name,
         }),
         'shopping'
       );
-    } else {
-      item = await this.#database.addItem(item, this.itemList);
-      this.#refreshItems();
+    } else if (!!item) {
+      console.log('dispatch addddddddddddddddd');
+      this.#store.dispatch(ShoppingListActions.addItem(item));
+
       await this.#uiService.showToast(
         this.translate.instant('toast.add.item', {
           name: item?.name,
@@ -124,8 +117,8 @@ export class ShoppinglistPage implements OnInit {
   async updateItem(item?: IShoppingItem) {
     this.isEditing = false;
     this.editItem = null;
-    await this.#database.addOrUpdateItem(item, this.itemList);
-    this.#refreshItems();
+    console.log('hmmmmmmm what item', item);
+    this.#store.dispatch(ShoppingListActions.updateItem(item));
     await this.#uiService.showToast(
       this.translate.instant('toast.update.item', {
         name: item?.name,
@@ -135,9 +128,9 @@ export class ShoppinglistPage implements OnInit {
   }
 
   async removeItem(item: IShoppingItem) {
-    await this.listComponent?.closeSlidingItems();
-    await this.#database.deleteItem(item, this.itemList);
-    this.#refreshItems();
+    this.#store.dispatch(ShoppingListActions.removeItem(item));
+    // await this.#database.deleteItem(item, this.itemList);
+    // this.#refreshItems();
     await this.#uiService.showToast(
       this.translate.instant('toast.remove.item', {
         name: item?.name,
@@ -152,8 +145,8 @@ export class ShoppinglistPage implements OnInit {
   }
 
   async quickAddItem() {
-    if (!this.searchResult?.hasSearchTerm) return;
-    const litem = createShoppingItem(this.searchResult.searchTerm);
+    // if (!this.searchResult?.hasSearchTerm) return;
+    const litem = createShoppingItem('this.searchResult.searchTerm');
     return this.addItem(litem);
   }
 
@@ -162,13 +155,13 @@ export class ShoppinglistPage implements OnInit {
     this.createNewItem = null;
 
     if (item?.name.length) {
-      await this.#database.addOrUpdateItem(item, this.#database.all);
+      // await this.#database.addOrUpdateItem(item, this.#database.all);
       const copy = createShoppingItemFromGlobal(item);
-      const litem = await this.#database.addItem(copy, this.itemList);
-      this.#refreshItems();
+      // const litem = await this.#database.addItem(copy, this.itemList);
+      this.#clearSearch();
       await this.#uiService.showToast(
         this.translate.instant('toast.created.item', {
-          name: litem?.name,
+          name: item?.name,
         })
       );
     }
@@ -182,12 +175,12 @@ export class ShoppinglistPage implements OnInit {
   // what should happen if we buy an item?
 
   async buyItem(item: IShoppingItem) {
-    await this.listComponent?.closeSlidingItems();
-    item.state = 'bought';
-    await this.#database.addOrUpdateItem(item, this.itemList);
-    this.#items.next(
-      this.#sortList([...this.itemList.items], 'alphabetical', false)
-    );
+    // await this.listComponent?.closeSlidingItems();
+    // item.state = 'bought';
+    // await this.#database.addOrUpdateItem(item, this.itemList);
+    // this.#items.next(
+    //   this.#sortList([...this.itemList.items], 'alphabetical', false)
+    // );
     await this.#uiService.showToast(
       this.translate.instant('shoppinglist.page.toast.move', {
         name: item?.name,
@@ -197,21 +190,20 @@ export class ShoppinglistPage implements OnInit {
   }
 
   setDisplayMode(mode: 'alphabetical' | 'categories') {
-    this.#items.next(
-      this.#sortList([...this.itemList.items], 'alphabetical', true)
-    );
-    this.#refreshItems();
     this.mode = mode;
+    this.#sortList('alphabetical');
+    this.#clearSearch();
   }
 
   selectCategory(category: IItemCategory) {
-    this.#items.next([...getItemsFromCategory(category, this.itemList)]);
-    this.mode = 'alphabetical';
+    //TODO: dispatch select category
+    //this.items = getItemsFromCategory(category, this.itemList);
+    //this.mode = 'alphabetical';
   }
 
   async changeQuantity(item: IShoppingItem, diff: number) {
     item.quantity = Math.max(0, item.quantity + diff);
-    return this.#database.save();
+    // return this.#database.save();
   }
 
   showCreateGlobalDialog() {
@@ -227,28 +219,16 @@ export class ShoppinglistPage implements OnInit {
   }
 
   searchFor(searchTerm: string) {
-    this.searchResult = this.#database.search(this.itemList, searchTerm);
-
-    this.#items.next(
-      this.#sortList(
-        this.searchResult?.listItems || [...this.itemList.items],
-        'alphabetical',
-        false
-      )
-    );
+    // this.searchResult = this.#database.search(this.itemList, searchTerm);
+    // this.items = this.searchResult?.listItems || [...this.itemList.items];
   }
 
   #clearSearch() {
     this.searchResult = undefined;
     this.listSearchbar?.clear();
-    this.#items.next([...this.itemList.items]);
   }
 
-  #refreshItems() {
-    this.#clearSearch();
-  }
-
-  #sortList(items: IShoppingItem[], mode: 'alphabetical', toggleDir = true) {
+  #sortList(mode: 'alphabetical', toggleDir = true) {
     if (toggleDir) this.sortDir = this.sortDir === 'asc' ? 'desc' : 'asc';
     this.sortBy = mode;
     const sortFn = (a: IShoppingItem, b: IShoppingItem) => {
@@ -263,6 +243,6 @@ export class ShoppinglistPage implements OnInit {
         return a.state === 'bought' ? 1 : -1;
       }
     };
-    return items.sort(sortFn);
+    this.itemList.items.sort(sortFn);
   }
 }

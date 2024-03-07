@@ -42,7 +42,6 @@ import {
   TItemUnit,
   TPackagingUnit,
 } from '../../@types/types';
-import { createGlobalItem } from '../../app.factory';
 import { DatabaseService } from '../../services/database.service';
 import { CategoriesDialogComponent } from '../categories-dialog/categories-dialog.component';
 
@@ -112,9 +111,9 @@ export class EditGlobalItemDialogComponent implements OnInit {
         ? this.translate.instant('edit.global.item.dialog.title.create')
         : this.translate.instant('edit.global.item.dialog.title.update');
 
-    this.value = this.item
-      ? this.#database.cloneItem(this.item)
-      : createGlobalItem('');
+    // this.value = this.item
+    //   ? this.#database.cloneItem(this.item)
+    //   : createGlobalItem('');
   }
 
   setCategories(categories?: string[]) {

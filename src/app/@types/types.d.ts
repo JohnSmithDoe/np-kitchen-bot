@@ -1,5 +1,6 @@
 import { Color } from '@ionic/core/dist/types/interface';
 
+// eslint-disable-next-line functional/type-declaration-immutability
 export type TIonDragEvent = CustomEvent<{ amount: number; ratio: number }>;
 
 export type TColor =
@@ -15,9 +16,10 @@ export type TColor =
 export type TTimestamp = string;
 // Todo
 export interface IItemLocation {}
+// eslint-disable-next-line functional/type-declaration-immutability
 export interface IItemCategory {
-  name: string;
-  items: IBaseItem[];
+  readonly name: string;
+  items: ReadonlyArray<IBaseItem>;
 }
 
 // Orangensaft
@@ -40,7 +42,7 @@ export type TBestBeforeTimespan =
   | 'years';
 
 //
-export interface IBaseItem {
+export type IBaseItem = {
   id: string;
   name: string;
   createdAt: TTimestamp;
@@ -50,7 +52,7 @@ export interface IBaseItem {
   price?: number;
   desc?: string;
   location?: string;
-}
+};
 
 export interface IGlobalItem extends IBaseItem {
   unit: TItemUnit;
@@ -66,11 +68,18 @@ export interface IShoppingItem extends IBaseItem {
   state: 'bought' | 'active';
 }
 
-export interface IStorageItem extends IBaseItem {
+// export type IStorageItem = Readonly<
+//   IBaseItem & {
+//     quantity: number;
+//     minAmount?: number;
+//     bestBefore?: TTimestamp;
+//   }
+// >;
+export type IStorageItem = IBaseItem & {
   quantity: number;
   minAmount?: number;
   bestBefore?: TTimestamp;
-}
+};
 
 export interface IItemList<T extends IBaseItem = IBaseItem> {
   id: string;
@@ -83,16 +92,23 @@ export interface ISettings {
   showQuickAddGlobal: boolean;
 }
 
+export type TStorageList = IItemList<IStorageItem> & {
+  id: '_storage';
+  title: 'Storage';
+};
+export type TGlobalsList = IItemList<IGlobalItem> & {
+  id: '_globals';
+  title: 'Global Items';
+};
+export type TShoppingList = IItemList<IShoppingItem> & {
+  id: '_shopping';
+  title: 'Shopping Items';
+};
+
 export interface IDatastore {
-  all: IItemList<IGlobalItem> & {
-    id: '_all';
-    title: 'All Items';
-  };
-  storage: IItemList<IStorageItem> & {
-    id: '_storage';
-    title: 'Storage';
-  };
-  shoppinglists: IItemList<IShoppingItem>[];
+  globals: TGlobalsList;
+  storage: TStorageList;
+  shoppinglist: TShoppingList;
   settings: ISettings;
 }
 

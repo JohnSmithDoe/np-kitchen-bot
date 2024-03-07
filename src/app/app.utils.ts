@@ -47,7 +47,7 @@ export function getCategoriesFromList(...itemList: (IItemList | undefined)[]) {
       if (!found) {
         categories.push({ name: category, items: [item] });
       } else {
-        found.items.push(item);
+        found.items = [...found.items, item];
       }
     });
     return categories;

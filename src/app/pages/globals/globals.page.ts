@@ -1,5 +1,7 @@
+import { AsyncPipe } from '@angular/common';
 import { Component, inject, OnInit, ViewChild } from '@angular/core';
 import { IonContent, IonModal } from '@ionic/angular/standalone';
+import { Store } from '@ngrx/store';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { add, remove } from 'ionicons/icons';
@@ -10,7 +12,6 @@ import {
   ISearchResult,
 } from '../../@types/types';
 import { createGlobalItem } from '../../app.factory';
-import { getItemsFromCategory } from '../../app.utils';
 import { GlobalItemComponent } from '../../components/item-list-items/global-item/global-item.component';
 import { TextItemComponent } from '../../components/item-list-items/text-item/text-item.component';
 import { ItemListEmptyComponent } from '../../components/item-list/item-list-empty/item-list-empty.component';
@@ -23,11 +24,13 @@ import { EditGlobalItemDialogComponent } from '../../dialogs/edit-global-item-di
 import { EditStorageItemDialogComponent } from '../../dialogs/edit-storage-item-dialog/edit-storage-item-dialog.component';
 import { DatabaseService } from '../../services/database.service';
 import { UiService } from '../../services/ui.service';
+import { GlobalsActions } from '../../state/globals/globals.actions';
+import { selectGlobalsList } from '../../state/globals/globals.selector';
 
 @Component({
   selector: 'app-page-database',
-  templateUrl: 'database.page.html',
-  styleUrls: ['database.page.scss'],
+  templateUrl: 'globals.page.html',
+  styleUrls: ['globals.page.scss'],
   standalone: true,
   imports: [
     PageHeaderComponent,
@@ -43,18 +46,17 @@ import { UiService } from '../../services/ui.service';
     EditGlobalItemDialogComponent,
     GlobalItemComponent,
     EditStorageItemDialogComponent,
+    AsyncPipe,
   ],
 })
-export class DatabasePage implements OnInit {
+export class GlobalsPage implements OnInit {
   @ViewChild(ItemListSearchbarComponent, { static: true })
   listSearchbar?: ItemListSearchbarComponent;
 
-  @ViewChild('globalListComponent', { static: true })
-  listComponent!: ItemListComponent;
-
-  readonly #database = inject(DatabaseService);
+  readonly #dataService = inject(DatabaseService);
   readonly #uiService = inject(UiService);
   readonly translate = inject(TranslateService);
+  readonly #store = inject(Store);
 
   itemList!: IItemList<IGlobalItem>;
 
@@ -64,37 +66,50 @@ export class DatabasePage implements OnInit {
   isEditing = false;
   editItem: IGlobalItem | null | undefined;
   editMode: 'update' | 'create' = 'create';
-  items: IGlobalItem[] = [];
 
   searchResult?: ISearchResult<IGlobalItem>;
   mode: 'alphabetical' | 'categories' = 'alphabetical';
+
+  sortBy?: 'alphabetical';
+  sortDir: 'asc' | 'desc' = 'asc';
+
+  rxItems$ = this.#store.select(selectGlobalsList);
 
   constructor() {
     addIcons({ add, remove });
   }
 
   ngOnInit(): void {
-    this.itemList = this.#database.all;
-    this.items = this.itemList.items;
     this.createNewItem = null;
   }
 
   async addItem(item?: IGlobalItem) {
-    if (!item) return;
-    await this.#database.addOrUpdateItem(item, this.itemList);
-    this.#refreshItems();
-    await this.#uiService.showToast(
-      this.translate.instant('toast.add.item', {
-        name: item?.name,
-      })
-    );
+    // do not add an already contained item (could be triggered by a shortcut)
+    if (this.searchResult?.foundInList) {
+      await this.#uiService.showToast(
+        this.translate.instant('toast.add.item.error.contained', {
+          name: item?.name,
+        }),
+        'shopping'
+      );
+    } else if (!!item) {
+      console.log('dispatch addddddddddddddddd');
+      this.#store.dispatch(GlobalsActions.addItem(item));
+
+      await this.#uiService.showToast(
+        this.translate.instant('toast.add.item', {
+          name: item?.name,
+        })
+      );
+    }
   }
 
   async updateItem(item?: IGlobalItem) {
     if (!item) return;
     this.isEditing = false;
     this.editItem = null;
-    await this.#database.addOrUpdateItem(item, this.itemList);
+    console.log('hmmmmmmm what item', item);
+    this.#store.dispatch(GlobalsActions.updateItem(item));
     await this.#uiService.showToast(
       this.translate.instant('toast.update.item', {
         name: item?.name,
@@ -103,9 +118,9 @@ export class DatabasePage implements OnInit {
   }
 
   async removeItem(item: IGlobalItem) {
-    await this.listComponent?.closeSlidingItems();
-    await this.#database.deleteItem(item, this.itemList);
-    this.#refreshItems();
+    this.#store.dispatch(GlobalsActions.removeItem(item));
+    // await this.#database.deleteItem(item, this.itemList);
+    // this.#refreshItems();
     await this.#uiService.showToast(
       this.translate.instant('toast.remove.item', {
         name: item?.name,
@@ -114,19 +129,25 @@ export class DatabasePage implements OnInit {
   }
 
   async quickAddItem() {
-    if (!this.searchResult?.hasSearchTerm) return;
-    const litem = createGlobalItem(this.searchResult.searchTerm);
+    // if (!this.searchResult?.hasSearchTerm) return;
+    const litem = createGlobalItem('this.searchResult.searchTerm');
     return this.addItem(litem);
-  }
-
-  searchFor(searchTerm: string) {
-    this.searchResult = this.#database.search(this.itemList, searchTerm);
-    this.items = this.searchResult?.listItems || [...this.itemList.items];
   }
 
   showGlobalEditDialog() {
     this.isCreating = true; // show create dialog with the new item
     this.createNewItem = createGlobalItem(this.searchResult?.searchTerm ?? '');
+  }
+  setDisplayMode(mode: 'alphabetical' | 'categories') {
+    this.mode = mode;
+    this.#sortList('alphabetical');
+    this.#clearSearch();
+  }
+
+  selectCategory(category: IItemCategory) {
+    //TODO: dispatch select category
+    //this.items = getItemsFromCategory(category, this.itemList);
+    //this.mode = 'alphabetical';
   }
 
   showEditDialog(item?: IGlobalItem) {
@@ -136,25 +157,27 @@ export class DatabasePage implements OnInit {
     this.editMode = item ? 'update' : 'create';
   }
 
-  setDisplayMode(mode: 'alphabetical' | 'categories') {
-    if (mode === 'categories') {
-      this.items = [...this.itemList.items];
-    }
-    this.mode = mode;
-  }
-
-  selectCategory(category: IItemCategory) {
-    this.items = getItemsFromCategory(category, this.itemList);
-    this.mode = 'alphabetical';
+  searchFor(searchTerm: string) {
+    // this.searchResult = this.#database.search(this.itemList, searchTerm);
+    // this.items = this.searchResult?.listItems || [...this.itemList.items];
   }
 
   #clearSearch() {
     this.searchResult = undefined;
     this.listSearchbar?.clear();
-    this.items = [...this.itemList.items];
   }
 
-  #refreshItems() {
-    this.#clearSearch();
+  #sortList(mode: 'alphabetical', toggleDir = true) {
+    if (toggleDir) this.sortDir = this.sortDir === 'asc' ? 'desc' : 'asc';
+    this.sortBy = mode;
+    const sortFn = (a: IGlobalItem, b: IGlobalItem) => {
+      switch (mode) {
+        case 'alphabetical':
+          return this.sortDir === 'asc'
+            ? a.name.localeCompare(b.name)
+            : b.name.localeCompare(a.name);
+      }
+    };
+    this.itemList.items.sort(sortFn);
   }
 }

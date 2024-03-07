@@ -34,7 +34,6 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { closeCircle } from 'ionicons/icons';
 import { IItemList, IShoppingItem } from '../../@types/types';
-import { createShoppingItem } from '../../app.factory';
 import { DatabaseService } from '../../services/database.service';
 import { CategoriesDialogComponent } from '../categories-dialog/categories-dialog.component';
 
@@ -104,9 +103,9 @@ export class EditShoppingItemDialogComponent implements OnInit {
         ? this.translate.instant('edit.item.dialog.title.create')
         : this.translate.instant('edit.item.dialog.title.update');
 
-    this.value = this.item
-      ? this.#database.cloneItem(this.item)
-      : createShoppingItem('');
+    // this.value = this.item
+    //   ? this.#database.cloneItem(this.item)
+    //   : createShoppingItem('');
   }
 
   setCategories(categories?: string[]) {

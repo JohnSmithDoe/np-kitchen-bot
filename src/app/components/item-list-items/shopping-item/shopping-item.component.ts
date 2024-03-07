@@ -21,6 +21,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { IShoppingItem, TColor, TIonDragEvent } from '../../../@types/types';
 import { checkItemOptionsOnDrag } from '../../../app.utils';
 import { CategoryNoteDirective } from '../../../directives/category-note.directive';
+import { ItemListComponent } from '../../item-list/item-list.component';
 
 @Component({
   selector: 'app-shopping-item',
@@ -52,6 +53,7 @@ import { CategoryNoteDirective } from '../../../directives/category-note.directi
 export class ShoppingItemComponent implements OnInit {
   @Input() item!: IShoppingItem;
   @Input() color?: TColor;
+  @Input({ required: true }) itemList!: ItemListComponent;
 
   @Output() increment = new EventEmitter<void>();
   @Output() decrement = new EventEmitter<void>();
@@ -77,12 +79,14 @@ export class ShoppingItemComponent implements OnInit {
     ev.stopPropagation();
   }
 
-  handleItemOptionsOnDrag(ev: TIonDragEvent) {
+  async handleItemOptionsOnDrag(ev: TIonDragEvent) {
     switch (checkItemOptionsOnDrag(ev)) {
       case 'end':
+        await this.itemList.closeSlidingItems();
         this.deleteItem.emit();
         break;
       case 'start':
+        await this.itemList.closeSlidingItems();
         this.cartItem.emit();
         break;
     }
