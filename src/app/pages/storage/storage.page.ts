@@ -1,8 +1,8 @@
 import { AsyncPipe, JsonPipe } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { IonButton, IonContent, IonModal } from '@ionic/angular/standalone';
 import { Store } from '@ngrx/store';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { add, remove } from 'ionicons/icons';
 import {
@@ -10,12 +10,8 @@ import {
   IStorageItem,
   TItemListCategory,
   TItemListMode,
-  TUpdateDTO,
 } from '../../@types/types';
-import {
-  createStorageItem,
-  createStorageItemFromGlobal,
-} from '../../app.factory';
+import { createStorageItemFromGlobal } from '../../app.factory';
 import { StorageItemComponent } from '../../components/item-list-items/storage-item/storage-item.component';
 import { TextItemComponent } from '../../components/item-list-items/text-item/text-item.component';
 import { ItemListEmptyComponent } from '../../components/item-list/item-list-empty/item-list-empty.component';
@@ -27,8 +23,6 @@ import { PageHeaderComponent } from '../../components/page-header/page-header.co
 import { EditGlobalItemDialogComponent } from '../../dialogs/edit-global-item-dialog/edit-global-item-dialog.component';
 import { EditStorageItemDialogComponent } from '../../dialogs/edit-storage-item-dialog/edit-storage-item-dialog.component';
 import { CategoriesPipe } from '../../pipes/categories.pipe';
-import { DatabaseService } from '../../services/database.service';
-import { UiService } from '../../services/ui.service';
 import { StorageActions } from '../../state/storage/storage.actions';
 import {
   selectStorageListCategories,
@@ -62,10 +56,7 @@ import {
     JsonPipe,
   ],
 })
-export class StoragePage implements OnInit {
-  readonly #dataService = inject(DatabaseService);
-  readonly #uiService = inject(UiService);
-  readonly translate = inject(TranslateService);
+export class StoragePage {
   readonly #store = inject(Store);
 
   rxState$ = this.#store.select(selectStorageState);
@@ -77,105 +68,39 @@ export class StoragePage implements OnInit {
     addIcons({ add, remove });
   }
 
-  ngOnInit(): void {
-    console.log('init');
-  }
-
-  async addItem(item?: IStorageItem) {
-    // do not add an already contained item (could be triggered by a shortcut)
-    // if (this.searchResult?.exactMatch) {
-    //   await this.#uiService.showToast(
-    //     this.translate.instant('toast.add.item.error.contained', {
-    //       name: item?.name,
-    //     }),
-    //     'storage'
-    //   );
-    // } else
-    if (!!item) {
-      console.log('dispatch addddddddddddddddd');
-      this.#store.dispatch(StorageActions.addItem(item));
-
-      await this.#uiService.showToast(
-        this.translate.instant('toast.add.item', {
-          name: item?.name,
-          total: item?.quantity,
-        })
-      );
-    }
-  }
-
-  async updateItem(item?: Partial<IStorageItem>) {
-    console.log('updateItem dispatch ennnnnnnnnnnnnnnnd');
-    this.#store.dispatch(StorageActions.endEditItem(item));
-    // todo: effects for toast i guess
-    await this.#uiService.showToast(
-      this.translate.instant('toast.update.item', {
-        name: item?.name,
-        total: item?.quantity,
-      })
-    );
-  }
   async removeItem(item: IStorageItem) {
     this.#store.dispatch(StorageActions.removeItem(item));
-    // await this.#database.deleteItem(item, this.itemList);
-    // this.#refreshItems();
-    await this.#uiService.showToast(
-      this.translate.instant('toast.remove.item', {
-        name: item?.name,
-      })
-    );
   }
 
-  async addGlobalItem(item?: IGlobalItem) {
-    // TODO
-    // this.#store.dispatch(StorageActions.addItemFromGlobal(item))
-    if (!item) return;
-    let litem: IStorageItem | undefined = createStorageItemFromGlobal(item);
-    return this.addItem(litem);
+  async addItemFromSearch() {
+    this.#store.dispatch(StorageActions.addItemFromSearch());
   }
 
-  async quickAddItem() {
-    // TODO
-    // this.#store.dispatch(StorageActions.addItemFromSearch(item))
-
-    // if (!this.searchResult?.hasSearchTerm) return;
-    const litem = createStorageItem('hmm');
-    return this.addItem(litem);
+  showCreateDialog() {
+    this.#store.dispatch(StorageActions.createItem());
   }
 
-  async createGlobalItem(item?: IGlobalItem) {
-    if (item?.name.length) {
-      // await this.#database.addOrUpdateItem(item, this.#database.all);
-      const copy = createStorageItemFromGlobal(item);
-      // const litem = await this.#database.addItem(copy, this.itemList);
-      this.#clearSearch();
-      await this.#uiService.showToast(
-        this.translate.instant('toast.created.item', {
-          name: item?.name,
-        })
-      );
-    }
+  showEditDialog(item: IStorageItem) {
+    this.#store.dispatch(StorageActions.editItem(item));
   }
 
-  async copyToShoppingList(item?: IStorageItem) {
-    if (!item) return;
-    // item = this.#database.cloneItem(item);
-    // item.quantity = 0;
-    // item = await this.#database.addItem(item, this.#database.shoppinglist());
-    if (item) {
-      item.quantity++;
-    }
+  closeEditDialog() {
+    this.#store.dispatch(StorageActions.endEditItem());
+  }
 
-    await this.#uiService.showToast(
-      this.translate.instant('storage.page.toast.move', {
-        name: item?.name,
-        total: item?.quantity,
-      })
-    );
+  async updateItem(item: Partial<IStorageItem>) {
+    this.#store.dispatch(StorageActions.endEditItem(item));
+  }
+
+  searchFor(searchTerm: string) {
+    this.#store.dispatch(StorageActions.updateSearch(searchTerm));
+  }
+
+  #clearSearch() {
+    this.#store.dispatch(StorageActions.updateSearch());
   }
 
   setDisplayMode(mode: TItemListMode | 'bestBefore') {
-    console.log('dispatch mode');
     mode = mode === 'bestBefore' ? 'alphabetical' : mode;
     this.#store.dispatch(StorageActions.updateMode(mode));
   }
@@ -187,26 +112,32 @@ export class StoragePage implements OnInit {
   changeQuantity(item: IStorageItem, diff: number) {
     this.#store.dispatch(
       StorageActions.updateItem({
-        id: item.id,
+        ...item,
         quantity: Math.max(0, item.quantity + diff),
       })
     );
   }
 
-  showEditDialog(item?: IStorageItem) {
-    this.#store.dispatch(StorageActions.startEditItem(item));
+  async addGlobalItem(item?: IGlobalItem) {
+    // TODO
+    // this.#store.dispatch(StorageActions.addItemFromGlobal(item))
+    if (!item) return;
+    let litem: IStorageItem | undefined = createStorageItemFromGlobal(item);
+    this.#store.dispatch(StorageActions.addItem(litem));
   }
 
-  closeEditDialog(data?: TUpdateDTO<IStorageItem>) {
-    this.#store.dispatch(StorageActions.endEditItem(data));
-  }
-
-  searchFor(searchTerm: string) {
-    this.#store.dispatch(StorageActions.updateSearch(searchTerm));
-  }
-
-  #clearSearch() {
-    this.#store.dispatch(StorageActions.updateSearch());
+  async createGlobalItem(item?: IGlobalItem) {
+    if (item?.name.length) {
+      // await this.#database.addOrUpdateItem(item, this.#database.all);
+      const copy = createStorageItemFromGlobal(item);
+      // const litem = await this.#database.addItem(copy, this.itemList);
+      // this.#clearSearch();
+      // await this.#uiService.showToast(
+      //   this.translate.instant('toast.created.item', {
+      //     name: item?.name,
+      //   })
+      // );
+    }
   }
 
   showCreateGlobalDialog() {
@@ -216,5 +147,22 @@ export class StoragePage implements OnInit {
 
   closeCreateGlobalDialog() {
     //
+  }
+
+  async copyToShoppingList(item?: IStorageItem) {
+    if (!item) return;
+    // item = this.#database.cloneItem(item);
+    // item.quantity = 0;
+    // item = await this.#database.addItem(item, this.#database.shoppinglist());
+    if (item) {
+      item.quantity++;
+    }
+
+    // await this.#uiService.showToast(
+    //   this.translate.instant('storage.page.toast.move', {
+    //     name: item?.name,
+    //     total: item?.quantity,
+    //   })
+    // );
   }
 }

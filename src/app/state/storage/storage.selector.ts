@@ -17,17 +17,6 @@ export const selectStorageList = createSelector(
   (state) => state.items
 );
 
-function findCategory(item: IBaseItem, category?: string) {
-  if (!category) return true;
-  return !!item.category?.find(
-    (cat) => cat.toLowerCase() === category.toLowerCase()
-  );
-}
-
-function findByName(item: IBaseItem, searchQuery?: string) {
-  return item.name.toLowerCase().includes(searchQuery ?? '');
-}
-
 export const selectStorageListSearchResult = createSelector(
   selectStorageState,
   (state: IStorageState) => search(state, state.items)
@@ -57,9 +46,11 @@ export const selectStorageListItems = createSelector(
   selectStorageState,
   selectStorageListSearchResult,
   (state: IStorageState, result): IStorageItem[] | undefined => {
-    return (result?.listItems ?? [...state.items]).sort(
-      sortStorageListFn(state.sort)
-    );
+    return (result?.listItems ?? [...state.items])
+      .filter(
+        (item) => !state.filterBy || item.category?.includes(state.filterBy)
+      )
+      .sort(sortStorageListFn(state.sort));
   }
 );
 export const selectStorageListCategories = createSelector(
@@ -68,19 +59,12 @@ export const selectStorageListCategories = createSelector(
     return [...new Set(state.items.flatMap((item) => item.category ?? []))];
   }
 );
-export const selectStorageListContainsSearch = createSelector(
-  selectStorageListSearchResult,
-  (result): boolean => {
-    return !!result?.exactMatch;
-  }
-);
 
 function search(
   state: IStorageState,
   items: IStorageItem[]
 ): ISearchResult<IStorageItem> | undefined {
   const searchQuery = state.searchQuery;
-  console.log('search ', state);
   if (!searchQuery || !searchQuery.length) return;
 
   const matchesName = (item: IBaseItem, other: IBaseItem) =>
@@ -120,6 +104,16 @@ function search(
   //   .concat(listItems)
   //   // .concat(globalItems)
   //   .concat(storageItems);
+  // function findCategory(item: IBaseItem, category?: string) {
+  //   if (!category) return true;
+  //   return !!item.category?.find(
+  //     (cat) => cat.toLowerCase() === category.toLowerCase()
+  //   );
+  // }
+  //
+  // function findByName(item: IBaseItem, searchQuery?: string) {
+  //   return item.name.toLowerCase().includes(searchQuery ?? '');
+  // }
 
   const exactMatch = listItems.find((base) => matchesSearchExactly(base));
   return {

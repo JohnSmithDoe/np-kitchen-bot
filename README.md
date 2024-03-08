@@ -5,7 +5,7 @@
 ## Todo rxStore
 * finish edit dialogs and have an own dialog state for that
 * from storage -> shopping, globals, settings
-
+* change detection onPush
 ## Todos:
 * uniqueness by name
   * keine gleichnamigen Einträge innerhalb einer liste erlauben

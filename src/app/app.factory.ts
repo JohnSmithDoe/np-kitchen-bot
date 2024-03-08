@@ -14,7 +14,7 @@ export function createBaseItem(
 ): IBaseItem {
   return {
     id: uuidv4(),
-    name,
+    name: name.trim(),
     category: category
       ? Array.isArray(category)
         ? category

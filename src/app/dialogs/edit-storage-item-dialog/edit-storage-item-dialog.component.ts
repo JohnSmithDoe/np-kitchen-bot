@@ -1,4 +1,4 @@
-import { CurrencyPipe, DatePipe } from '@angular/common';
+import { CurrencyPipe, DatePipe, JsonPipe } from '@angular/common';
 import {
   Component,
   EventEmitter,
@@ -34,7 +34,11 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import * as dayjs from 'dayjs';
 import { addIcons } from 'ionicons';
 import { closeCircle } from 'ionicons/icons';
-import { IStorageItem, TUpdateDTO } from '../../@types/types';
+import {
+  IStorageItem,
+  TItemListCategory,
+  TUpdateDTO,
+} from '../../@types/types';
 import { DatabaseService } from '../../services/database.service';
 import { CategoriesDialogComponent } from '../categories-dialog/categories-dialog.component';
 
@@ -66,6 +70,7 @@ import { CategoriesDialogComponent } from '../categories-dialog/categories-dialo
     DatePipe,
     IonPopover,
     IonText,
+    JsonPipe,
   ],
   templateUrl: './edit-storage-item-dialog.component.html',
   styleUrl: './edit-storage-item-dialog.component.scss',
@@ -86,13 +91,25 @@ export class EditStorageItemDialogComponent implements OnInit {
   saveButtonText = '';
   currencyCode: 'EUR' | 'USD' = 'EUR';
 
+  nameValue?: string;
+  categoryValue: TItemListCategory[] | undefined;
+  quantityValue?: number;
+  minAmountValue?: number;
   bestBeforeDate?: string;
   bestBeforeValue?: string;
-  categoryValue: string[] | undefined;
   priceValue?: number;
-  minAmountValue?: number;
-  quantityValue?: number;
-  nameValue?: string;
+
+  submitChanges() {
+    this.saveItem.emit({
+      ...this.item,
+      name: this.nameValue,
+      category: this.categoryValue,
+      quantity: this.quantityValue,
+      minAmount: this.minAmountValue,
+      bestBefore: this.bestBeforeValue,
+      price: this.priceValue,
+    });
+  }
 
   datePick(ev: DatetimeCustomEvent) {
     if (typeof ev.detail.value === 'string') {
@@ -112,6 +129,11 @@ export class EditStorageItemDialogComponent implements OnInit {
     this.currencyCode = this.translate.currentLang !== 'en' ? 'EUR' : 'USD';
 
     this.nameValue = this.item?.name;
+    this.categoryValue = this.item?.category;
+    this.quantityValue = this.item?.quantity;
+    this.minAmountValue = this.item?.minAmount;
+    this.bestBeforeValue = this.item?.bestBefore;
+    this.priceValue = this.item?.price;
 
     this.saveButtonText =
       this.mode === 'create'
@@ -129,12 +151,12 @@ export class EditStorageItemDialogComponent implements OnInit {
     }
   }
 
-  setCategories(categories?: string[]) {
+  setCategories(categories?: TItemListCategory[]) {
     this.selectCategories = false;
     this.categoryValue = categories;
   }
 
-  removeCategory(cat: string) {
+  removeCategory(cat: TItemListCategory) {
     this.categoryValue?.splice(this.categoryValue?.indexOf(cat), 1);
     // update object reference
     this.categoryValue = this.categoryValue
@@ -158,9 +180,5 @@ export class EditStorageItemDialogComponent implements OnInit {
     // swap german , with . e.g. 1234,34 -> 1234.34
     const numberInput = cleanInput.replace(/,+/g, '.');
     this.priceValue = Number.parseFloat(numberInput);
-  }
-
-  submitChanges() {
-    this.saveItem.emit({ name: this.nameValue });
   }
 }

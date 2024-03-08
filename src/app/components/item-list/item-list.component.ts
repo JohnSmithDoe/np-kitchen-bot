@@ -3,9 +3,7 @@ import {
   Component,
   EventEmitter,
   Input,
-  OnChanges,
   Output,
-  SimpleChanges,
   TemplateRef,
   ViewChild,
 } from '@angular/core';
@@ -42,6 +40,7 @@ import { TextItemComponent } from '../item-list-items/text-item/text-item.compon
   templateUrl: 'item-list.component.html',
   styleUrls: ['item-list.component.scss'],
   standalone: true,
+  // changeDetection: ChangeDetectionStrategy.OnPush, TODO: seems to work :D
   imports: [
     IonSearchbar,
     IonToolbar,
@@ -67,14 +66,14 @@ import { TextItemComponent } from '../item-list-items/text-item/text-item.compon
     TextItemComponent,
   ],
 })
-export class ItemListComponent implements OnChanges {
+export class ItemListComponent {
   @ViewChild('ionList', { static: true }) ionList?: IonList;
 
   @Input() itemTemplate!: TemplateRef<any>;
   @Input({ required: true }) items?: ReadonlyArray<IBaseItem> | null;
+  @Input() categories?: ReadonlyArray<TItemListCategory> | null;
   @Input() mode: 'alphabetical' | 'categories' = 'alphabetical';
 
-  categories: TItemListCategory[] = [];
   // searchTerm?: string | null;
 
   @Output() selectCategory = new EventEmitter<TItemListCategory>();
@@ -87,10 +86,6 @@ export class ItemListComponent implements OnChanges {
 
   constructor() {
     addIcons({ add, remove, cart, list });
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    console.log(changes);
   }
 
   async closeSlidingItems() {

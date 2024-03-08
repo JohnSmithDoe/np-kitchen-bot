@@ -125,7 +125,7 @@
 <ion-modal [isOpen]="selectCategories" (didDismiss)="selectCategories = false">
   <ng-template>
     <app-categories-dialog
-      [item]="value"
+      [itemCategories]="value.category"
       [categories]="[]"
       (confirm)="setCategories($event)"
       (cancel)="selectCategories = false"

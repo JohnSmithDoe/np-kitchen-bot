@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { ActionCreator, Store } from '@ngrx/store';
 import { exhaustMap, map, take } from 'rxjs';
@@ -17,17 +17,15 @@ import { selectStorageState } from './storage/storage.selector';
 
 @Injectable({ providedIn: 'root' })
 export class Effects {
-  constructor(
-    private actions$: Actions,
-    private store: Store,
-    private database: DatabaseService
-  ) {}
+  #actions$ = inject(Actions);
+  #store = inject(Store);
+  #database = inject(DatabaseService);
 
   initializeApplication$ = createEffect(() => {
-    return this.actions$.pipe(
+    return this.#actions$.pipe(
       ofType(ApplicationActions.load),
       exhaustMap(() =>
-        fromPromise(this.database.create()).pipe(
+        fromPromise(this.#database.create()).pipe(
           map((data) => ApplicationActions.loadedSuccessfully(data))
         )
       )
@@ -71,14 +69,14 @@ export class Effects {
   ) {
     return createEffect(
       () => {
-        return this.actions$.pipe(
+        return this.#actions$.pipe(
           ofType(...events),
           exhaustMap(() =>
-            this.store.select(select).pipe(
+            this.#store.select(select).pipe(
               map((value) =>
-                fromPromise(this.database.save(storageKey, value))
+                fromPromise(this.#database.save(storageKey, value))
               ),
-              take(1)
+              take(1) // TODO: this closes the obs i think... should be done by better piping i guess
             )
           )
         );

@@ -1,5 +1,10 @@
-import { TIonDragEvent } from './@types/types';
+import { IGlobalItem, TAllItemTypes, TIonDragEvent } from './@types/types';
 
+// type guards
+export function isGlobalItem(value: TAllItemTypes): value is IGlobalItem {
+  return !value.hasOwnProperty('quantity'); // no quantity -> its a global one
+}
+// create a unique id the 4 is a fixed number in it
 export function uuidv4() {
   return '10000000-1000-4000-8000-100000000000'.replace(/[018]/g, (c) => {
     return (

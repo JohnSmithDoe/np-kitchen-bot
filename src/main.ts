@@ -22,6 +22,7 @@ import { routes } from './app/app.routes';
 import { DatabaseService } from './app/services/database.service';
 import { Effects } from './app/state/effects';
 import { globalsReducer } from './app/state/globals/globals.reducer';
+import { MessageEffects } from './app/state/message.effects';
 import { settingsReducer } from './app/state/settings/settings.reducer';
 import { shoppingListsReducer } from './app/state/shoppinglist/shopping-lists.reducer';
 import { storageReducer } from './app/state/storage/storage.reducer';
@@ -75,6 +76,6 @@ void bootstrapApplication(AppComponent, {
       multi: true,
       deps: [DatabaseService],
     },
-    provideEffects(Effects),
+    provideEffects(Effects, MessageEffects),
   ],
 });

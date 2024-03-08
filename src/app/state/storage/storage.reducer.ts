@@ -5,7 +5,7 @@ import {
   TStorageList,
   TUpdateDTO,
 } from '../../@types/types';
-import { uuidv4 } from '../../app.utils';
+import { createStorageItem } from '../../app.factory';
 import { ApplicationActions } from '../application.actions';
 import { StorageActions } from './storage.actions';
 
@@ -20,13 +20,12 @@ export const initialState: IStorageState = {
 
 export const storageReducer = createReducer(
   initialState,
-  on(
-    StorageActions.addItem,
-    (state: IStorageState, { item }): IStorageState => {
-      const newItem = { ...item, name: state.searchQuery ?? 'new item' };
-      return { ...state, items: [newItem, ...state.items] };
-    }
-  ),
+  on(StorageActions.addItem, (state, { item }): IStorageState => {
+    return {
+      ...state,
+      items: [item, ...state.items],
+    };
+  }),
   on(StorageActions.removeItem, (state, { item }): IStorageState => {
     return {
       ...state,
@@ -34,24 +33,73 @@ export const storageReducer = createReducer(
     };
   }),
   on(
-    StorageActions.startEditItem,
-    (state: IStorageState, { data }): IStorageState => {
-      const editMode = data ? 'update' : 'create';
-      const itemData: TUpdateDTO<IStorageItem> = {
+    StorageActions.createItem,
+    (
+      state: IStorageState,
+      { data }: { data?: Partial<IStorageItem> }
+    ): IStorageState => {
+      // use search query as initial name
+      const name = data?.name?.length ? data.name : state.searchQuery ?? '';
+      const newItem = createStorageItem(name);
+      const editData: TUpdateDTO<IStorageItem> = {
         ...data,
-        id: data?.id ?? uuidv4(), // ensure id
-        name: data?.name ?? state.searchQuery ?? '', // use search query as initial name
+        ...newItem,
       };
-      return { ...state, data: itemData, isEditing: true, editMode };
+      return { ...state, data: editData, isEditing: true, editMode: 'create' };
+    }
+  ),
+  on(
+    StorageActions.addItemFromSearch,
+    (state: IStorageState): IStorageState => {
+      // do not add an empty item
+      // do not add an already contained item (could be triggered by a shortcut)
+      if (
+        !state.searchQuery?.trim().length ||
+        !!state.items.find(
+          (item) => item.name.toLowerCase() === state.searchQuery
+        )
+      )
+        return state;
+      //if (contained) throw new Error('Already contained'); // Breaks EVERYTHING hmmm
+      // TODO: errorhandler maybe or effect
+      //   await this.#uiService.showToast(
+      //     this.translate.instant('toast.add.item.error.contained', {
+      //       name: item?.name,
+      //     }),
+      //     'storage'
+      //   );
+      const item = createStorageItem(state.searchQuery);
+      return { ...state, items: [item, ...state.items] };
+    }
+  ),
+  on(
+    StorageActions.editItem,
+    (state: IStorageState, { item }): IStorageState => {
+      const editData: TUpdateDTO<IStorageItem> = {
+        ...item,
+        name: item?.name ?? state.searchQuery ?? '', // use search query as initial name
+      };
+      return { ...state, data: editData, isEditing: true, editMode: 'update' };
     }
   ),
 
-  on(StorageActions.endEditItem, (state, { data }): IStorageState => {
-    return {
-      ...updateStorageItem(data, state),
+  on(StorageActions.endEditItem, (state, { item }): IStorageState => {
+    const result = {
+      ...state,
       data: undefined,
       isEditing: false,
     };
+    if (!item || !state.editMode || !state.data) return result;
+    switch (state.editMode) {
+      case 'update':
+        return updateStorageItem(item, result);
+      case 'create':
+        const newItem: IStorageItem = { ...state.data, quantity: 1, ...item };
+        return {
+          ...result,
+          items: [newItem, ...state.items],
+        };
+    }
   }),
   on(StorageActions.updateItem, (state, { item }): IStorageState => {
     return updateStorageItem(item, state);
@@ -60,7 +108,7 @@ export const storageReducer = createReducer(
     return { ...state, searchQuery };
   }),
   on(StorageActions.updateFilter, (state, { filterBy }): IStorageState => {
-    return { ...state, filterBy };
+    return { ...state, filterBy, mode: 'alphabetical' };
   }),
   on(StorageActions.updateMode, (state, { mode }): IStorageState => {
     // reset sort on mode change, otherwise toggle
@@ -69,7 +117,12 @@ export const storageReducer = createReducer(
         ? { sortBy: 'name', sortDir: 'asc' }
         : updateSort(state.sort?.sortBy, 'toggle', state.sort?.sortDir);
     // clear search ... maybe
-    return { ...state, sort: sort, mode: mode ?? 'alphabetical' };
+    return {
+      ...state,
+      sort: sort,
+      mode: mode ?? 'alphabetical',
+      filterBy: undefined,
+    };
   }),
   on(StorageActions.updateSort, (state, { sortBy, sortDir }): IStorageState => {
     const sort = updateSort(sortBy, sortDir, state.sort?.sortDir);
@@ -92,7 +145,11 @@ function updateStorageItem(
   const itemIdx = state.items.findIndex((listItem) => listItem.id === item.id);
   if (itemIdx >= 0) {
     const original = state.items[itemIdx];
-    items.splice(itemIdx, 1, { ...original, ...item });
+    const updatedItem = { ...original, ...item };
+    items.splice(itemIdx, 1, updatedItem);
+  } else {
+    // hmmmmmmm
+    console.error(item, state.items, 'not found');
   }
   return { ...state, items };
 }

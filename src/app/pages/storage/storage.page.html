@@ -2,12 +2,12 @@
   color="storage"
   label="{{'page-title.storage' | translate}}"
   [disabled]="!!(rxSearchResult$ | async)?.exactMatch"
-  (addItem)="showEditDialog()"
+  (addItem)="showCreateDialog()"
 >
   <app-item-list-searchbar
     [query]="(rxState$ | async)?.searchQuery"
     (queryChange)="searchFor($event)"
-    (hitEnter)="quickAddItem()"
+    (hitEnter)="addItemFromSearch()"
   ></app-item-list-searchbar>
   <app-item-list-toolbar (selectDisplayMode)="setDisplayMode($event)">
     <ion-button (click)="setDisplayMode('bestBefore')">Mhd</ion-button>
@@ -21,7 +21,7 @@
     [showQuickAdd]="(rxSearchResult$ | async)?.showQuickAdd"
     [showQuickAddGlobal]="(rxSearchResult$ | async)?.showQuickAddGlobal"
     [quickAddLabel]="(rxSearchResult$ | async)?.searchTerm"
-    (quickAddItem)="quickAddItem()"
+    (quickAddItem)="showCreateDialog()"
     (quickCreateGlobal)="showCreateGlobalDialog()"
   ></app-item-list-quickadd>
   <app-item-list
@@ -30,6 +30,7 @@
     header="{{'list-header.storage' | translate}}"
     [mode]="(rxState$ | async)?.mode ?? 'alphabetical'"
     [items]="(rxItems$ | async)"
+    [categories]="(rxCategories$ | async)"
     [itemTemplate]="storageItem"
     (selectCategory)="selectCategory($event)"
   ></app-item-list>
@@ -48,7 +49,7 @@
     [isEmptyList]="!((rxItems$ | async)?.length)"
     [isSearching]="(rxSearchResult$ |async)?.hasSearchTerm"
     [searchTerm]="(rxSearchResult$ |async)?.searchTerm"
-    (emptyItem)="showEditDialog()"
+    (emptyItem)="showCreateDialog()"
   ></app-item-list-empty>
 
   <!--  global search result-->
@@ -69,12 +70,11 @@
       (selectItem)="addGlobalItem(item)"
     ></app-text-item>
   </ng-template>
-
   }
 </ion-content>
 
 <ion-modal
-  [isOpen]="(rxState$|async)?.isEditing === true"
+  [isOpen]="(rxState$ | async)?.isEditing === true"
   (didDismiss)="closeEditDialog()"
 >
   <ng-template>
