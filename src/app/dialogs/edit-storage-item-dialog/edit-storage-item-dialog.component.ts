@@ -1,4 +1,4 @@
-import { CurrencyPipe, DatePipe, JsonPipe } from '@angular/common';
+import { CurrencyPipe, DatePipe } from '@angular/common';
 import {
   Component,
   EventEmitter,
@@ -70,7 +70,6 @@ import { CategoriesDialogComponent } from '../categories-dialog/categories-dialo
     DatePipe,
     IonPopover,
     IonText,
-    JsonPipe,
   ],
   templateUrl: './edit-storage-item-dialog.component.html',
   styleUrl: './edit-storage-item-dialog.component.scss',
@@ -132,8 +131,12 @@ export class EditStorageItemDialogComponent implements OnInit {
     this.categoryValue = this.item?.category;
     this.quantityValue = this.item?.quantity;
     this.minAmountValue = this.item?.minAmount;
-    this.bestBeforeValue = this.item?.bestBefore;
     this.priceValue = this.item?.price;
+
+    this.bestBeforeValue = this.item?.bestBefore;
+    if (this.bestBeforeValue) {
+      this.bestBeforeDate = dayjs(this.bestBeforeValue).format();
+    }
 
     this.saveButtonText =
       this.mode === 'create'
@@ -144,11 +147,6 @@ export class EditStorageItemDialogComponent implements OnInit {
       this.mode === 'create'
         ? this.translate.instant('edit.item.dialog.title.create')
         : this.translate.instant('edit.item.dialog.title.update');
-
-    this.bestBeforeValue = this.item?.bestBefore;
-    if (this.bestBeforeValue) {
-      this.bestBeforeDate = dayjs(this.bestBeforeValue).format();
-    }
   }
 
   setCategories(categories?: TItemListCategory[]) {

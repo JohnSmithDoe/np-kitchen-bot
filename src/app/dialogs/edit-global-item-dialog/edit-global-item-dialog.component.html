@@ -6,9 +6,7 @@
       }}</ion-button>
     </ion-buttons>
     <ion-buttons slot="end">
-      <ion-button (click)="saveItem.emit(value)">{{
-        saveButtonText
-      }}</ion-button>
+      <ion-button (click)="submitChanges()">{{ saveButtonText }}</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -20,13 +18,14 @@
       <ion-input
         label="{{ 'edit.item.dialog.name' | translate }}"
         placeholder="{{ 'edit.item.dialog.name.placeholder' | translate }}"
-        [(ngModel)]="value.name"
+        [(ngModel)]="nameValue"
       ></ion-input>
     </ion-item>
+
     <ion-item button (click)="selectCategories = true">
       <ion-label class="ion-text-wrap">
         {{ 'edit.item.dialog.categories' | translate }}
-        @for (cat of value.category; track cat) {
+        @for (cat of categoryValue; track cat) {
           <ion-chip color="category">
             <!--                <ion-avatar>-->
             <!--                  <img alt="Image of the category" src="assets/avatar.svg"/>-->
@@ -95,7 +94,7 @@
       <ion-select
         label="Haltbarkeit"
         interface="popover"
-        [value]="value.bestBeforeTimespan"
+        [value]="bestBeforeTimespanValue"
         (ionChange)="setBestBeforeTimespan($event)"
       >
         <ion-select-option value="forever">Ewig</ion-select-option>
@@ -110,8 +109,8 @@
         type="number"
         class="ion-text-end"
         [clearOnEdit]="true"
-        [disabled]="value.bestBeforeTimespan === 'forever'"
-        [(ngModel)]="value.bestBeforeTimevalue"
+        [disabled]="bestBeforeTimespanValue === 'forever'"
+        [(ngModel)]="bestBeforeTimeValue"
       >
         <div slot="label">
           Haltbarkeit
@@ -125,8 +124,8 @@
 <ion-modal [isOpen]="selectCategories" (didDismiss)="selectCategories = false">
   <ng-template>
     <app-categories-dialog
-      [itemCategories]="value.category"
-      [categories]="[]"
+      [itemCategories]="categoryValue"
+      [categories]="categories"
       (confirm)="setCategories($event)"
       (cancel)="selectCategories = false"
     ></app-categories-dialog>

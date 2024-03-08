@@ -33,8 +33,11 @@ import {
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { closeCircle } from 'ionicons/icons';
-import { IItemList, IShoppingItem } from '../../@types/types';
-import { DatabaseService } from '../../services/database.service';
+import {
+  IShoppingItem,
+  TItemListCategory,
+  TUpdateDTO,
+} from '../../@types/types';
 import { CategoriesDialogComponent } from '../categories-dialog/categories-dialog.component';
 
 @Component({
@@ -70,15 +73,13 @@ import { CategoriesDialogComponent } from '../categories-dialog/categories-dialo
   styleUrl: './edit-shopping-item-dialog.component.scss',
 })
 export class EditShoppingItemDialogComponent implements OnInit {
-  readonly #database = inject(DatabaseService);
   readonly translate = inject(TranslateService);
 
-  @Input() item?: IShoppingItem | null;
-  @Input() localList!: IItemList<IShoppingItem>;
+  @Input() item?: TUpdateDTO<IShoppingItem> | null;
+  @Input() categories: string[] = [];
   @Input() mode: 'update' | 'create' = 'create';
-  @Input() value!: IShoppingItem;
 
-  @Output() saveItem = new EventEmitter<IShoppingItem>();
+  @Output() saveItem = new EventEmitter<Partial<IShoppingItem>>();
   @Output() cancel = new EventEmitter();
 
   selectCategories = false;
@@ -86,12 +87,32 @@ export class EditShoppingItemDialogComponent implements OnInit {
   saveButtonText = '';
   currencyCode: 'EUR' | 'USD' = 'EUR';
 
+  nameValue?: string;
+  categoryValue: TItemListCategory[] | undefined;
+  quantityValue?: number;
+  priceValue?: number;
+
+  submitChanges() {
+    this.saveItem.emit({
+      ...this.item,
+      name: this.nameValue,
+      category: this.categoryValue,
+      quantity: this.quantityValue,
+      price: this.priceValue,
+    });
+  }
+
   constructor() {
     addIcons({ closeCircle });
   }
 
   ngOnInit(): void {
     this.currencyCode = this.translate.currentLang !== 'en' ? 'EUR' : 'USD';
+
+    this.nameValue = this.item?.name;
+    this.categoryValue = this.item?.category;
+    this.quantityValue = this.item?.quantity;
+    this.priceValue = this.item?.price;
 
     this.saveButtonText =
       this.mode === 'create'
@@ -102,22 +123,18 @@ export class EditShoppingItemDialogComponent implements OnInit {
       this.mode === 'create'
         ? this.translate.instant('edit.item.dialog.title.create')
         : this.translate.instant('edit.item.dialog.title.update');
-
-    // this.value = this.item
-    //   ? this.#database.cloneItem(this.item)
-    //   : createShoppingItem('');
   }
 
-  setCategories(categories?: string[]) {
+  setCategories(categories?: TItemListCategory[]) {
     this.selectCategories = false;
-    this.value.category = categories;
+    this.categoryValue = categories;
   }
 
-  removeCategory(cat: string) {
-    this.value.category?.splice(this.value.category?.indexOf(cat), 1);
+  removeCategory(cat: TItemListCategory) {
+    this.categoryValue?.splice(this.categoryValue?.indexOf(cat), 1);
     // update object reference
-    this.value.category = this.value.category
-      ? [...this.value.category]
+    this.categoryValue = this.categoryValue
+      ? [...this.categoryValue]
       : undefined;
   }
 
@@ -136,6 +153,6 @@ export class EditShoppingItemDialogComponent implements OnInit {
     const cleanInput = inputValue.replace(/[^0-9,-]+/g, '');
     // swap german , with . e.g. 1234,34 -> 1234.34
     const numberInput = cleanInput.replace(/,+/g, '.');
-    this.value.price = Number.parseFloat(numberInput);
+    this.priceValue = Number.parseFloat(numberInput);
   }
 }

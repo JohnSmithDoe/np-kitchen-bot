@@ -1,5 +1,5 @@
 import { AsyncPipe } from '@angular/common';
-import { Component, inject, OnInit, ViewChild } from '@angular/core';
+import { Component, inject, ViewChild } from '@angular/core';
 import { IonContent, IonModal } from '@ionic/angular/standalone';
 import { Store } from '@ngrx/store';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -7,18 +7,11 @@ import { addIcons } from 'ionicons';
 import { add, remove } from 'ionicons/icons';
 import {
   IGlobalItem,
-  IItemList,
-  ISearchResult,
   IShoppingItem,
-  IStorageItem,
   TItemListCategory,
+  TItemListMode,
 } from '../../@types/types';
-import {
-  createGlobalItem,
-  createShoppingItem,
-  createShoppingItemFromGlobal,
-  createShoppingItemFromStorage,
-} from '../../app.factory';
+import { createShoppingItemFromGlobal } from '../../app.factory';
 import { ShoppingItemComponent } from '../../components/item-list-items/shopping-item/shopping-item.component';
 import { TextItemComponent } from '../../components/item-list-items/text-item/text-item.component';
 import { ItemListEmptyComponent } from '../../components/item-list/item-list-empty/item-list-empty.component';
@@ -34,7 +27,9 @@ import { DatabaseService } from '../../services/database.service';
 import { UiService } from '../../services/ui.service';
 import { ShoppingListActions } from '../../state/shoppinglist/shopping-list.actions';
 import {
-  selectShoppingList,
+  selectShoppingListCategories,
+  selectShoppingListItems,
+  selectShoppingListSearchResult,
   selectShoppinglistState,
 } from '../../state/shoppinglist/shopping-list.selector';
 
@@ -61,7 +56,7 @@ import {
     AsyncPipe,
   ],
 })
-export class ShoppinglistPage implements OnInit {
+export class ShoppinglistPage {
   @ViewChild(ItemListSearchbarComponent, { static: true })
   listSearchbar?: ItemListSearchbarComponent;
 
@@ -70,183 +65,93 @@ export class ShoppinglistPage implements OnInit {
   readonly translate = inject(TranslateService);
   readonly #store = inject(Store);
 
-  itemList!: IItemList<IShoppingItem>;
-
-  isCreating = false;
-  createNewItem: IGlobalItem | null | undefined;
-
-  isEditing = false;
-  editItem: IShoppingItem | null | undefined;
-  editMode: 'update' | 'create' = 'create';
-
-  searchResult?: ISearchResult<IShoppingItem>;
-  mode: 'alphabetical' | 'categories' = 'alphabetical';
-
-  sortBy?: 'alphabetical';
-  sortDir: 'asc' | 'desc' = 'asc';
-
   rxState$ = this.#store.select(selectShoppinglistState);
-  rxItems$ = this.#store.select(selectShoppingList);
+  rxItems$ = this.#store.select(selectShoppingListItems);
+  rxCategories$ = this.#store.select(selectShoppingListCategories);
+  rxSearchResult$ = this.#store.select(selectShoppingListSearchResult);
 
   constructor() {
     addIcons({ add, remove });
   }
 
-  ngOnInit(): void {
-    this.createNewItem = null;
-  }
-
-  async addItem(item?: IShoppingItem) {
-    // do not add an already contained item (could be triggered by a shortcut)
-    if (this.searchResult?.exactMatch) {
-      await this.#uiService.showToast(
-        this.translate.instant('toast.add.item.error.contained', {
-          name: item?.name,
-        }),
-        'shopping'
-      );
-    } else if (!!item) {
-      console.log('dispatch addddddddddddddddd');
-      this.#store.dispatch(ShoppingListActions.addItem(item));
-
-      await this.#uiService.showToast(
-        this.translate.instant('toast.add.item', {
-          name: item?.name,
-          total: item?.quantity,
-        })
-      );
-    }
-  }
-
-  async updateItem(item?: IShoppingItem) {
-    this.isEditing = false;
-    this.editItem = null;
-    console.log('hmmmmmmm what item', item);
-    this.#store.dispatch(ShoppingListActions.updateItem(item));
-    await this.#uiService.showToast(
-      this.translate.instant('toast.update.item', {
-        name: item?.name,
-        total: item?.quantity,
-      })
-    );
-  }
-
   async removeItem(item: IShoppingItem) {
     this.#store.dispatch(ShoppingListActions.removeItem(item));
-    // await this.#database.deleteItem(item, this.itemList);
-    // this.#refreshItems();
-    await this.#uiService.showToast(
-      this.translate.instant('toast.remove.item', {
-        name: item?.name,
+  }
+
+  async addItemFromSearch() {
+    this.#store.dispatch(ShoppingListActions.addItemFromSearch());
+  }
+
+  showCreateDialog() {
+    this.#store.dispatch(ShoppingListActions.createItem());
+  }
+
+  showEditDialog(item: IShoppingItem) {
+    this.#store.dispatch(ShoppingListActions.editItem(item));
+  }
+
+  closeEditDialog() {
+    this.#store.dispatch(ShoppingListActions.endEditItem());
+  }
+
+  async updateItem(item: Partial<IShoppingItem>) {
+    this.#store.dispatch(ShoppingListActions.endEditItem(item));
+  }
+
+  searchFor(searchTerm: string) {
+    this.#store.dispatch(ShoppingListActions.updateSearch(searchTerm));
+  }
+
+  setDisplayMode(mode: TItemListMode | 'bestBefore') {
+    mode = mode === 'bestBefore' ? 'alphabetical' : mode;
+    this.#store.dispatch(ShoppingListActions.updateMode(mode));
+  }
+
+  selectCategory(category: TItemListCategory) {
+    this.#store.dispatch(ShoppingListActions.updateFilter(category));
+  }
+
+  changeQuantity(item: IShoppingItem, diff: number) {
+    this.#store.dispatch(
+      ShoppingListActions.updateItem({
+        ...item,
+        quantity: Math.max(0, item.quantity + diff),
       })
     );
   }
 
   async addGlobalItem(item?: IGlobalItem) {
+    // TODO
+    // this.#store.dispatch(ShoppingListActions.addItemFromGlobal(item))
     if (!item) return;
     let litem: IShoppingItem | undefined = createShoppingItemFromGlobal(item);
-    return this.addItem(litem);
+    this.#store.dispatch(ShoppingListActions.addItem(litem));
   }
 
-  async quickAddItem() {
-    // if (!this.searchResult?.hasSearchTerm) return;
-    const litem = createShoppingItem('this.searchResult.searchTerm');
-    return this.addItem(litem);
-  }
-
-  async createGlobalItem(item?: IGlobalItem) {
-    this.isCreating = false;
-    this.createNewItem = null;
-
-    if (item?.name.length) {
+  async createGlobalItem(item?: any) {
+    if (item?.name?.length) {
       // await this.#database.addOrUpdateItem(item, this.#database.all);
       const copy = createShoppingItemFromGlobal(item);
       // const litem = await this.#database.addItem(copy, this.itemList);
-      this.#clearSearch();
-      await this.#uiService.showToast(
-        this.translate.instant('toast.created.item', {
-          name: item?.name,
-        })
-      );
+      // this.#clearSearch();
+      // await this.#uiService.showToast(
+      //   this.translate.instant('toast.created.item', {
+      //     name: item?.name,
+      //   })
+      // );
     }
   }
 
-  async addStorageItem(item: IStorageItem) {
-    const litem = createShoppingItemFromStorage(item);
-    return this.addItem(litem);
-  }
-
-  // what should happen if we buy an item?
-
-  async buyItem(item: IShoppingItem) {
-    // await this.listComponent?.closeSlidingItems();
-    // item.state = 'bought';
-    // await this.#database.addOrUpdateItem(item, this.itemList);
-    // this.#items.next(
-    //   this.#sortList([...this.itemList.items], 'alphabetical', false)
-    // );
-    await this.#uiService.showToast(
-      this.translate.instant('shoppinglist.page.toast.move', {
-        name: item?.name,
-        total: item?.quantity,
-      })
-    );
-  }
-
-  setDisplayMode(mode: 'alphabetical' | 'categories') {
-    this.mode = mode;
-    this.#sortList('alphabetical');
-    this.#clearSearch();
-  }
-
-  selectCategory(category: TItemListCategory) {
-    //TODO: dispatch select category
-    //this.items = getItemsFromCategory(category, this.itemList);
-    //this.mode = 'alphabetical';
-  }
-
-  async changeQuantity(item: IShoppingItem, diff: number) {
-    item.quantity = Math.max(0, item.quantity + diff);
-    // return this.#database.save();
-  }
-
   showCreateGlobalDialog() {
-    this.isCreating = true; // show create dialog with the new item
-    this.createNewItem = createGlobalItem(this.searchResult?.searchTerm ?? '');
+    // this.isCreating = true; // show create dialog with the new item
+    // this.createNewItem = createGlobalItem('');
   }
 
-  showEditDialog(item?: IShoppingItem) {
-    this.isEditing = true;
-    this.editItem =
-      item ?? createShoppingItem(this.searchResult?.searchTerm ?? '');
-    this.editMode = item ? 'update' : 'create';
+  closeCreateGlobalDialog() {
+    //
   }
 
-  searchFor(searchTerm: string) {
-    // this.searchResult = this.#database.search(this.itemList, searchTerm);
-    // this.items = this.searchResult?.listItems || [...this.itemList.items];
-  }
-
-  #clearSearch() {
-    // this.searchResult = undefined;
-    // this.listSearchbar?.clear();
-  }
-
-  #sortList(mode: 'alphabetical', toggleDir = true) {
-    if (toggleDir) this.sortDir = this.sortDir === 'asc' ? 'desc' : 'asc';
-    this.sortBy = mode;
-    const sortFn = (a: IShoppingItem, b: IShoppingItem) => {
-      if (!(a.state === 'bought' || b.state === 'bought')) {
-        switch (mode) {
-          case 'alphabetical':
-            return this.sortDir === 'asc'
-              ? a.name.localeCompare(b.name)
-              : b.name.localeCompare(a.name);
-        }
-      } else {
-        return a.state === 'bought' ? 1 : -1;
-      }
-    };
-    this.itemList.items.sort(sortFn);
+  buyItem(item: any) {
+    console.log('dis is not ready');
   }
 }

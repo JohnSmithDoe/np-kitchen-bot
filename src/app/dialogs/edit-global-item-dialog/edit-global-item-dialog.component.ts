@@ -40,8 +40,8 @@ import {
   TItemListCategory,
   TItemUnit,
   TPackagingUnit,
+  TUpdateDTO,
 } from '../../@types/types';
-import { DatabaseService } from '../../services/database.service';
 import { CategoriesDialogComponent } from '../categories-dialog/categories-dialog.component';
 
 @Component({
@@ -78,15 +78,13 @@ import { CategoriesDialogComponent } from '../categories-dialog/categories-dialo
   styleUrl: './edit-global-item-dialog.component.scss',
 })
 export class EditGlobalItemDialogComponent implements OnInit {
-  readonly #database = inject(DatabaseService);
   readonly translate = inject(TranslateService);
 
-  @Input() item?: Partial<IGlobalItem> | null;
+  @Input() item?: TUpdateDTO<IGlobalItem> | null;
+  @Input() categories: string[] = [];
   @Input() mode: 'update' | 'create' = 'create';
-  @Input() value!: IGlobalItem;
-  @Input() categories: TItemListCategory[] = [];
 
-  @Output() saveItem = new EventEmitter<IGlobalItem>();
+  @Output() saveItem = new EventEmitter<Partial<IGlobalItem>>();
   @Output() cancel = new EventEmitter();
 
   selectCategories = false;
@@ -94,12 +92,39 @@ export class EditGlobalItemDialogComponent implements OnInit {
   saveButtonText = '';
   currencyCode: 'EUR' | 'USD' = 'EUR';
 
+  nameValue?: string;
+  categoryValue: TItemListCategory[] | undefined;
+  priceValue?: number;
+
+  bestBeforeTimespanValue?: TBestBeforeTimespan;
+  bestBeforeTimeValue: undefined | number;
+  packagingValue?: TPackagingUnit;
+  unitValue?: TItemUnit;
+
+  submitChanges() {
+    this.saveItem.emit({
+      ...this.item,
+      name: this.nameValue,
+      category: this.categoryValue,
+      price: this.priceValue,
+    });
+  }
+
   constructor() {
     addIcons({ closeCircle });
   }
 
   ngOnInit(): void {
     this.currencyCode = this.translate.currentLang !== 'en' ? 'EUR' : 'USD';
+
+    this.nameValue = this.item?.name;
+    this.categoryValue = this.item?.category;
+    this.priceValue = this.item?.price;
+    this.bestBeforeTimespanValue = this.item?.bestBeforeTimespan;
+    this.bestBeforeTimeValue = this.item?.bestBeforeTimevalue;
+    this.packagingValue = this.item?.packaging;
+    this.unitValue = this.item?.unit;
+
     this.saveButtonText =
       this.mode === 'create'
         ? this.translate.instant('edit.global.item.dialog.button.create')
@@ -109,36 +134,32 @@ export class EditGlobalItemDialogComponent implements OnInit {
       this.mode === 'create'
         ? this.translate.instant('edit.global.item.dialog.title.create')
         : this.translate.instant('edit.global.item.dialog.title.update');
-
-    // this.value = this.item
-    //   ? this.#database.cloneItem(this.item)
-    //   : createGlobalItem('');
   }
 
-  setCategories(categories?: string[]) {
+  setCategories(categories?: TItemListCategory[]) {
     this.selectCategories = false;
-    this.value.category = categories;
+    this.categoryValue = categories;
   }
 
-  removeCategory(cat: string) {
-    this.value.category?.splice(this.value.category?.indexOf(cat), 1);
+  removeCategory(cat: TItemListCategory) {
+    this.categoryValue?.splice(this.categoryValue?.indexOf(cat), 1);
     // update object reference
-    this.value.category = this.value.category
-      ? [...this.value.category]
+    this.categoryValue = this.categoryValue
+      ? [...this.categoryValue]
       : undefined;
   }
 
   setUnit(ev: SelectCustomEvent<TItemUnit>) {
-    this.value.unit = ev.detail.value;
-    if (this.value.unit === 'ml') {
-      this.value.packaging = 'bottle';
-    } else if (this.value.packaging === 'bottle') {
-      this.value.packaging = 'loose';
+    this.unitValue = ev.detail.value;
+    if (this.unitValue === 'ml') {
+      this.packagingValue = 'bottle';
+    } else if (this.packagingValue === 'bottle') {
+      this.packagingValue = 'loose';
     }
   }
 
   setPackaging(ev: SelectCustomEvent<TPackagingUnit>) {
-    this.value.packaging = ev.detail.value;
+    this.packagingValue = ev.detail.value;
   }
 
   updatePrice(ev: InputCustomEvent<FocusEvent>) {
@@ -156,12 +177,12 @@ export class EditGlobalItemDialogComponent implements OnInit {
     const cleanInput = inputValue.replace(/[^0-9,-]+/g, '');
     // swap german , with . e.g. 1234,34 -> 1234.34
     const numberInput = cleanInput.replace(/,+/g, '.');
-    this.value.price = Number.parseFloat(numberInput);
+    this.priceValue = Number.parseFloat(numberInput);
   }
 
   setBestBeforeTimespan(ev: SelectCustomEvent<TBestBeforeTimespan>) {
-    this.value.bestBeforeTimespan = ev.detail.value;
-    this.value.bestBeforeTimevalue =
-      this.value.bestBeforeTimespan === 'forever' ? undefined : 1;
+    this.bestBeforeTimespanValue = ev.detail.value;
+    this.bestBeforeTimeValue =
+      this.bestBeforeTimespanValue === 'forever' ? undefined : 1;
   }
 }

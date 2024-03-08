@@ -138,3 +138,8 @@ export interface ISearchResult<T extends IBaseItem> {
   globalItems: IGlobalItem[];
   storageItems: IStorageItem[];
 }
+
+export type IListState<T extends IBaseItem> = IItemList<T>;
+export type IStorageState = Readonly<TStorageList>;
+export type IShoppingState = Readonly<TShoppingList>;
+export type IGlobalsState = Readonly<TGlobalsList>;

@@ -24,6 +24,7 @@
     (quickAddItem)="showCreateDialog()"
     (quickCreateGlobal)="showCreateGlobalDialog()"
   ></app-item-list-quickadd>
+
   <app-item-list
     #storageListComponent
     headerColor="storage"
@@ -39,12 +40,13 @@
       [item]="item"
       [itemList]="storageListComponent"
       (selectItem)="showEditDialog(item)"
+      (deleteItem)="removeItem(item)"
       (increment)="changeQuantity(item, +1)"
       (decrement)="changeQuantity(item, -1)"
       (cartItem)="copyToShoppingList(item)"
-      (deleteItem)="removeItem(item)"
     ></app-storage-item>
   </ng-template>
+
   <app-item-list-empty
     [isEmptyList]="!((rxItems$ | async)?.length)"
     [isSearching]="(rxSearchResult$ |async)?.hasSearchTerm"

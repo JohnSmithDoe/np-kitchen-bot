@@ -1,6 +1,20 @@
 import { createReducer, on } from '@ngrx/store';
-import { TShoppingList } from '../../@types/types';
+import {
+  IShoppingState,
+  TItemListSort,
+  TShoppingList,
+} from '../../@types/types';
 import { ApplicationActions } from '../application.actions';
+import {
+  addListItem,
+  addListItemFromSearchQuery,
+  createListItem,
+  editListItem,
+  endEditListItem,
+  removeListItem,
+  updateInPosition,
+  updateListSort,
+} from '../shared/item-list.reducer';
 import { ShoppingListActions } from './shopping-list.actions';
 
 export type IShoppinglistsState = Readonly<TShoppingList>;
@@ -8,32 +22,62 @@ export type IShoppinglistsState = Readonly<TShoppingList>;
 export const initialState: IShoppinglistsState = {
   title: 'Shopping Items',
   id: '_shopping',
-  mode: 'alphabetical',
   items: [],
+  mode: 'alphabetical',
 };
 
 export const shoppingListsReducer = createReducer(
   initialState,
-  on(ShoppingListActions.addItem, (state, action): IShoppinglistsState => {
-    return { ...state, items: [action.item, ...state.items] };
+  on(ShoppingListActions.addItem, (state, { item }) =>
+    addListItem(state, item)
+  ),
+  on(ShoppingListActions.removeItem, (state, { item }) =>
+    removeListItem(state, item)
+  ),
+  on(ShoppingListActions.createItem, (state, { data }) =>
+    createListItem(state, data)
+  ),
+  on(ShoppingListActions.addItemFromSearch, (state) =>
+    addListItemFromSearchQuery(state)
+  ),
+  on(ShoppingListActions.editItem, (state: IShoppinglistsState, { item }) =>
+    editListItem(state, item)
+  ),
+
+  on(ShoppingListActions.endEditItem, (state, { item }) =>
+    endEditListItem(state, item)
+  ),
+  on(ShoppingListActions.updateItem, (state, { item }) =>
+    updateInPosition(state, item)
+  ),
+  on(ShoppingListActions.updateSearch, (state, { searchQuery }) => {
+    return { ...state, searchQuery };
   }),
-  on(ShoppingListActions.removeItem, (state, { item }): IShoppinglistsState => {
+  on(
+    ShoppingListActions.updateFilter,
+    (state, { filterBy }): IShoppingState => {
+      return { ...state, filterBy, mode: 'alphabetical' };
+    }
+  ),
+  on(ShoppingListActions.updateMode, (state, { mode }) => {
+    // reset sort on mode change, otherwise toggle
+    const sort: TItemListSort | undefined =
+      state.mode !== mode
+        ? { sortBy: 'name', sortDir: 'asc' }
+        : updateListSort(state.sort?.sortBy, 'toggle', state.sort?.sortDir);
+    // clear search ... maybe
     return {
       ...state,
-      items: state.items.filter((listItem) => listItem.id !== item.id),
+      sort: sort,
+      mode: mode ?? 'alphabetical',
+      filterBy: undefined,
     };
   }),
-  on(ShoppingListActions.updateItem, (state, { item }): IShoppinglistsState => {
-    if (!item) return state;
-    const items = [...state.items];
-    const itemIdx = state.items.findIndex(
-      (listItem) => listItem.id === item.id
-    );
-    if (itemIdx >= 0) {
-      items.splice(itemIdx, 1, item);
-    }
-    return { ...state, items };
+  on(ShoppingListActions.updateSort, (state, { sortBy, sortDir }) => {
+    const sort = updateListSort(sortBy, sortDir, state.sort?.sortDir);
+    return { ...state, sort };
   }),
+
   on(
     ApplicationActions.loadedSuccessfully,
     (_state, { datastore }): IShoppinglistsState => {

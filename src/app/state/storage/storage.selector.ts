@@ -4,10 +4,10 @@ import {
   IBaseItem,
   ISearchResult,
   IStorageItem,
+  IStorageState,
   TItemListCategory,
   TItemListSort,
 } from '../../@types/types';
-import { IStorageState } from './storage.reducer';
 
 export const selectStorageState =
   createFeatureSelector<IStorageState>('storage');

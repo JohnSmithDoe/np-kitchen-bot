@@ -1,38 +1,70 @@
 import { createReducer, on } from '@ngrx/store';
-import { TGlobalsList } from '../../@types/types';
+import { IGlobalsState, TItemListSort } from '../../@types/types';
 import { ApplicationActions } from '../application.actions';
+import {
+  addListItem,
+  addListItemFromSearchQuery,
+  createListItem,
+  editListItem,
+  endEditListItem,
+  removeListItem,
+  updateInPosition,
+  updateListSort,
+} from '../shared/item-list.reducer';
 import { GlobalsActions } from './globals.actions';
-
-export type IGlobalsState = Readonly<TGlobalsList>;
 
 export const initialState: IGlobalsState = {
   title: 'Global Items',
   id: '_globals',
-  mode: 'alphabetical',
   items: [],
+  mode: 'alphabetical',
 };
 
 export const globalsReducer = createReducer(
   initialState,
-  on(GlobalsActions.addItem, (state, action): IGlobalsState => {
-    return { ...state, items: [action.item, ...state.items] };
+  on(GlobalsActions.addItem, (state, { item }) => addListItem(state, item)),
+  on(GlobalsActions.removeItem, (state, { item }) =>
+    removeListItem(state, item)
+  ),
+  on(GlobalsActions.createItem, (state, { data }) =>
+    createListItem(state, data)
+  ),
+  on(GlobalsActions.addItemFromSearch, (state) =>
+    addListItemFromSearchQuery(state)
+  ),
+  on(GlobalsActions.editItem, (state: IGlobalsState, { item }) =>
+    editListItem(state, item)
+  ),
+
+  on(GlobalsActions.endEditItem, (state, { item }) =>
+    endEditListItem(state, item)
+  ),
+  on(GlobalsActions.updateItem, (state, { item }) =>
+    updateInPosition(state, item)
+  ),
+  on(GlobalsActions.updateSearch, (state, { searchQuery }) => {
+    return { ...state, searchQuery };
   }),
-  on(GlobalsActions.removeItem, (state, { item }): IGlobalsState => {
+  on(GlobalsActions.updateFilter, (state, { filterBy }): IGlobalsState => {
+    return { ...state, filterBy, mode: 'alphabetical' };
+  }),
+  on(GlobalsActions.updateMode, (state, { mode }) => {
+    // reset sort on mode change, otherwise toggle
+    const sort: TItemListSort | undefined =
+      state.mode !== mode
+        ? { sortBy: 'name', sortDir: 'asc' }
+        : updateListSort(state.sort?.sortBy, 'toggle', state.sort?.sortDir);
+    // clear search ... maybe
     return {
       ...state,
-      items: state.items.filter((listItem) => listItem.id !== item.id),
+      sort: sort,
+      mode: mode ?? 'alphabetical',
+      filterBy: undefined,
     };
   }),
-  on(GlobalsActions.updateItem, (state, { item }): IGlobalsState => {
-    if (!item) return state;
-    const items = [...state.items];
-    const itemIdx = state.items.findIndex(
-      (listItem) => listItem.id === item.id
-    );
-    if (itemIdx >= 0) {
-      items.splice(itemIdx, 1, item);
-    }
-    return { ...state, items };
+  on(GlobalsActions.updateSort, (state, { sortBy, sortDir }) => {
+    const sort = updateListSort(sortBy, sortDir, state.sort?.sortDir);
+    return { ...state, sort };
   }),
   on(
     ApplicationActions.loadedSuccessfully,

@@ -96,10 +96,6 @@ export class StoragePage {
     this.#store.dispatch(StorageActions.updateSearch(searchTerm));
   }
 
-  #clearSearch() {
-    this.#store.dispatch(StorageActions.updateSearch());
-  }
-
   setDisplayMode(mode: TItemListMode | 'bestBefore') {
     mode = mode === 'bestBefore' ? 'alphabetical' : mode;
     this.#store.dispatch(StorageActions.updateMode(mode));
@@ -126,8 +122,8 @@ export class StoragePage {
     this.#store.dispatch(StorageActions.addItem(litem));
   }
 
-  async createGlobalItem(item?: IGlobalItem) {
-    if (item?.name.length) {
+  async createGlobalItem(item?: any) {
+    if (item?.name?.length) {
       // await this.#database.addOrUpdateItem(item, this.#database.all);
       const copy = createStorageItemFromGlobal(item);
       // const litem = await this.#database.addItem(copy, this.itemList);
