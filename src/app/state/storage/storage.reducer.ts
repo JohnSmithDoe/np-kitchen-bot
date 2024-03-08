@@ -1,14 +1,17 @@
 import { createReducer, on } from '@ngrx/store';
-import { IStorageState, TItemListSort } from '../../@types/types';
+import { IStorageState } from '../../@types/types';
+import { uuidv4 } from '../../app.utils';
 import { ApplicationActions } from '../application.actions';
 import {
   addListItem,
   addListItemFromSearchQuery,
+  createAndEditListItem,
   createListItem,
   editListItem,
   endEditListItem,
   removeListItem,
   updateInPosition,
+  updateListMode,
   updateListSort,
 } from '../shared/item-list.reducer';
 import { StorageActions } from './storage.actions';
@@ -26,6 +29,9 @@ export const storageReducer = createReducer(
   on(StorageActions.removeItem, (state, { item }) =>
     removeListItem(state, item)
   ),
+  on(StorageActions.createAndEditItem, (state, { data }) =>
+    createAndEditListItem(state, data)
+  ),
   on(StorageActions.createItem, (state, { data }) =>
     createListItem(state, data)
   ),
@@ -39,35 +45,47 @@ export const storageReducer = createReducer(
   on(StorageActions.endEditItem, (state, { item }) =>
     endEditListItem(state, item)
   ),
+  on(
+    StorageActions.createGlobalItem,
+    (state): IStorageState => ({
+      ...state,
+      isCreating: true,
+      data: { id: uuidv4(), name: state.searchQuery ?? '', createdAt: 'now' },
+    })
+  ),
+  on(
+    StorageActions.endCreateGlobalItem,
+    (state): IStorageState => ({
+      ...state,
+      isCreating: false,
+    })
+  ),
   on(StorageActions.updateItem, (state, { item }) =>
     updateInPosition(state, item)
   ),
-  on(StorageActions.updateSearch, (state, { searchQuery }) => {
+  on(StorageActions.updateSearch, (state, { searchQuery }): IStorageState => {
     return { ...state, searchQuery };
   }),
-  on(StorageActions.updateFilter, (state, { filterBy }): IStorageState => {
-    return { ...state, filterBy, mode: 'alphabetical' };
-  }),
-  on(StorageActions.updateMode, (state, { mode }) => {
-    // reset sort on mode change, otherwise toggle
-    const sort: TItemListSort | undefined =
-      state.mode !== mode
-        ? { sortBy: 'name', sortDir: 'asc' }
-        : updateListSort(state.sort?.sortBy, 'toggle', state.sort?.sortDir);
-    // clear search ... maybe
-    return {
+  on(
+    StorageActions.updateFilter,
+    (state, { filterBy }): IStorageState => ({
       ...state,
-      sort: sort,
-      mode: mode ?? 'alphabetical',
-      filterBy: undefined,
-    };
-  }),
+      filterBy,
+      mode: 'alphabetical',
+    })
+  ),
+  on(StorageActions.updateMode, (state, { mode }) =>
+    updateListMode(state, mode)
+  ),
   on(StorageActions.updateSort, (state, { sortBy, sortDir }) => {
     const sort = updateListSort(sortBy, sortDir, state.sort?.sortDir);
     return { ...state, sort };
   }),
 
-  on(ApplicationActions.loadedSuccessfully, (_state, { datastore }) => {
-    return datastore.storage ?? _state;
-  })
+  on(
+    ApplicationActions.loadedSuccessfully,
+    (_state, { datastore }): IStorageState => {
+      return datastore.storage ?? _state;
+    }
+  )
 );

@@ -23,7 +23,6 @@ export const selectGlobalsListSearchResult = createSelector(
 
 function sortGlobalsListFn(sort?: TItemListSort) {
   return (a: IGlobalItem, b: IGlobalItem) => {
-    const MAXDATE = '5000-1-1';
     switch (sort?.sortBy) {
       case 'name':
       case 'bestBefore':

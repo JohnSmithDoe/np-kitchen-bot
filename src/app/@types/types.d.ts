@@ -95,6 +95,7 @@ export interface IItemList<T extends IBaseItem = IBaseItem> {
   filterBy?: string;
   sort?: TItemListSort;
 
+  // these could be global maybe not data
   data?: TUpdateDTO<T>;
   isEditing?: boolean;
   editMode?: 'update' | 'create';

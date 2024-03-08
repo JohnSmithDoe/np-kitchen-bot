@@ -24,7 +24,6 @@ export const selectShoppingListSearchResult = createSelector(
 
 function sortShoppingListFn(sort?: TItemListSort) {
   return (a: IShoppingItem, b: IShoppingItem) => {
-    const MAXDATE = '5000-1-1';
     switch (sort?.sortBy) {
       case 'name':
       case 'bestBefore':

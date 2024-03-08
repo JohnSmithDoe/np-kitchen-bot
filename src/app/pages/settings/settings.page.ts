@@ -12,7 +12,6 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { add, remove } from 'ionicons/icons';
 import { PageHeaderComponent } from '../../components/page-header/page-header.component';
-import { DatabaseService } from '../../services/database.service';
 import { UiService } from '../../services/ui.service';
 import { selectSettingsState } from '../../state/settings/settings.selector';
 
@@ -33,7 +32,6 @@ import { selectSettingsState } from '../../state/settings/settings.selector';
   ],
 })
 export class SettingsPage {
-  readonly #database = inject(DatabaseService);
   readonly #store = inject(Store);
   readonly #uiService = inject(UiService);
   readonly translate = inject(TranslateService);

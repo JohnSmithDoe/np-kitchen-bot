@@ -2,9 +2,11 @@ import {
   IBaseItem,
   IListState,
   IStorageItem,
+  TItemListMode,
   TItemListSort,
   TUpdateDTO,
 } from '../../@types/types';
+// TODO: this is really not okay
 import { createStorageItem } from '../../app.factory';
 
 export const addListItem = <T extends IListState<R>, R extends IBaseItem>(
@@ -21,7 +23,10 @@ export const removeListItem = <T extends IListState<R>, R extends IBaseItem>(
   ...state,
   items: state.items.filter((listItem) => listItem.id !== item.id),
 });
-export const createListItem = <T extends IListState<R>, R extends IBaseItem>(
+export const createAndEditListItem = <
+  T extends IListState<R>,
+  R extends IBaseItem,
+>(
   state: T,
   data?: Partial<R>
 ) => {
@@ -34,6 +39,20 @@ export const createListItem = <T extends IListState<R>, R extends IBaseItem>(
   };
   return { ...state, data: editData, isEditing: true, editMode: 'create' };
 };
+
+export const createListItem = <T extends IListState<R>, R extends IBaseItem>(
+  state: T,
+  data?: Partial<R>
+) => {
+  // use search query as initial name
+  const name = data?.name?.length ? data.name : state.searchQuery ?? '';
+  const newItem: IStorageItem = {
+    ...createStorageItem(name),
+    ...data,
+  };
+  return { ...state, items: [newItem, ...state.items] };
+};
+
 export const updateInPosition = <T extends IListState<R>, R extends IBaseItem>(
   state: T,
   item: TUpdateDTO<R> | undefined
@@ -94,6 +113,7 @@ export const endEditListItem = <T extends IListState<R>, R extends IBaseItem>(
     ...state,
     data: undefined,
     isEditing: false,
+    isCreating: false,
   };
   if (!item || !state.editMode || !state.data) return result;
   switch (state.editMode) {
@@ -132,4 +152,22 @@ export const updateListSort = (
     result = { sortBy, sortDir };
   }
   return result;
+};
+
+export const updateListMode = <T extends IListState<R>, R extends IBaseItem>(
+  state: T,
+  mode?: TItemListMode
+): T => {
+  // reset sort on mode change, otherwise toggle
+  const sort: TItemListSort | undefined =
+    state.mode !== mode
+      ? { sortBy: 'name', sortDir: 'asc' }
+      : updateListSort(state.sort?.sortBy, 'toggle', state.sort?.sortDir);
+  // clear search ... maybe
+  return {
+    ...state,
+    sort: sort,
+    mode: mode ?? 'alphabetical',
+    filterBy: undefined,
+  };
 };

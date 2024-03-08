@@ -23,8 +23,6 @@ import { PageHeaderComponent } from '../../components/page-header/page-header.co
 import { EditGlobalItemDialogComponent } from '../../dialogs/edit-global-item-dialog/edit-global-item-dialog.component';
 import { EditShoppingItemDialogComponent } from '../../dialogs/edit-shopping-item-dialog/edit-shopping-item-dialog.component';
 import { CategoriesPipe } from '../../pipes/categories.pipe';
-import { DatabaseService } from '../../services/database.service';
-import { UiService } from '../../services/ui.service';
 import { ShoppingListActions } from '../../state/shoppinglist/shopping-list.actions';
 import {
   selectShoppingListCategories,
@@ -60,8 +58,6 @@ export class ShoppinglistPage {
   @ViewChild(ItemListSearchbarComponent, { static: true })
   listSearchbar?: ItemListSearchbarComponent;
 
-  readonly #dataService = inject(DatabaseService);
-  readonly #uiService = inject(UiService);
   readonly translate = inject(TranslateService);
   readonly #store = inject(Store);
 
@@ -131,7 +127,6 @@ export class ShoppinglistPage {
   async createGlobalItem(item?: any) {
     if (item?.name?.length) {
       // await this.#database.addOrUpdateItem(item, this.#database.all);
-      const copy = createShoppingItemFromGlobal(item);
       // const litem = await this.#database.addItem(copy, this.itemList);
       // this.#clearSearch();
       // await this.#uiService.showToast(

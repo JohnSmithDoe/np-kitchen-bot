@@ -7,6 +7,7 @@ export const GlobalsActions = createActionGroup({
     'Add Item': (item: IGlobalItem) => ({ item }),
     'Add Item From Search': emptyProps(),
     'Remove Item': (item: IGlobalItem) => ({ item }),
+    'Create And Edit Item': (data?: Partial<IGlobalItem>) => ({ data }),
     'Create Item': (data?: Partial<IGlobalItem>) => ({ data }),
     'Edit Item': (item: TUpdateDTO<IGlobalItem>) => ({ item }),
     'End Edit Item': (item?: Partial<IGlobalItem>) => ({ item }),

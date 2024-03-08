@@ -71,7 +71,7 @@ export class GlobalsPage {
   }
 
   showCreateDialog() {
-    this.#store.dispatch(GlobalsActions.createItem());
+    this.#store.dispatch(GlobalsActions.createAndEditItem());
   }
 
   showEditDialog(item: IGlobalItem) {

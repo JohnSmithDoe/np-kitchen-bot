@@ -39,7 +39,6 @@ import {
   TItemListCategory,
   TUpdateDTO,
 } from '../../@types/types';
-import { DatabaseService } from '../../services/database.service';
 import { CategoriesDialogComponent } from '../categories-dialog/categories-dialog.component';
 
 @Component({
@@ -75,7 +74,6 @@ import { CategoriesDialogComponent } from '../categories-dialog/categories-dialo
   styleUrl: './edit-storage-item-dialog.component.scss',
 })
 export class EditStorageItemDialogComponent implements OnInit {
-  readonly #database = inject(DatabaseService);
   readonly translate = inject(TranslateService);
 
   @Input() item?: TUpdateDTO<IStorageItem> | null;

@@ -8,7 +8,7 @@ import { ApplicationActions } from '../application.actions';
 import {
   addListItem,
   addListItemFromSearchQuery,
-  createListItem,
+  createAndEditListItem,
   editListItem,
   endEditListItem,
   removeListItem,
@@ -34,8 +34,9 @@ export const shoppingListsReducer = createReducer(
   on(ShoppingListActions.removeItem, (state, { item }) =>
     removeListItem(state, item)
   ),
-  on(ShoppingListActions.createItem, (state, { data }) =>
-    createListItem(state, data)
+  on(
+    ShoppingListActions.createItem,
+    (state, { data }) => createAndEditListItem(state, data) // TODO storage item is added....
   ),
   on(ShoppingListActions.addItemFromSearch, (state) =>
     addListItemFromSearchQuery(state)
@@ -50,9 +51,13 @@ export const shoppingListsReducer = createReducer(
   on(ShoppingListActions.updateItem, (state, { item }) =>
     updateInPosition(state, item)
   ),
-  on(ShoppingListActions.updateSearch, (state, { searchQuery }) => {
-    return { ...state, searchQuery };
-  }),
+  on(
+    ShoppingListActions.updateSearch,
+    (state, { searchQuery }): IShoppinglistsState => ({
+      ...state,
+      searchQuery,
+    })
+  ),
   on(
     ShoppingListActions.updateFilter,
     (state, { filterBy }): IShoppingState => {

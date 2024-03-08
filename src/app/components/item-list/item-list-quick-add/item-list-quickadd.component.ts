@@ -2,7 +2,6 @@ import {
   booleanAttribute,
   Component,
   EventEmitter,
-  inject,
   Input,
   OnDestroy,
   Output,
@@ -12,7 +11,6 @@ import { addIcons } from 'ionicons';
 import { add, cart, list, remove } from 'ionicons/icons';
 import { Subscription } from 'rxjs';
 import { TColor } from '../../../@types/types';
-import { DatabaseService } from '../../../services/database.service';
 import { TextItemComponent } from '../../item-list-items/text-item/text-item.component';
 
 @Component({
@@ -23,8 +21,6 @@ import { TextItemComponent } from '../../item-list-items/text-item/text-item.com
   imports: [TextItemComponent, TranslateModule],
 })
 export class ItemListQuickaddComponent implements OnDestroy {
-  readonly #database = inject(DatabaseService);
-
   @Input() quickAddLabel?: string;
   @Input() listName?: string;
   @Input() color?: TColor;

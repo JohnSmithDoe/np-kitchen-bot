@@ -29,7 +29,6 @@ import {
 import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
-import { DatabaseService } from './services/database.service';
 import { selectShoppingList } from './state/shoppinglist/shopping-list.selector';
 
 @Component({
@@ -60,7 +59,6 @@ import { selectShoppingList } from './state/shoppinglist/shopping-list.selector'
 export class AppComponent implements OnInit {
   readonly #alertController = inject(AlertController);
   readonly #store = inject(Store);
-  readonly #database = inject(DatabaseService);
 
   isSupported = false;
   barcodes: Barcode[] = [];

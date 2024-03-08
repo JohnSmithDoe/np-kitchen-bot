@@ -4,6 +4,7 @@ import { ApplicationActions } from '../application.actions';
 import {
   addListItem,
   addListItemFromSearchQuery,
+  createAndEditListItem,
   createListItem,
   editListItem,
   endEditListItem,
@@ -26,8 +27,13 @@ export const globalsReducer = createReducer(
   on(GlobalsActions.removeItem, (state, { item }) =>
     removeListItem(state, item)
   ),
-  on(GlobalsActions.createItem, (state, { data }) =>
-    createListItem(state, data)
+  on(
+    GlobalsActions.createAndEditItem,
+    (state, { data }) => createAndEditListItem(state, data) // TODO this is not correct... adds an storage item......
+  ),
+  on(
+    GlobalsActions.createItem,
+    (state, { data }) => createListItem(state, data) // TODO this is not correct... adds an storage item......
   ),
   on(GlobalsActions.addItemFromSearch, (state) =>
     addListItemFromSearchQuery(state)
@@ -42,7 +48,7 @@ export const globalsReducer = createReducer(
   on(GlobalsActions.updateItem, (state, { item }) =>
     updateInPosition(state, item)
   ),
-  on(GlobalsActions.updateSearch, (state, { searchQuery }) => {
+  on(GlobalsActions.updateSearch, (state, { searchQuery }): IGlobalsState => {
     return { ...state, searchQuery };
   }),
   on(GlobalsActions.updateFilter, (state, { filterBy }): IGlobalsState => {

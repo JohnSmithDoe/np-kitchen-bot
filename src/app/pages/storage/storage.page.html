@@ -19,7 +19,7 @@
     color="storage"
     listName="{{'list-header.storage' | translate}}"
     [showQuickAdd]="(rxSearchResult$ | async)?.showQuickAdd"
-    [showQuickAddGlobal]="(rxSearchResult$ | async)?.showQuickAddGlobal"
+    [showQuickAddGlobal]="(rxSearchResult$ | async)?.showQuickAddGlobal || true"
     [quickAddLabel]="(rxSearchResult$ | async)?.searchTerm"
     (quickAddItem)="showCreateDialog()"
     (quickCreateGlobal)="showCreateGlobalDialog()"
@@ -69,7 +69,7 @@
       [label]="item.name"
       [note]="item | appCategories"
       [helper]="'item-helper.search' | translate"
-      (selectItem)="addGlobalItem(item)"
+      (selectItem)="createAndAddGlobalItem(item)"
     ></app-text-item>
   </ng-template>
   }
@@ -97,7 +97,7 @@
   <ng-template>
     <app-edit-global-item-dialog
       (cancel)="closeCreateGlobalDialog()"
-      (saveItem)="createGlobalItem($event)"
+      (saveItem)="createAndAddGlobalItem($event)"
       [item]="(rxState$|async)?.data"
       [categories]="(rxCategories$|async)??[]"
     ></app-edit-global-item-dialog>

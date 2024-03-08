@@ -11,7 +11,6 @@ import {
   TItemListCategory,
   TItemListMode,
 } from '../../@types/types';
-import { createStorageItemFromGlobal } from '../../app.factory';
 import { StorageItemComponent } from '../../components/item-list-items/storage-item/storage-item.component';
 import { TextItemComponent } from '../../components/item-list-items/text-item/text-item.component';
 import { ItemListEmptyComponent } from '../../components/item-list/item-list-empty/item-list-empty.component';
@@ -77,7 +76,7 @@ export class StoragePage {
   }
 
   showCreateDialog() {
-    this.#store.dispatch(StorageActions.createItem());
+    this.#store.dispatch(StorageActions.createAndEditItem());
   }
 
   showEditDialog(item: IStorageItem) {
@@ -114,35 +113,16 @@ export class StoragePage {
     );
   }
 
-  async addGlobalItem(item?: IGlobalItem) {
-    // TODO
-    // this.#store.dispatch(StorageActions.addItemFromGlobal(item))
-    if (!item) return;
-    let litem: IStorageItem | undefined = createStorageItemFromGlobal(item);
-    this.#store.dispatch(StorageActions.addItem(litem));
-  }
-
-  async createGlobalItem(item?: any) {
-    if (item?.name?.length) {
-      // await this.#database.addOrUpdateItem(item, this.#database.all);
-      const copy = createStorageItemFromGlobal(item);
-      // const litem = await this.#database.addItem(copy, this.itemList);
-      // this.#clearSearch();
-      // await this.#uiService.showToast(
-      //   this.translate.instant('toast.created.item', {
-      //     name: item?.name,
-      //   })
-      // );
-    }
-  }
-
   showCreateGlobalDialog() {
-    // this.isCreating = true; // show create dialog with the new item
-    // this.createNewItem = createGlobalItem('');
+    this.#store.dispatch(StorageActions.createGlobalItem());
   }
 
   closeCreateGlobalDialog() {
-    //
+    this.#store.dispatch(StorageActions.endCreateGlobalItem());
+  }
+
+  async createAndAddGlobalItem(data: Partial<IGlobalItem>) {
+    this.#store.dispatch(StorageActions.createGlobalAndAddAsItem(data));
   }
 
   async copyToShoppingList(item?: IStorageItem) {

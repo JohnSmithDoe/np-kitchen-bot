@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { ActionCreator, Store } from '@ngrx/store';
-import { exhaustMap, map, take } from 'rxjs';
+import { exhaustMap, map, mergeMap, take } from 'rxjs';
 import { fromPromise } from 'rxjs/internal/observable/innerFrom';
 import { IDatastore } from '../@types/types';
 import { DatabaseService } from '../services/database.service';
@@ -29,6 +29,17 @@ export class Effects {
           map((data) => ApplicationActions.loadedSuccessfully(data))
         )
       )
+    );
+  });
+
+  createGlobalAndAddAsItem$ = createEffect(() => {
+    return this.#actions$.pipe(
+      ofType(StorageActions.createGlobalAndAddAsItem),
+      mergeMap(({ data }) => [
+        GlobalsActions.createItem(data),
+        StorageActions.createItem(data),
+        StorageActions.endCreateGlobalItem(),
+      ])
     );
   });
 
