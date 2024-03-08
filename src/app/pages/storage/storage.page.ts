@@ -10,6 +10,7 @@ import {
   IStorageItem,
   TItemListCategory,
   TItemListMode,
+  TUpdateDTO,
 } from '../../@types/types';
 import {
   createStorageItem,
@@ -106,6 +107,7 @@ export class StoragePage implements OnInit {
   async updateItem(item?: Partial<IStorageItem>) {
     console.log('updateItem dispatch ennnnnnnnnnnnnnnnd');
     this.#store.dispatch(StorageActions.endEditItem(item));
+    // todo: effects for toast i guess
     await this.#uiService.showToast(
       this.translate.instant('toast.update.item', {
         name: item?.name,
@@ -125,12 +127,17 @@ export class StoragePage implements OnInit {
   }
 
   async addGlobalItem(item?: IGlobalItem) {
+    // TODO
+    // this.#store.dispatch(StorageActions.addItemFromGlobal(item))
     if (!item) return;
     let litem: IStorageItem | undefined = createStorageItemFromGlobal(item);
     return this.addItem(litem);
   }
 
   async quickAddItem() {
+    // TODO
+    // this.#store.dispatch(StorageActions.addItemFromSearch(item))
+
     // if (!this.searchResult?.hasSearchTerm) return;
     const litem = createStorageItem('hmm');
     return this.addItem(litem);
@@ -186,16 +193,11 @@ export class StoragePage implements OnInit {
     );
   }
 
-  showCreateGlobalDialog() {
-    // this.isCreating = true; // show create dialog with the new item
-    // this.createNewItem = createGlobalItem('');
-  }
-
   showEditDialog(item?: IStorageItem) {
     this.#store.dispatch(StorageActions.startEditItem(item));
   }
 
-  closeEditDialog(data?: Partial<IStorageItem>) {
+  closeEditDialog(data?: TUpdateDTO<IStorageItem>) {
     this.#store.dispatch(StorageActions.endEditItem(data));
   }
 
@@ -205,6 +207,11 @@ export class StoragePage implements OnInit {
 
   #clearSearch() {
     this.#store.dispatch(StorageActions.updateSearch());
+  }
+
+  showCreateGlobalDialog() {
+    // this.isCreating = true; // show create dialog with the new item
+    // this.createNewItem = createGlobalItem('');
   }
 
   closeCreateGlobalDialog() {

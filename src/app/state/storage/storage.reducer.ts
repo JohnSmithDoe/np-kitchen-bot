@@ -1,5 +1,11 @@
 import { createReducer, on } from '@ngrx/store';
-import { IStorageItem, TItemListSort, TStorageList } from '../../@types/types';
+import {
+  IStorageItem,
+  TItemListSort,
+  TStorageList,
+  TUpdateDTO,
+} from '../../@types/types';
+import { uuidv4 } from '../../app.utils';
 import { ApplicationActions } from '../application.actions';
 import { StorageActions } from './storage.actions';
 
@@ -11,20 +17,6 @@ export const initialState: IStorageState = {
   items: [],
   mode: 'alphabetical',
 };
-
-function updateStorageItem(
-  item: Partial<IStorageItem> | undefined,
-  state: IStorageState
-) {
-  if (!item) return state;
-  const items = [...state.items];
-  const itemIdx = state.items.findIndex((listItem) => listItem.id === item.id);
-  if (itemIdx >= 0) {
-    const original = state.items[itemIdx];
-    items.splice(itemIdx, 1, { ...original, ...item });
-  }
-  return { ...state, items };
-}
 
 export const storageReducer = createReducer(
   initialState,
@@ -41,18 +33,20 @@ export const storageReducer = createReducer(
       items: state.items.filter((listItem) => listItem.id !== item.id),
     };
   }),
-  on(StorageActions.startEditItem, (state, { data }): IStorageState => {
-    const editMode = data ? 'update' : 'create';
-    console.log('edit t hisssss', data);
-    return { ...state, data, isEditing: true, editMode };
-  }),
+  on(
+    StorageActions.startEditItem,
+    (state: IStorageState, { data }): IStorageState => {
+      const editMode = data ? 'update' : 'create';
+      const itemData: TUpdateDTO<IStorageItem> = {
+        ...data,
+        id: data?.id ?? uuidv4(), // ensure id
+        name: data?.name ?? state.searchQuery ?? '', // use search query as initial name
+      };
+      return { ...state, data: itemData, isEditing: true, editMode };
+    }
+  ),
 
   on(StorageActions.endEditItem, (state, { data }): IStorageState => {
-    console.log('ending edit', state.data, data, {
-      ...updateStorageItem(data, state),
-      data: undefined,
-      isEditing: false,
-    });
     return {
       ...updateStorageItem(data, state),
       data: undefined,
@@ -88,6 +82,20 @@ export const storageReducer = createReducer(
     }
   )
 );
+
+function updateStorageItem(
+  item: Partial<IStorageItem> | undefined,
+  state: IStorageState
+) {
+  if (!item) return state;
+  const items = [...state.items];
+  const itemIdx = state.items.findIndex((listItem) => listItem.id === item.id);
+  if (itemIdx >= 0) {
+    const original = state.items[itemIdx];
+    items.splice(itemIdx, 1, { ...original, ...item });
+  }
+  return { ...state, items };
+}
 
 function updateSort(
   sortBy?: 'name' | 'bestBefore' | string,

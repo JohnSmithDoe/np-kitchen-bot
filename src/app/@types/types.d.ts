@@ -64,6 +64,7 @@ export interface IShoppingItem extends IBaseItem {
   quantity: number;
   state: 'bought' | 'active';
 }
+export type TUpdateDTO<T extends IBaseItem> = Partial<T> & { id: string };
 
 // export type IStorageItem = Readonly<
 //   IBaseItem & {
@@ -92,7 +93,7 @@ export interface IItemList<T extends IBaseItem = IBaseItem> {
   searchQuery?: string;
   filterBy?: string;
   sort?: TItemListSort;
-  data?: Partial<T>;
+  data?: TUpdateDTO<T>;
   isEditing?: boolean;
   editMode?: 'update' | 'create';
   isCreating?: boolean;
