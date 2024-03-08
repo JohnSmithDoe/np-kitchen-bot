@@ -4,12 +4,14 @@
 
 ## Todo rxStore
 * finish edit dialogs and have an own dialog state for that
-* from storage -> shopping, globals, settings
 * change detection onPush
+* categories state -> dialog
+* Think about: create edit; success fail
+  * even smaller and more actions... hmm
+  * 
 ## Todos:
 * uniqueness by name
   * keine gleichnamigen Einträge innerhalb einer liste erlauben
-  * trim name
 * Units: 3 x Kartoffeln, 3 x Spaghetti, 3 x Mehl ...
   * Besser? 500 g Kartoffeln ..., 3 Packungen Spaghetti, 2 kg Mehl ...
   * Alternative UI: Bestandsregler (viel - wenig) mit min max ...

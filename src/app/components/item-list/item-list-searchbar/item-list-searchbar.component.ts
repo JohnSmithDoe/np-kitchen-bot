@@ -1,4 +1,10 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+} from '@angular/core';
 import { SearchbarCustomEvent } from '@ionic/angular';
 import { IonSearchbar } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
@@ -10,6 +16,7 @@ import { add, cart, list, remove } from 'ionicons/icons';
   templateUrl: 'item-list-searchbar.component.html',
   styleUrls: ['item-list-searchbar.component.scss'],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [IonSearchbar, TranslateModule],
 })
 export class ItemListSearchbarComponent {

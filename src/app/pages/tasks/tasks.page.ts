@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
   IonButton,
   IonButtons,
@@ -14,6 +14,7 @@ import {
   templateUrl: 'tasks.page.html',
   styleUrls: ['tasks.page.scss'],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     IonHeader,
     IonToolbar,

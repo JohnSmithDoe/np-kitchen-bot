@@ -1,9 +1,10 @@
-import { Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { IonActionSheet } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-common-actions-sheet',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [IonActionSheet],
   templateUrl: './common-actions-sheet.component.html',
   styleUrl: './common-actions-sheet.component.scss',

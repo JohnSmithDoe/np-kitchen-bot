@@ -1,5 +1,6 @@
 import {
   booleanAttribute,
+  ChangeDetectionStrategy,
   Component,
   EventEmitter,
   Input,
@@ -18,6 +19,7 @@ import { TextItemComponent } from '../../item-list-items/text-item/text-item.com
   templateUrl: 'item-list-quickadd.component.html',
   styleUrls: ['item-list-quickadd.component.scss'],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [TextItemComponent, TranslateModule],
 })
 export class ItemListQuickaddComponent implements OnDestroy {

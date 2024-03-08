@@ -1,4 +1,11 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CheckboxCustomEvent } from '@ionic/angular';
 import {
@@ -22,6 +29,7 @@ import { TItemListCategory } from '../../@types/types';
 @Component({
   selector: 'app-categories-dialog',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './categories-dialog.component.html',
   styleUrls: ['./categories-dialog.component.scss'],
   imports: [

@@ -1,5 +1,6 @@
 import { NgTemplateOutlet } from '@angular/common';
 import {
+  ChangeDetectionStrategy,
   Component,
   EventEmitter,
   Input,
@@ -40,6 +41,7 @@ import { TextItemComponent } from '../item-list-items/text-item/text-item.compon
   templateUrl: 'item-list.component.html',
   styleUrls: ['item-list.component.scss'],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   // changeDetection: ChangeDetectionStrategy.OnPush, TODO: seems to work :D
   imports: [
     IonSearchbar,

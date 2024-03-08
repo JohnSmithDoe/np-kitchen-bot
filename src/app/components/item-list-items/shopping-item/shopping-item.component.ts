@@ -1,5 +1,12 @@
 import { DatePipe, NgTemplateOutlet } from '@angular/common';
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+} from '@angular/core';
 import {
   IonAvatar,
   IonButton,
@@ -26,6 +33,7 @@ import { ItemListComponent } from '../../item-list/item-list.component';
 @Component({
   selector: 'app-shopping-item',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './shopping-item.component.html',
   styleUrls: ['./shopping-item.component.scss'],
   imports: [

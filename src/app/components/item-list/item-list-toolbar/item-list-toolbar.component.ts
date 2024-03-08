@@ -1,5 +1,6 @@
 import {
   booleanAttribute,
+  ChangeDetectionStrategy,
   Component,
   EventEmitter,
   Input,
@@ -19,6 +20,7 @@ import { add, cart, list, remove } from 'ionicons/icons';
   templateUrl: 'item-list-toolbar.component.html',
   styleUrls: ['item-list-toolbar.component.scss'],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [IonToolbar, IonButtons, IonButton, IonIcon],
 })
 export class ItemListToolbarComponent {

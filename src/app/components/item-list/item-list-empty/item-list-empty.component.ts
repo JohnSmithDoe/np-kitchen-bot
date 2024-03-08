@@ -1,5 +1,6 @@
 import {
   booleanAttribute,
+  ChangeDetectionStrategy,
   Component,
   EventEmitter,
   Input,
@@ -15,6 +16,7 @@ import { TextItemComponent } from '../../item-list-items/text-item/text-item.com
   templateUrl: 'item-list-empty.component.html',
   styleUrls: ['item-list-empty.component.scss'],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [TextItemComponent, TranslateModule],
 })
 export class ItemListEmptyComponent {

@@ -1,10 +1,10 @@
 import { NgTemplateOutlet } from '@angular/common';
 import {
+  ChangeDetectionStrategy,
   Component,
   EventEmitter,
   inject,
   Input,
-  OnInit,
   Output,
 } from '@angular/core';
 import {
@@ -23,6 +23,7 @@ import { DatabaseService } from '../../services/database.service';
 @Component({
   selector: 'app-add-item-dialog',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     IonButton,
     NgTemplateOutlet,
@@ -37,17 +38,13 @@ import { DatabaseService } from '../../services/database.service';
   templateUrl: './add-item.dialog.html',
   styleUrl: './add-item.dialog.scss',
 })
-export class AddItemDialog implements OnInit {
+export class AddItemDialog {
   readonly #database = inject(DatabaseService);
   @Input() itemList!: IItemList<IGlobalItem>;
 
   @Output() addItem = new EventEmitter<IGlobalItem>();
   @Output() createItem = new EventEmitter<IGlobalItem>();
   @Output() cancel = new EventEmitter();
-
-  ngOnInit(): void {
-    this.itemList ??= this.#database.all;
-  }
 
   close() {
     this.cancel.emit();

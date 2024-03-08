@@ -1,6 +1,11 @@
 import { JsonPipe, registerLocaleData } from '@angular/common';
 import * as de from '@angular/common/locales/de';
-import { Component, inject, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  OnInit,
+} from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
   Barcode,
@@ -35,6 +40,7 @@ import { selectShoppingList } from './state/shoppinglist/shopping-list.selector'
   selector: 'app-root',
   templateUrl: 'app.component.html',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     IonApp,
     IonRouterOutlet,

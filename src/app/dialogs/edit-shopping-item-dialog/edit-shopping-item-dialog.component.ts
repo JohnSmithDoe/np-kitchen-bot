@@ -1,5 +1,6 @@
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import {
+  ChangeDetectionStrategy,
   Component,
   EventEmitter,
   inject,
@@ -43,6 +44,7 @@ import { CategoriesDialogComponent } from '../categories-dialog/categories-dialo
 @Component({
   selector: 'app-edit-shopping-item-dialog',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     IonButton,
     FormsModule,

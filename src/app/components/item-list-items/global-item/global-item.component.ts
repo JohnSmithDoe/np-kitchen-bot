@@ -1,5 +1,12 @@
 import { NgTemplateOutlet } from '@angular/common';
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+} from '@angular/core';
 import {
   IonAvatar,
   IonButton,
@@ -25,6 +32,7 @@ import { ItemListComponent } from '../../item-list/item-list.component';
 @Component({
   selector: 'app-global-item',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './global-item.component.html',
   styleUrls: ['./global-item.component.scss'],
   imports: [

@@ -1,4 +1,10 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+} from '@angular/core';
 import {
   IonItem,
   IonLabel,
@@ -10,6 +16,7 @@ import { TColor } from '../../../@types/types';
 @Component({
   selector: 'app-text-item',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './text-item.component.html',
   styleUrls: ['./text-item.component.scss'],
   imports: [IonItem, IonLabel, IonListHeader, IonNote],
