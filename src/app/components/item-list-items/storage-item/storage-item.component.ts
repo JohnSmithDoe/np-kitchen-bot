@@ -88,15 +88,22 @@ export class StorageItemComponent implements OnInit {
   async handleItemOptionsOnDrag(ev: TIonDragEvent) {
     switch (checkItemOptionsOnDrag(ev)) {
       case 'end':
-        await this.itemList.closeSlidingItems();
-        this.deleteItem.emit();
-        break;
+        return this.emitDeleteItem();
       case 'start':
-        await this.itemList.closeSlidingItems();
-        this.cartItem.emit();
-        break;
+        return this.emitCartItem();
     }
   }
+
+  async emitDeleteItem() {
+    await this.itemList.closeSlidingItems();
+    this.deleteItem.emit();
+  }
+
+  async emitCartItem() {
+    await this.itemList.closeSlidingItems();
+    this.cartItem.emit();
+  }
+
   getColor(item: IStorageItem): TColor {
     let result: TColor = 'success';
     if (item.minAmount) {

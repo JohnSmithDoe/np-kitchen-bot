@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { EMPTY, exhaustMap, map, switchMap, take } from 'rxjs';
+import { EMPTY, exhaustMap, map, mergeMap, take, tap } from 'rxjs';
 import { fromPromise } from 'rxjs/internal/observable/innerFrom';
 import { isGlobalItem } from '../app.utils';
 import { UiService } from '../services/ui.service';
@@ -63,8 +63,8 @@ export class MessageEffects {
           ShoppingListActions.removeItem,
           GlobalsActions.removeItem
         ),
-        exhaustMap(({ item }) => {
-          return fromPromise(this.#uiService.showRemoveItemToast(item.name));
+        tap(({ item }) => {
+          return this.#uiService.showRemoveItemToast(item.name);
         })
       );
     },
@@ -75,18 +75,18 @@ export class MessageEffects {
     () => {
       return this.#actions$.pipe(
         ofType(ShoppingListActions.addStorageItem),
-        switchMap(({ data }) => {
+        mergeMap(({ data }) => {
           return this.#store.select(selectShoppingList).pipe(
-            map((items) => items.find((aItem) => aItem.name === data.name)),
-            map((item) =>
-              fromPromise(
+            map((i) => i.find((a) => a.name === data.name)),
+            map((item) => {
+              return fromPromise(
                 this.#uiService.showMovedToShoppingListToast(
                   item?.name ?? 'Error',
                   item?.quantity ?? -1
                 )
-              )
-            ),
-            take(1) /// hmmmm if not its triggered twice... but whyyyyyyyyy
+              );
+            }),
+            take(1)
           );
         })
       );

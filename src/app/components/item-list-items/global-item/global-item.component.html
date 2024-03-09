@@ -15,7 +15,7 @@
   <ng-container *ngTemplateOutlet="itemTemplate"></ng-container>
 
   <ion-item-options side="end">
-    <ion-item-option color="danger" expandable (click)="deleteItem.emit()">
+    <ion-item-option color="danger" expandable (click)="emitDeleteItem()">
       Delete
     </ion-item-option>
   </ion-item-options>

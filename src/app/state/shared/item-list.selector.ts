@@ -81,7 +81,7 @@ export const filterBySearchQuery = <
 function sortItemListFn<T extends IBaseItem>(sort?: TItemListSort) {
   const MAXDATE = '5000-1-1';
   const MINDATE = '1970-1-1';
-  return (a: T, b: T) => {
+  return (a: T, b: T): number => {
     switch (sort?.sortBy) {
       case 'name':
         return sort.sortDir === 'asc'
@@ -89,10 +89,12 @@ function sortItemListFn<T extends IBaseItem>(sort?: TItemListSort) {
           : b.name.localeCompare(a.name);
       case 'bestBefore':
         if (isStorageItem(a) && isStorageItem(b)) {
-          return sort.sortDir === 'asc'
-            ? dayjs(a.bestBefore ?? MAXDATE).unix() -
+          return !a.bestBefore && !b.bestBefore
+            ? sortItemListFn<T>({ ...sort, sortBy: 'name' })(a, b)
+            : sort.sortDir === 'asc'
+              ? dayjs(a.bestBefore ?? MAXDATE).unix() -
                 dayjs(b.bestBefore ?? MAXDATE).unix()
-            : dayjs(b.bestBefore ?? MINDATE).unix() -
+              : dayjs(b.bestBefore ?? MINDATE).unix() -
                 dayjs(a.bestBefore ?? MINDATE).unix();
         } else {
           return 0;

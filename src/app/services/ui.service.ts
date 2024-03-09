@@ -52,6 +52,6 @@ export class UiService {
       name,
       quantity,
     });
-    return this.showToast(msg, 'warning');
+    return this.showToast(msg);
   }
 }

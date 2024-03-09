@@ -71,13 +71,13 @@ export class GlobalItemComponent implements OnInit {
   }
 
   async handleItemOptionsOnDrag(ev: TIonDragEvent) {
-    switch (checkItemOptionsOnDrag(ev)) {
-      case 'end':
-        await this.itemList.closeSlidingItems();
-        this.deleteItem.emit();
-        break;
-      case 'start':
-        break;
+    if (checkItemOptionsOnDrag(ev) === 'end') {
+      return this.emitDeleteItem();
     }
+  }
+
+  async emitDeleteItem() {
+    await this.itemList.closeSlidingItems();
+    this.deleteItem.emit();
   }
 }
