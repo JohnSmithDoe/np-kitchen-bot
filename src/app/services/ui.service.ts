@@ -8,11 +8,18 @@ import { TColor } from '../@types/types';
 })
 export class UiService {
   readonly #toastController = inject(ToastController);
-  readonly #translate = inject(TranslateService);
+  readonly translate = inject(TranslateService);
 
   async showToast(message: string, color: TColor = 'success') {
     const toast = await this.#toastController.create({
       position: 'bottom',
+      positionAnchor: 'footer',
+      buttons: [
+        {
+          text: 'X',
+          role: 'cancel',
+        },
+      ],
       duration: 1500,
       color,
       message,
@@ -21,7 +28,7 @@ export class UiService {
   }
 
   showAddItemToast(name: string, quantity?: number) {
-    const msg = this.#translate.instant('toast.add.item', {
+    const msg = this.translate.instant('toast.add.item', {
       name,
       quantity,
     });
@@ -29,14 +36,21 @@ export class UiService {
   }
 
   showUpdateItemToast(name: string) {
-    const msg = this.#translate.instant('toast.update.item', {
+    const msg = this.translate.instant('toast.update.item', {
       name,
     });
     return this.showToast(msg);
   }
   showRemoveItemToast(name: string) {
-    const msg = this.#translate.instant('toast.remove.item', {
+    const msg = this.translate.instant('toast.remove.item', {
       name,
+    });
+    return this.showToast(msg, 'warning');
+  }
+  showMovedToShoppingListToast(name: string, quantity: number) {
+    const msg = this.translate.instant('toast.moved.item.shopping', {
+      name,
+      quantity,
     });
     return this.showToast(msg, 'warning');
   }

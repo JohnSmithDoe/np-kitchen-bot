@@ -1,5 +1,5 @@
 import { createReducer, on } from '@ngrx/store';
-import { IGlobalsState, TItemListSort } from '../../@types/types';
+import { IGlobalsState } from '../../@types/types';
 import { ApplicationActions } from '../application.actions';
 import {
   addListItem,
@@ -10,6 +10,7 @@ import {
   endEditListItem,
   removeListItem,
   updateInPosition,
+  updateListMode,
   updateListSort,
 } from '../shared/item-list.reducer';
 import { GlobalsActions } from './globals.actions';
@@ -54,20 +55,9 @@ export const globalsReducer = createReducer(
   on(GlobalsActions.updateFilter, (state, { filterBy }): IGlobalsState => {
     return { ...state, filterBy, mode: 'alphabetical' };
   }),
-  on(GlobalsActions.updateMode, (state, { mode }) => {
-    // reset sort on mode change, otherwise toggle
-    const sort: TItemListSort | undefined =
-      state.mode !== mode
-        ? { sortBy: 'name', sortDir: 'asc' }
-        : updateListSort(state.sort?.sortBy, 'toggle', state.sort?.sortDir);
-    // clear search ... maybe
-    return {
-      ...state,
-      sort: sort,
-      mode: mode ?? 'alphabetical',
-      filterBy: undefined,
-    };
-  }),
+  on(GlobalsActions.updateMode, (state, { mode }) =>
+    updateListMode(state, mode)
+  ),
   on(GlobalsActions.updateSort, (state, { sortBy, sortDir }) => {
     const sort = updateListSort(sortBy, sortDir, state.sort?.sortDir);
     return { ...state, sort };

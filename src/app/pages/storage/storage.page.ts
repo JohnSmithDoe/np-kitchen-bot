@@ -10,6 +10,7 @@ import {
   IStorageItem,
   TItemListCategory,
   TItemListMode,
+  TItemListSortType,
 } from '../../@types/types';
 import { StorageItemComponent } from '../../components/item-list-items/storage-item/storage-item.component';
 import { TextItemComponent } from '../../components/item-list-items/text-item/text-item.component';
@@ -68,11 +69,11 @@ export class StoragePage {
     addIcons({ add, remove });
   }
 
-  async removeItem(item: IStorageItem) {
+  removeItem(item: IStorageItem) {
     this.#store.dispatch(StorageActions.removeItem(item));
   }
 
-  async addItemFromSearch() {
+  addItemFromSearch() {
     this.#store.dispatch(StorageActions.addItemFromSearch());
   }
 
@@ -88,7 +89,7 @@ export class StoragePage {
     this.#store.dispatch(StorageActions.endEditItem());
   }
 
-  async updateItem(item: Partial<IStorageItem>) {
+  updateItem(item: Partial<IStorageItem>) {
     this.#store.dispatch(StorageActions.endEditItem(item));
   }
 
@@ -96,11 +97,12 @@ export class StoragePage {
     this.#store.dispatch(StorageActions.updateSearch(searchTerm));
   }
 
-  setDisplayMode(mode: TItemListMode | 'bestBefore') {
-    mode = mode === 'bestBefore' ? 'alphabetical' : mode;
+  setDisplayMode(mode: TItemListMode) {
     this.#store.dispatch(StorageActions.updateMode(mode));
   }
-
+  setSortMode(type: TItemListSortType) {
+    this.#store.dispatch(StorageActions.updateSort(type, 'toggle'));
+  }
   selectCategory(category: TItemListCategory) {
     this.#store.dispatch(StorageActions.updateFilter(category));
   }
@@ -122,24 +124,11 @@ export class StoragePage {
     this.#store.dispatch(StorageActions.endCreateGlobalItem());
   }
 
-  async createAndAddGlobalItem(data: Partial<IGlobalItem>) {
+  createAndAddGlobalItem(data: Partial<IGlobalItem>) {
     this.#store.dispatch(StorageActions.createGlobalAndAddAsItem(data));
   }
 
-  async copyToShoppingList(item?: IStorageItem) {
-    if (!item) return;
-    // item = this.#database.cloneItem(item);
-    // item.quantity = 0;
-    // item = await this.#database.addItem(item, this.#database.shoppinglist());
-    if (item) {
-      item.quantity++;
-    }
-
-    // await this.#uiService.showToast(
-    //   this.translate.instant('storage.page.toast.move', {
-    //     name: item?.name,
-    //     total: item?.quantity,
-    //   })
-    // );
+  async copyToShoppingList(item: IStorageItem) {
+    this.#store.dispatch(StorageActions.moveToShoppinglist(item));
   }
 }

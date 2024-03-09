@@ -10,7 +10,7 @@
     (hitEnter)="addItemFromSearch()"
   ></app-item-list-searchbar>
   <app-item-list-toolbar (selectDisplayMode)="setDisplayMode($event)">
-    <ion-button (click)="setDisplayMode('bestBefore')">Mhd</ion-button>
+    <ion-button (click)="setSortMode('bestBefore')">Mhd</ion-button>
   </app-item-list-toolbar>
 </app-page-header>
 
@@ -19,9 +19,9 @@
     color="storage"
     listName="{{'list-header.storage' | translate}}"
     [showQuickAdd]="(rxSearchResult$ | async)?.showQuickAdd"
-    [showQuickAddGlobal]="(rxSearchResult$ | async)?.showQuickAddGlobal || true"
+    [showQuickAddGlobal]="(rxSearchResult$ | async)?.showQuickAddGlobal"
     [quickAddLabel]="(rxSearchResult$ | async)?.searchTerm"
-    (quickAddItem)="showCreateDialog()"
+    (quickAddItem)="addItemFromSearch()"
     (quickCreateGlobal)="showCreateGlobalDialog()"
   ></app-item-list-quickadd>
 

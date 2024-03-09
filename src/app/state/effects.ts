@@ -32,7 +32,7 @@ export class Effects {
     );
   });
 
-  createGlobalAndAddAsItem$ = createEffect(() => {
+  createGlobalAndAddAsStorageItem$ = createEffect(() => {
     return this.#actions$.pipe(
       ofType(StorageActions.createGlobalAndAddAsItem),
       mergeMap(({ data }) => [
@@ -40,6 +40,24 @@ export class Effects {
         StorageActions.createItem(data),
         StorageActions.endCreateGlobalItem(),
       ])
+    );
+  });
+
+  createGlobalAndAddAsShoppingItem$ = createEffect(() => {
+    return this.#actions$.pipe(
+      ofType(StorageActions.createGlobalAndAddAsItem),
+      mergeMap(({ data }) => [
+        GlobalsActions.createItem(data),
+        ShoppingListActions.createItem(data),
+        ShoppingListActions.endCreateGlobalItem(),
+      ])
+    );
+  });
+
+  moveToShoppingList$ = createEffect(() => {
+    return this.#actions$.pipe(
+      ofType(StorageActions.moveToShoppinglist),
+      map(({ item }) => ShoppingListActions.addStorageItem(item))
     );
   });
 

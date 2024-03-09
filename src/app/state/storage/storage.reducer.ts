@@ -45,27 +45,13 @@ export const storageReducer = createReducer(
   on(StorageActions.endEditItem, (state, { item }) =>
     endEditListItem(state, item)
   ),
-  on(
-    StorageActions.createGlobalItem,
-    (state): IStorageState => ({
-      ...state,
-      isCreating: true,
-      data: { id: uuidv4(), name: state.searchQuery ?? '', createdAt: 'now' },
-    })
-  ),
-  on(
-    StorageActions.endCreateGlobalItem,
-    (state): IStorageState => ({
-      ...state,
-      isCreating: false,
-    })
-  ),
   on(StorageActions.updateItem, (state, { item }) =>
     updateInPosition(state, item)
   ),
-  on(StorageActions.updateSearch, (state, { searchQuery }): IStorageState => {
-    return { ...state, searchQuery };
-  }),
+  on(
+    StorageActions.updateSearch,
+    (state, { searchQuery }): IStorageState => ({ ...state, searchQuery })
+  ),
   on(
     StorageActions.updateFilter,
     (state, { filterBy }): IStorageState => ({
@@ -81,11 +67,25 @@ export const storageReducer = createReducer(
     const sort = updateListSort(sortBy, sortDir, state.sort?.sortDir);
     return { ...state, sort };
   }),
-
   on(
     ApplicationActions.loadedSuccessfully,
     (_state, { datastore }): IStorageState => {
       return datastore.storage ?? _state;
     }
+  ),
+  on(
+    StorageActions.createGlobalItem,
+    (state): IStorageState => ({
+      ...state,
+      isCreating: true,
+      data: { id: uuidv4(), name: state.searchQuery ?? '', createdAt: 'now' },
+    })
+  ),
+  on(
+    StorageActions.endCreateGlobalItem,
+    (state): IStorageState => ({
+      ...state,
+      isCreating: false,
+    })
   )
 );

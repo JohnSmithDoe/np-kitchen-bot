@@ -1,25 +1,23 @@
 import { createReducer, on } from '@ngrx/store';
-import {
-  IShoppingState,
-  TItemListSort,
-  TShoppingList,
-} from '../../@types/types';
+import { IShoppingItem, IShoppingState } from '../../@types/types';
+import { createShoppingItemFromStorage } from '../../app.factory';
+import { uuidv4 } from '../../app.utils';
 import { ApplicationActions } from '../application.actions';
 import {
   addListItem,
   addListItemFromSearchQuery,
   createAndEditListItem,
+  createListItem,
   editListItem,
   endEditListItem,
   removeListItem,
   updateInPosition,
+  updateListMode,
   updateListSort,
 } from '../shared/item-list.reducer';
 import { ShoppingListActions } from './shopping-list.actions';
 
-export type IShoppinglistsState = Readonly<TShoppingList>;
-
-export const initialState: IShoppinglistsState = {
+export const initialState: IShoppingState = {
   title: 'Shopping Items',
   id: '_shopping',
   items: [],
@@ -34,14 +32,30 @@ export const shoppingListsReducer = createReducer(
   on(ShoppingListActions.removeItem, (state, { item }) =>
     removeListItem(state, item)
   ),
-  on(
-    ShoppingListActions.createItem,
-    (state, { data }) => createAndEditListItem(state, data) // TODO storage item is added....
+  on(ShoppingListActions.createAndEditItem, (state, { data }) =>
+    createAndEditListItem(state, data)
   ),
+  on(ShoppingListActions.createItem, (state, { data }) =>
+    createListItem(state, data)
+  ),
+  on(ShoppingListActions.addStorageItem, (state: IShoppingState, { data }) => {
+    const found = state.items.find(
+      (item) => item.name.toLowerCase() === data?.name?.toLowerCase()
+    );
+    if (found) {
+      return updateInPosition<IShoppingState, IShoppingItem>(state, {
+        ...found,
+        quantity: found.quantity + 1,
+      });
+    } else {
+      const item = createShoppingItemFromStorage(data);
+      return addListItem(state, item);
+    }
+  }),
   on(ShoppingListActions.addItemFromSearch, (state) =>
     addListItemFromSearchQuery(state)
   ),
-  on(ShoppingListActions.editItem, (state: IShoppinglistsState, { item }) =>
+  on(ShoppingListActions.editItem, (state: IShoppingState, { item }) =>
     editListItem(state, item)
   ),
 
@@ -53,41 +67,45 @@ export const shoppingListsReducer = createReducer(
   ),
   on(
     ShoppingListActions.updateSearch,
-    (state, { searchQuery }): IShoppinglistsState => ({
+    (state, { searchQuery }): IShoppingState => ({
       ...state,
       searchQuery,
     })
   ),
   on(
     ShoppingListActions.updateFilter,
-    (state, { filterBy }): IShoppingState => {
-      return { ...state, filterBy, mode: 'alphabetical' };
-    }
-  ),
-  on(ShoppingListActions.updateMode, (state, { mode }) => {
-    // reset sort on mode change, otherwise toggle
-    const sort: TItemListSort | undefined =
-      state.mode !== mode
-        ? { sortBy: 'name', sortDir: 'asc' }
-        : updateListSort(state.sort?.sortBy, 'toggle', state.sort?.sortDir);
-    // clear search ... maybe
-    return {
+    (state, { filterBy }): IShoppingState => ({
       ...state,
-      sort: sort,
-      mode: mode ?? 'alphabetical',
-      filterBy: undefined,
-    };
-  }),
+      filterBy,
+      mode: 'alphabetical',
+    })
+  ),
+  on(ShoppingListActions.updateMode, (state, { mode }) =>
+    updateListMode(state, mode)
+  ),
   on(ShoppingListActions.updateSort, (state, { sortBy, sortDir }) => {
     const sort = updateListSort(sortBy, sortDir, state.sort?.sortDir);
     return { ...state, sort };
   }),
-
   on(
     ApplicationActions.loadedSuccessfully,
-    (_state, { datastore }): IShoppinglistsState => {
-      console.log('loaded shoppinglist', _state, datastore.shoppinglist);
+    (_state, { datastore }): IShoppingState => {
       return datastore.shoppinglist ?? _state;
     }
+  ),
+  on(
+    ShoppingListActions.createGlobalItem,
+    (state): IShoppingState => ({
+      ...state,
+      isCreating: true,
+      data: { id: uuidv4(), name: state.searchQuery ?? '', createdAt: 'now' },
+    })
+  ),
+  on(
+    ShoppingListActions.endCreateGlobalItem,
+    (state): IShoppingState => ({
+      ...state,
+      isCreating: false,
+    })
   )
 );

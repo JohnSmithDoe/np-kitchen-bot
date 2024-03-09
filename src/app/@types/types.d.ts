@@ -66,7 +66,11 @@ export interface IShoppingItem extends IBaseItem {
 }
 export type TUpdateDTO<T extends IBaseItem> = IBaseItem &
   Partial<T> & { id: string };
-export type TAllItemTypes = IGlobalItem | IShoppingItem | IStorageItem;
+export type TAllItemTypes =
+  | IBaseItem
+  | IGlobalItem
+  | IShoppingItem
+  | IStorageItem;
 // export type IStorageItem = Readonly<
 //   IBaseItem & {
 //     quantity: number;
@@ -80,9 +84,12 @@ export type IStorageItem = IBaseItem & {
   bestBefore?: TTimestamp;
 };
 
+type TItemListSortType = 'name' | 'bestBefore';
+type TItemListSortDir = 'asc' | 'desc';
+
 export type TItemListSort = {
-  sortDir: 'asc' | 'desc';
-  sortBy: 'name' | string;
+  sortDir: TItemListSortDir;
+  sortBy: TItemListSortType;
 };
 export type TItemListMode = 'alphabetical' | 'categories';
 

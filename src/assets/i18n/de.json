@@ -1,6 +1,5 @@
 {
 	"add-item.dialog.button.cancel": "Abbrechen",
-	"add-item.dialog.header": "Aus den dauerhaften Einträgen",
 	"add-item.dialog.title": "Eintrag hinzufügen",
 	"categories-dialog.empty": "Es gibt noch keine Kategorien.",
 	"categories-dialog.empty.helper": "Gib etwas in die Suche ein.",
@@ -37,16 +36,15 @@
 	"list-header.global.search": "Aus den dauerhaften Einträgen",
 	"list-header.shoppinglist": "Einkaufsliste",
 	"list-header.storage": "Lagerliste",
-	"list-header.storage.search": "Im Lager",
 	"page-title.global": "Dauerhafte Einträge",
 	"page-title.settings": "Einstellungen",
 	"page-title.shoppinglist": "Einkaufsliste",
 	"page-title.storage": "Lagerliste",
 	"searchbar.placeholder": "Suchen oder neu anlegen",
-	"shoppinglist.page.toast.move": "{{name}} wurde gekauft",
-	"storage.page.toast.move": "{{name}} wurde der Einkaufsliste hinzugefügt. Total ({{total}})",
-	"toast.add.item": "{{name}} wurde der Liste hinzugefügt",
-	"toast.created.item": "{{name}} wurde erstellt und der Liste hinzugefügt.",
-	"toast.remove.item": "{{name}} wurde entfernt.",
-	"toast.update.item": "{{name}} wurde aktualisiert"
+	"toast.save.setting": "Einstellungen wurden gespeichert",
+  "toast.moved.item.shopping": "{{name}} wurde der Einkaufsliste hinzugefügt. ({{total}})",
+  "toast.add.item": "{{name}} wurde der Liste hinzugefügt",
+  "toast.created.item": "{{name}} wurde erstellt und der Liste hinzugefügt.",
+  "toast.remove.item": "{{name}} wurde entfernt.",
+  "toast.update.item": "{{name}} wurde aktualisiert"
 }

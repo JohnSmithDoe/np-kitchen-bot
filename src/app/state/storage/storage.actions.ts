@@ -17,9 +17,12 @@ export const StorageActions = createActionGroup({
     'Edit Item': (item: TUpdateDTO<IStorageItem>) => ({ item }),
     'End Edit Item': (item?: Partial<IStorageItem>) => ({ item }),
     'Update Item': (item: TUpdateDTO<IStorageItem>) => ({ item }),
+
     'Create Global Item': emptyProps(),
     'End Create Global Item': emptyProps(),
     'Create Global And Add As Item': (data: Partial<IGlobalItem>) => ({ data }),
+
+    'Move To Shoppinglist': (item: IStorageItem) => ({ item }),
     'Update Search': (searchQuery?: string) => ({ searchQuery }),
     'Update Filter': (filterBy?: string) => ({ filterBy }),
     'Update Mode': (mode?: TItemListMode) => ({ mode }),

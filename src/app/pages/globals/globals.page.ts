@@ -91,8 +91,7 @@ export class GlobalsPage {
     this.#store.dispatch(GlobalsActions.updateSearch(searchTerm));
   }
 
-  setDisplayMode(mode: TItemListMode | 'bestBefore') {
-    mode = mode === 'bestBefore' ? 'alphabetical' : mode;
+  setDisplayMode(mode: TItemListMode) {
     this.#store.dispatch(GlobalsActions.updateMode(mode));
   }
 

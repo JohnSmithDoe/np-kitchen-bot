@@ -104,8 +104,7 @@ export class ShoppinglistPage {
     this.#store.dispatch(ShoppingListActions.updateSearch(searchTerm));
   }
 
-  setDisplayMode(mode: TItemListMode | 'bestBefore') {
-    mode = mode === 'bestBefore' ? 'alphabetical' : mode;
+  setDisplayMode(mode: TItemListMode) {
     this.#store.dispatch(ShoppingListActions.updateMode(mode));
   }
 

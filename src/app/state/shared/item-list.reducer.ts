@@ -4,6 +4,8 @@ import {
   IStorageItem,
   TItemListMode,
   TItemListSort,
+  TItemListSortDir,
+  TItemListSortType,
   TUpdateDTO,
 } from '../../@types/types';
 // TODO: this is really not okay
@@ -129,9 +131,9 @@ export const endEditListItem = <T extends IListState<R>, R extends IBaseItem>(
   }
 };
 export const updateListSort = (
-  sortBy?: 'name' | 'bestBefore' | string,
-  newDir?: 'asc' | 'desc' | 'keep' | 'toggle',
-  currentDir?: 'asc' | 'desc'
+  sortBy?: TItemListSortType,
+  newDir?: TItemListSortDir | 'keep' | 'toggle',
+  currentDir?: TItemListSortDir
 ) => {
   let result: TItemListSort | undefined;
   if (!!sortBy) {
@@ -162,12 +164,13 @@ export const updateListMode = <T extends IListState<R>, R extends IBaseItem>(
   const sort: TItemListSort | undefined =
     state.mode !== mode
       ? { sortBy: 'name', sortDir: 'asc' }
-      : updateListSort(state.sort?.sortBy, 'toggle', state.sort?.sortDir);
-  // clear search ... maybe
+      : updateListSort('name', 'toggle', state.sort?.sortDir);
   return {
     ...state,
     sort: sort,
     mode: mode ?? 'alphabetical',
+    // clear search ... maybe
+    searchQuery: undefined,
     filterBy: undefined,
   };
 };

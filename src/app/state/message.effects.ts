@@ -1,17 +1,20 @@
 import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { EMPTY, exhaustMap } from 'rxjs';
+import { Store } from '@ngrx/store';
+import { EMPTY, exhaustMap, map } from 'rxjs';
 import { fromPromise } from 'rxjs/internal/observable/innerFrom';
 import { isGlobalItem } from '../app.utils';
 import { UiService } from '../services/ui.service';
 import { GlobalsActions } from './globals/globals.actions';
 import { ShoppingListActions } from './shoppinglist/shopping-list.actions';
+import { selectShoppingList } from './shoppinglist/shopping-list.selector';
 import { StorageActions } from './storage/storage.actions';
 
 @Injectable({ providedIn: 'root' })
 export class MessageEffects {
   #actions$ = inject(Actions);
   #uiService = inject(UiService);
+  #store = inject(Store);
 
   addItemSussess$ = createEffect(
     () => {
@@ -62,6 +65,28 @@ export class MessageEffects {
         ),
         exhaustMap(({ item }) => {
           return fromPromise(this.#uiService.showRemoveItemToast(item.name));
+        })
+      );
+    },
+    { dispatch: false }
+  );
+
+  moveToShoppingListSuccess$ = createEffect(
+    () => {
+      return this.#actions$.pipe(
+        ofType(ShoppingListActions.addStorageItem),
+        exhaustMap(({ data }) => {
+          return this.#store.select(selectShoppingList).pipe(
+            map((items) => {
+              const item = items.find((aItem) => aItem.name === data.name);
+              return fromPromise(
+                this.#uiService.showMovedToShoppingListToast(
+                  item?.name ?? 'Error',
+                  item?.quantity ?? -1
+                )
+              );
+            })
+          );
         })
       );
     },
