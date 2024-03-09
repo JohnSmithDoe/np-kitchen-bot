@@ -101,6 +101,12 @@ export const shoppingListsReducer = createReducer(
       data: { id: uuidv4(), name: state.searchQuery ?? '', createdAt: 'now' },
     })
   ),
+  on(ShoppingListActions.buyItem, (state, { item }) =>
+    updateInPosition<IShoppingState, IShoppingItem>(state, {
+      ...item,
+      state: 'bought',
+    })
+  ),
   on(
     ShoppingListActions.endCreateGlobalItem,
     (state): IShoppingState => ({

@@ -1,9 +1,10 @@
+import { AsyncPipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
   EventEmitter,
+  inject,
   Input,
-  OnInit,
   Output,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -23,8 +24,17 @@ import {
   IonTitle,
   IonToolbar,
 } from '@ionic/angular/standalone';
+import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
+import { map } from 'rxjs';
 import { TItemListCategory } from '../../@types/types';
+import { CategoriesActions } from '../../state/categories/categories.actions';
+import {
+  selectCategories,
+  selectCategoriesState,
+  selectContainsSearchResult,
+  selectSelectedCategories,
+} from '../../state/categories/categories.selector';
 
 @Component({
   selector: 'app-categories-dialog',
@@ -48,64 +58,49 @@ import { TItemListCategory } from '../../@types/types';
     TranslateModule,
     IonLabel,
     IonNote,
+    AsyncPipe,
   ],
 })
-export class CategoriesDialogComponent implements OnInit {
-  // TODO could be done by a category dialog component state
+export class CategoriesDialogComponent {
+  #store = inject(Store);
+
   @Input() categories: TItemListCategory[] = [];
   @Input() itemCategories?: TItemListCategory[];
 
   @Output() confirm = new EventEmitter<string[]>();
   @Output() cancel = new EventEmitter();
 
-  items: TItemListCategory[] = [];
-  newCategories: TItemListCategory[] = [];
-  selection: string[] = [];
-  searchFor?: string;
-  isExactlyIncluded = false;
+  rxSearchContained$ = this.#store.select(selectContainsSearchResult);
+  rxState$ = this.#store.select(selectCategoriesState);
+  rxItems$ = this.#store.select(selectCategories);
+  rxSelection$ = this.#store.select(selectSelectedCategories);
 
   constructor() {}
 
-  ngOnInit() {
-    this.searchFor = undefined;
-    this.selection = this.itemCategories ?? [];
-
-    this.items = [...new Set([...this.categories, ...this.selection])];
-  }
-
   searchbarInput(ev: any) {
-    this.searchFor = ev.target.value;
-    if (!this.searchFor || !this.searchFor.length) {
-      this.items = [...this.newCategories, ...this.categories];
-      this.isExactlyIncluded = false;
-    } else {
-      this.items = [...this.newCategories, ...this.categories].filter((cat) =>
-        cat.toLowerCase().includes(this.searchFor!.toLowerCase())
-      );
-      this.isExactlyIncluded = !!this.items.find(
-        (item) => item.toLowerCase() === this.searchFor?.toLowerCase()
-      );
-    }
+    this.#store.dispatch(CategoriesActions.updateSearchQuery(ev.target.value));
   }
 
   isChecked(item: TItemListCategory) {
-    return this.selection.find((selected) => selected === item);
+    return this.rxSelection$.pipe(map((selection) => selection.includes(item)));
   }
 
   selectionChange(ev: CheckboxCustomEvent<TItemListCategory>) {
     const { checked, value } = ev.detail;
-    if (checked) {
-      this.selection = [...this.selection, value];
-    } else {
-      this.selection = this.selection.filter((item) => item !== value);
-    }
+    this.#store.dispatch(CategoriesActions.selectCategory(value));
   }
 
   addNewCategory() {
-    if (this.searchFor && !!this.searchFor.length) {
-      this.newCategories.push(this.searchFor);
-      this.selection = [...this.selection, this.searchFor];
-      this.searchbarInput({ target: { value: null } });
-    }
+    this.#store.dispatch(CategoriesActions.addCategory());
+  }
+
+  cancelDialog() {
+    this.#store.dispatch(CategoriesActions.abortChanges());
+  }
+
+  confirmDialog() {
+    //TODO: hmmm
+    this.confirm.emit();
+    this.#store.dispatch(CategoriesActions.confirmChanges());
   }
 }

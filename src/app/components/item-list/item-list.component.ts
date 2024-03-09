@@ -76,8 +76,6 @@ export class ItemListComponent {
   @Input() categories?: ReadonlyArray<TItemListCategory> | null;
   @Input() mode: 'alphabetical' | 'categories' = 'alphabetical';
 
-  // searchTerm?: string | null;
-
   @Output() selectCategory = new EventEmitter<TItemListCategory>();
   @Output() reorder = new EventEmitter<ItemReorderEventDetail>();
 

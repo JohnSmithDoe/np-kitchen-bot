@@ -1,12 +1,12 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-button (click)="cancel.emit()">{{
+      <ion-button (click)="cancelDialog()">{{
         'categories.dialog.cancel' | translate
       }}</ion-button>
     </ion-buttons>
     <ion-buttons slot="end">
-      <ion-button (click)="confirm.emit(selection)">{{
+      <ion-button (click)="confirmDialog()">{{
         'categories.dialog.confirm' | translate
       }}</ion-button>
     </ion-buttons>
@@ -14,7 +14,7 @@
   <ion-toolbar>
     <ion-searchbar
       placeholder="{{ 'searchbar.placeholder' | translate }}"
-      [(ngModel)]="searchFor"
+      [value]="(rxState$ | async)?.searchQuery"
       (ionInput)="searchbarInput($event)"
       (keyup.enter)="addNewCategory()"
       [debounce]="250"
@@ -24,7 +24,7 @@
 
 <ion-content>
   <ion-list id="modal-list" [inset]="true">
-    @if (!!searchFor && !isExactlyIncluded) {
+    @if ((rxSearchContained$ | async) === false) {
       <ion-item
         button
         (click)="addNewCategory()"
@@ -32,27 +32,28 @@
         color="category"
       >
         <ion-label>{{
-          'categories-dialog.notfound.create' | translate: { name: searchFor }
+          'categories-dialog.notfound.create'
+            | translate: { name: (rxState$ | async)?.searchQuery }
         }}</ion-label>
         <ion-note slot="end" class="global-item-helper" color="dark">
           {{
             'categories-dialog.notfound.create.helper'
-              | translate: { name: searchFor }
+              | translate: { name: (rxState$ | async)?.searchQuery }
           }}
         </ion-note>
       </ion-item>
     }
-    @for (item of items; track item) {
+    @for (item of rxItems$ | async; track item) {
       <ion-item>
         <ion-checkbox
           [value]="item"
-          [checked]="isChecked(item)"
+          [checked]="isChecked(item) | async"
           (ionChange)="selectionChange($event)"
           >{{ item }}
         </ion-checkbox>
       </ion-item>
     } @empty {
-      @if (!searchFor) {
+      @if (!(rxState$ | async)?.searchQuery) {
         <ion-item>
           <ion-label>
             {{ 'categories-dialog.empty' | translate }}<br />

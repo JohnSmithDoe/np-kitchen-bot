@@ -68,10 +68,10 @@
       </ion-modal>
     </ion-item>
 
-    <ion-item button (click)="selectCategories = true">
+    <ion-item button (click)="showCategoryDialog()">
       <ion-label class="ion-text-wrap">
         {{ 'edit.item.dialog.categories' | translate }}
-        @for (cat of categoryValue; track cat) {
+        @for (cat of (rxCategory$ | async)?.selection; track cat) {
           <ion-chip color="category">
             <!--                <ion-avatar>-->
             <!--                  <img alt="Image of the category" src="assets/avatar.svg"/>-->
@@ -90,13 +90,14 @@
   </ion-list>
 </ion-content>
 
-<ion-modal [isOpen]="selectCategories" (didDismiss)="selectCategories = false">
+<ion-modal
+  [isOpen]="(rxCategory$ | async)?.isSelecting === true"
+  (didDismiss)="closedCategoryDialog()"
+>
   <ng-template>
     <app-categories-dialog
-      [itemCategories]="categoryValue"
-      [categories]="categories"
       (confirm)="setCategories($event)"
-      (cancel)="selectCategories = false"
+      (cancel)="closedCategoryDialog()"
     ></app-categories-dialog>
   </ng-template>
 </ion-modal>

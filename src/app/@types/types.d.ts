@@ -151,3 +151,9 @@ export type IListState<T extends IBaseItem> = IItemList<T>;
 export type IStorageState = Readonly<TStorageList>;
 export type IShoppingState = Readonly<TShoppingList>;
 export type IGlobalsState = Readonly<TGlobalsList>;
+export type ICategoriesState = Readonly<{
+  categories: TItemListCategory[];
+  selection: TItemListCategory[];
+  searchQuery?: string;
+  isSelecting?: boolean;
+}>;

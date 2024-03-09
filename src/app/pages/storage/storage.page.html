@@ -86,6 +86,7 @@
       (saveItem)="updateItem($event)"
       [item]="(rxState$|async)?.data"
       [categories]="(rxCategories$ | async) ?? []"
+      [items]="(rxItems$ | async) ?? []"
     ></app-edit-storage-item-dialog>
   </ng-template>
 </ion-modal>

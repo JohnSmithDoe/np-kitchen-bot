@@ -1,13 +1,8 @@
 import { AsyncPipe } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  inject,
-  ViewChild,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { IonContent, IonModal } from '@ionic/angular/standalone';
 import { Store } from '@ngrx/store';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { add, remove } from 'ionicons/icons';
 import {
@@ -15,8 +10,8 @@ import {
   IShoppingItem,
   TItemListCategory,
   TItemListMode,
+  TItemListSortType,
 } from '../../@types/types';
-import { createShoppingItemFromGlobal } from '../../app.factory';
 import { ShoppingItemComponent } from '../../components/item-list-items/shopping-item/shopping-item.component';
 import { TextItemComponent } from '../../components/item-list-items/text-item/text-item.component';
 import { ItemListEmptyComponent } from '../../components/item-list/item-list-empty/item-list-empty.component';
@@ -61,10 +56,6 @@ import {
   ],
 })
 export class ShoppinglistPage {
-  @ViewChild(ItemListSearchbarComponent, { static: true })
-  listSearchbar?: ItemListSearchbarComponent;
-
-  readonly translate = inject(TranslateService);
   readonly #store = inject(Store);
 
   rxState$ = this.#store.select(selectShoppinglistState);
@@ -107,7 +98,9 @@ export class ShoppinglistPage {
   setDisplayMode(mode: TItemListMode) {
     this.#store.dispatch(ShoppingListActions.updateMode(mode));
   }
-
+  setSortMode(type: TItemListSortType) {
+    this.#store.dispatch(ShoppingListActions.updateSort(type, 'toggle'));
+  }
   selectCategory(category: TItemListCategory) {
     this.#store.dispatch(ShoppingListActions.updateFilter(category));
   }
@@ -121,37 +114,19 @@ export class ShoppinglistPage {
     );
   }
 
-  async addGlobalItem(item?: IGlobalItem) {
-    // TODO
-    // this.#store.dispatch(ShoppingListActions.addItemFromGlobal(item))
-    if (!item) return;
-    let litem: IShoppingItem | undefined = createShoppingItemFromGlobal(item);
-    this.#store.dispatch(ShoppingListActions.addItem(litem));
-  }
-
-  async createGlobalItem(item?: any) {
-    if (item?.name?.length) {
-      // await this.#database.addOrUpdateItem(item, this.#database.all);
-      // const litem = await this.#database.addItem(copy, this.itemList);
-      // this.#clearSearch();
-      // await this.#uiService.showToast(
-      //   this.translate.instant('toast.created.item', {
-      //     name: item?.name,
-      //   })
-      // );
-    }
-  }
-
   showCreateGlobalDialog() {
-    // this.isCreating = true; // show create dialog with the new item
-    // this.createNewItem = createGlobalItem('');
+    this.#store.dispatch(ShoppingListActions.createGlobalItem());
   }
 
   closeCreateGlobalDialog() {
-    //
+    this.#store.dispatch(ShoppingListActions.endCreateGlobalItem());
   }
 
-  buyItem(item: any) {
-    console.log('dis is not ready');
+  createAndAddGlobalItem(data: Partial<IGlobalItem>) {
+    this.#store.dispatch(ShoppingListActions.createGlobalAndAddAsItem(data));
+  }
+
+  async buyItem(item: IShoppingItem) {
+    this.#store.dispatch(ShoppingListActions.buyItem(item));
   }
 }

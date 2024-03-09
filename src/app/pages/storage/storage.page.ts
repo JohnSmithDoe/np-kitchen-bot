@@ -1,4 +1,4 @@
-import { AsyncPipe, JsonPipe } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { IonButton, IonContent, IonModal } from '@ionic/angular/standalone';
 import { Store } from '@ngrx/store';
@@ -54,7 +54,6 @@ import {
     CategoriesPipe,
     IonButton,
     AsyncPipe,
-    JsonPipe,
   ],
 })
 export class StoragePage {

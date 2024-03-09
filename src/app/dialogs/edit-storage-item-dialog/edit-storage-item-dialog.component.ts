@@ -1,4 +1,4 @@
-import { CurrencyPipe, DatePipe } from '@angular/common';
+import { AsyncPipe, CurrencyPipe, DatePipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -31,15 +31,19 @@ import {
   IonTitle,
   IonToolbar,
 } from '@ionic/angular/standalone';
+import { Store } from '@ngrx/store';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import * as dayjs from 'dayjs';
 import { addIcons } from 'ionicons';
 import { closeCircle } from 'ionicons/icons';
 import {
+  IBaseItem,
   IStorageItem,
   TItemListCategory,
   TUpdateDTO,
 } from '../../@types/types';
+import { CategoriesActions } from '../../state/categories/categories.actions';
+import { selectCategoriesState } from '../../state/categories/categories.selector';
 import { CategoriesDialogComponent } from '../categories-dialog/categories-dialog.component';
 
 @Component({
@@ -71,21 +75,26 @@ import { CategoriesDialogComponent } from '../categories-dialog/categories-dialo
     DatePipe,
     IonPopover,
     IonText,
+    AsyncPipe,
   ],
   templateUrl: './edit-storage-item-dialog.component.html',
   styleUrl: './edit-storage-item-dialog.component.scss',
 })
 export class EditStorageItemDialogComponent implements OnInit {
   readonly translate = inject(TranslateService);
+  readonly #store = inject(Store);
 
+  rxCategory$ = this.#store.select(selectCategoriesState);
+  //TODO: state...
   @Input() item?: TUpdateDTO<IStorageItem> | null;
+  @Input() items?: IBaseItem[] | null;
   @Input() categories: string[] = [];
+
   @Input() mode: 'update' | 'create' = 'create';
 
   @Output() saveItem = new EventEmitter<Partial<IStorageItem>>();
   @Output() cancel = new EventEmitter();
 
-  selectCategories = false;
   dialogTitle = '';
   saveButtonText = '';
   currencyCode: 'EUR' | 'USD' = 'EUR';
@@ -97,6 +106,21 @@ export class EditStorageItemDialogComponent implements OnInit {
   bestBeforeDate?: string;
   bestBeforeValue?: string;
   priceValue?: number;
+
+  showCategoryDialog() {
+    this.#store.dispatch(
+      CategoriesActions.showDialog(this.item ?? undefined, this.items ?? [])
+    );
+  }
+
+  closedCategoryDialog() {
+    this.#store.dispatch(CategoriesActions.abortChanges());
+  }
+
+  setCategories(categories?: TItemListCategory[]) {
+    this.#store.dispatch(CategoriesActions.confirmChanges());
+    this.categoryValue = categories;
+  }
 
   submitChanges() {
     this.saveItem.emit({
@@ -147,11 +171,6 @@ export class EditStorageItemDialogComponent implements OnInit {
       this.mode === 'create'
         ? this.translate.instant('edit.item.dialog.title.create')
         : this.translate.instant('edit.item.dialog.title.update');
-  }
-
-  setCategories(categories?: TItemListCategory[]) {
-    this.selectCategories = false;
-    this.categoryValue = categories;
   }
 
   removeCategory(cat: TItemListCategory) {

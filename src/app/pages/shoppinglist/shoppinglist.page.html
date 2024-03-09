@@ -21,7 +21,7 @@
     [showQuickAdd]="(rxSearchResult$ | async)?.showQuickAdd"
     [showQuickAddGlobal]="(rxSearchResult$ | async)?.showQuickAddGlobal"
     [quickAddLabel]="(rxSearchResult$ | async)?.searchTerm"
-    (quickAddItem)="showCreateDialog()"
+    (quickAddItem)="addItemFromSearch()"
     (quickCreateGlobal)="showCreateGlobalDialog()"
   ></app-item-list-quickadd>
 
@@ -40,10 +40,10 @@
       [item]="item"
       [itemList]="shoppinglistComponent"
       (selectItem)="showEditDialog(item)"
+      (deleteItem)="removeItem(item)"
       (increment)="changeQuantity(item, +1)"
       (decrement)="changeQuantity(item, -1)"
       (cartItem)="buyItem(item)"
-      (deleteItem)="removeItem(item)"
     ></app-shopping-item>
   </ng-template>
 
@@ -88,7 +88,7 @@
       [label]="item.name"
       [note]="item | appCategories"
       [helper]="'item-helper.search' | translate"
-      (selectItem)="addGlobalItem(item)"
+      (selectItem)="createAndAddGlobalItem(item)"
     ></app-text-item>
   </ng-template>
   }
@@ -116,7 +116,7 @@
   <ng-template>
     <app-edit-global-item-dialog
       (cancel)="closeCreateGlobalDialog()"
-      (saveItem)="createGlobalItem($event)"
+      (saveItem)="createAndAddGlobalItem($event)"
       [item]="(rxState$|async)?.data"
       [categories]="(rxCategories$|async)??[]"
     ></app-edit-global-item-dialog>

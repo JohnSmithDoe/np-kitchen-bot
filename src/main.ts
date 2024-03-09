@@ -20,6 +20,7 @@ import { AppComponent } from './app/app.component';
 
 import { routes } from './app/app.routes';
 import { DatabaseService } from './app/services/database.service';
+import { categoriesReducer } from './app/state/categories/categories.reducer';
 import { Effects } from './app/state/effects';
 import { globalsReducer } from './app/state/globals/globals.reducer';
 import { MessageEffects } from './app/state/message.effects';
@@ -65,6 +66,7 @@ void bootstrapApplication(AppComponent, {
       storage: storageReducer,
       shoppinglist: shoppingListsReducer,
       globals: globalsReducer,
+      categories: categoriesReducer,
     }),
     {
       provide: LOCALE_ID,

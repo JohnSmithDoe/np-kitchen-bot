@@ -24,6 +24,8 @@ export const ShoppingListActions = createActionGroup({
     'End Create Global Item': emptyProps(),
     'Create Global And Add As Item': (data: Partial<IGlobalItem>) => ({ data }),
 
+    'Buy Item': (item: IShoppingItem) => ({ item }),
+
     'Update Search': (searchQuery?: string) => ({ searchQuery }),
     'Update Filter': (filterBy?: string) => ({ filterBy }),
     'Update Mode': (mode?: TItemListMode) => ({ mode }),
