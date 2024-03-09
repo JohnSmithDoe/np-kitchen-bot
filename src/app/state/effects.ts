@@ -66,7 +66,12 @@ export class Effects {
     selectStorageState,
     StorageActions.addItem,
     StorageActions.removeItem,
-    StorageActions.updateItem
+    StorageActions.updateItem,
+    StorageActions.endEditItem,
+    StorageActions.endCreateGlobalItem,
+    StorageActions.createGlobalAndAddAsItem,
+    StorageActions.createItem,
+    StorageActions.addItemFromSearch
   );
 
   saveGlobalsOnChange$ = this.#createSaveEffect(
@@ -74,7 +79,11 @@ export class Effects {
     selectGlobalsState,
     GlobalsActions.addItem,
     GlobalsActions.removeItem,
-    GlobalsActions.updateItem
+    GlobalsActions.updateItem,
+    GlobalsActions.createItem,
+    GlobalsActions.createAndEditItem,
+    GlobalsActions.addItemFromSearch,
+    GlobalsActions.endEditItem
   );
 
   saveShoppinglistOnChange$ = this.#createSaveEffect(
@@ -82,7 +91,12 @@ export class Effects {
     selectShoppinglistState,
     ShoppingListActions.addItem,
     ShoppingListActions.removeItem,
-    ShoppingListActions.updateItem
+    ShoppingListActions.updateItem,
+    ShoppingListActions.addStorageItem,
+    ShoppingListActions.createGlobalAndAddAsItem,
+    ShoppingListActions.addItemFromSearch,
+    ShoppingListActions.endCreateGlobalItem,
+    ShoppingListActions.endEditItem
   );
 
   saveSettingsOnChange$ = this.#createSaveEffect(

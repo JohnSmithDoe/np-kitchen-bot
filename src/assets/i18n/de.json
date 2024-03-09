@@ -41,10 +41,9 @@
 	"page-title.shoppinglist": "Einkaufsliste",
 	"page-title.storage": "Lagerliste",
 	"searchbar.placeholder": "Suchen oder neu anlegen",
+	"toast.add.item": "{{name}} wurde der Liste hinzugefügt",
+	"toast.moved.item.shopping": "{{name}} wurde der Einkaufsliste hinzugefügt. ({{quantity}})",
+	"toast.remove.item": "{{name}} wurde entfernt.",
 	"toast.save.setting": "Einstellungen wurden gespeichert",
-  "toast.moved.item.shopping": "{{name}} wurde der Einkaufsliste hinzugefügt. ({{total}})",
-  "toast.add.item": "{{name}} wurde der Liste hinzugefügt",
-  "toast.created.item": "{{name}} wurde erstellt und der Liste hinzugefügt.",
-  "toast.remove.item": "{{name}} wurde entfernt.",
-  "toast.update.item": "{{name}} wurde aktualisiert"
+	"toast.update.item": "{{name}} wurde aktualisiert"
 }
