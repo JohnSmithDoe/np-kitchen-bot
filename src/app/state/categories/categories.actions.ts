@@ -5,7 +5,7 @@ export const CategoriesActions = createActionGroup({
   source: 'Categories',
   events: {
     'Add Category': emptyProps(),
-    'Select Category': (category: TItemListCategory) => ({ category }),
+    'Toggle Category': (category: TItemListCategory) => ({ category }),
     'Remove Category': (category: TItemListCategory) => ({ category }),
     'Update Search Query': (query?: string) => ({ query }),
     'Show Dialog': (item?: IBaseItem, items?: IBaseItem[]) => ({ item, items }),

@@ -1,4 +1,4 @@
-import { CurrencyPipe, DatePipe } from '@angular/common';
+import { AsyncPipe, CurrencyPipe, DatePipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -32,10 +32,12 @@ import {
   IonTitle,
   IonToolbar,
 } from '@ionic/angular/standalone';
+import { Store } from '@ngrx/store';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { closeCircle } from 'ionicons/icons';
 import {
+  IBaseItem,
   IGlobalItem,
   TBestBeforeTimespan,
   TItemListCategory,
@@ -43,6 +45,9 @@ import {
   TPackagingUnit,
   TUpdateDTO,
 } from '../../@types/types';
+import { selectCategoriesState } from '../../state/categories/categories.selector';
+import { EditGlobalItemActions } from '../../state/edit-global-item/edit-global-item.actions';
+import { selectEditGlobalState } from '../../state/edit-global-item/edit-global-item.selector';
 import { CategoriesDialogComponent } from '../categories-dialog/categories-dialog.component';
 
 @Component({
@@ -75,15 +80,25 @@ import { CategoriesDialogComponent } from '../categories-dialog/categories-dialo
     IonPopover,
     IonNote,
     IonText,
+    AsyncPipe,
   ],
   templateUrl: './edit-global-item-dialog.component.html',
   styleUrl: './edit-global-item-dialog.component.scss',
 })
 export class EditGlobalItemDialogComponent implements OnInit {
   readonly translate = inject(TranslateService);
-
+  readonly #store = inject(Store);
+  /**  [mode]="(rxState$|async)?.editMode ?? 'create'"
+ (cancel)="closeEditDialog()"
+ (saveItem)="updateItem($event)"
+ [item]="(rxState$|async)?.data"
+ [categories]="(rxCategories$ | async) ?? []"
+*/
+  rxState$ = this.#store.select(selectEditGlobalState);
+  rxCategory$ = this.#store.select(selectCategoriesState);
+  //TODO: state...
   @Input() item?: TUpdateDTO<IGlobalItem> | null;
-  @Input() categories: string[] = [];
+  @Input() items?: IBaseItem[] | null;
   @Input() mode: 'update' | 'create' = 'create';
 
   @Output() saveItem = new EventEmitter<Partial<IGlobalItem>>();
@@ -186,5 +201,9 @@ export class EditGlobalItemDialogComponent implements OnInit {
     this.bestBeforeTimespanValue = ev.detail.value;
     this.bestBeforeTimeValue =
       this.bestBeforeTimespanValue === 'forever' ? undefined : 1;
+  }
+
+  closedDialog() {
+    this.#store.dispatch(EditGlobalItemActions.hideDialog());
   }
 }

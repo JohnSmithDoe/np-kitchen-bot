@@ -15,7 +15,6 @@ import {
 import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { ellipse, square, triangle } from 'ionicons/icons';
-import { CommonActionsSheetComponent } from '../../dialogs/common-actions-sheet/common-actions-sheet.component';
 
 @Component({
   selector: 'app-home',
@@ -35,7 +34,6 @@ import { CommonActionsSheetComponent } from '../../dialogs/common-actions-sheet/
     IonTabs,
     IonActionSheet,
     IonButton,
-    CommonActionsSheetComponent,
     TranslateModule,
   ],
 })

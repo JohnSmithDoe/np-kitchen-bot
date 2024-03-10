@@ -1,16 +1,10 @@
 import { createReducer, on } from '@ngrx/store';
 import { IStorageState } from '../../@types/types';
-import { uuidv4 } from '../../app.utils';
 import { ApplicationActions } from '../application.actions';
 import {
   addListItem,
-  addListItemFromSearchQuery,
-  createAndEditListItem,
-  createListItem,
-  editListItem,
-  endEditListItem,
   removeListItem,
-  updateInPosition,
+  updateListItem,
   updateListMode,
   updateListSort,
 } from '../shared/item-list.reducer';
@@ -29,24 +23,8 @@ export const storageReducer = createReducer(
   on(StorageActions.removeItem, (state, { item }) =>
     removeListItem(state, item)
   ),
-  on(StorageActions.createAndEditItem, (state, { data }) =>
-    createAndEditListItem(state, data)
-  ),
-  on(StorageActions.createItem, (state, { data }) =>
-    createListItem(state, data)
-  ),
-  on(StorageActions.addItemFromSearch, (state) =>
-    addListItemFromSearchQuery(state)
-  ),
-  on(StorageActions.editItem, (state: IStorageState, { item }) =>
-    editListItem(state, item)
-  ),
-
-  on(StorageActions.endEditItem, (state, { item }) =>
-    endEditListItem(state, item)
-  ),
   on(StorageActions.updateItem, (state, { item }) =>
-    updateInPosition(state, item)
+    updateListItem(state, item)
   ),
   on(
     StorageActions.updateSearch,
@@ -72,20 +50,5 @@ export const storageReducer = createReducer(
     (_state, { datastore }): IStorageState => {
       return datastore.storage ?? _state;
     }
-  ),
-  on(
-    StorageActions.createGlobalItem,
-    (state): IStorageState => ({
-      ...state,
-      isCreating: true,
-      data: { id: uuidv4(), name: state.searchQuery ?? '', createdAt: 'now' },
-    })
-  ),
-  on(
-    StorageActions.endCreateGlobalItem,
-    (state): IStorageState => ({
-      ...state,
-      isCreating: false,
-    })
   )
 );

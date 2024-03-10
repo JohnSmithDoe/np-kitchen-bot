@@ -101,12 +101,6 @@ export interface IItemList<T extends IBaseItem = IBaseItem> {
   searchQuery?: string;
   filterBy?: string;
   sort?: TItemListSort;
-
-  // these could be global maybe not data
-  data?: TUpdateDTO<T>;
-  isEditing?: boolean;
-  editMode?: 'update' | 'create';
-  isCreating?: boolean;
 }
 
 export interface ISettings {
@@ -157,3 +151,25 @@ export type ICategoriesState = Readonly<{
   searchQuery?: string;
   isSelecting?: boolean;
 }>;
+
+export type IEditItemState<T extends IBaseItem> = Readonly<{
+  item: T;
+  isEditing?: boolean;
+  data?: TUpdateDTO<T>;
+  editMode?: 'update' | 'create';
+  dialogTitle?: string;
+  saveButtonText?: string;
+}>;
+export type IEditStorageItemState = IEditItemState<IStorageItem>;
+export type IEditShoppingItemState = IEditItemState<IShoppingItem>;
+export type IEditGlobalItemState = IEditItemState<IGlobalItem>;
+export interface IAppState {
+  settings: ISettings;
+  storage: IStorageState;
+  shoppinglist: IShoppingState;
+  globals: IGlobalsState;
+  categories: ICategoriesState;
+  editStorageItem: IEditStorageItemState;
+  editShoppingItem: IEditShoppingItemState;
+  editGlobalItem: IEditGlobalItemState;
+}

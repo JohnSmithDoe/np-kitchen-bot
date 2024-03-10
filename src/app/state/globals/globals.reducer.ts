@@ -3,13 +3,8 @@ import { IGlobalsState } from '../../@types/types';
 import { ApplicationActions } from '../application.actions';
 import {
   addListItem,
-  addListItemFromSearchQuery,
-  createAndEditListItem,
-  createListItem,
-  editListItem,
-  endEditListItem,
   removeListItem,
-  updateInPosition,
+  updateListItem,
   updateListMode,
   updateListSort,
 } from '../shared/item-list.reducer';
@@ -28,26 +23,8 @@ export const globalsReducer = createReducer(
   on(GlobalsActions.removeItem, (state, { item }) =>
     removeListItem(state, item)
   ),
-  on(
-    GlobalsActions.createAndEditItem,
-    (state, { data }) => createAndEditListItem(state, data) // TODO this is not correct... adds an storage item......
-  ),
-  on(
-    GlobalsActions.createItem,
-    (state, { data }) => createListItem(state, data) // TODO this is not correct... adds an storage item......
-  ),
-  on(GlobalsActions.addItemFromSearch, (state) =>
-    addListItemFromSearchQuery(state)
-  ),
-  on(GlobalsActions.editItem, (state: IGlobalsState, { item }) =>
-    editListItem(state, item)
-  ),
-
-  on(GlobalsActions.endEditItem, (state, { item }) =>
-    endEditListItem(state, item)
-  ),
   on(GlobalsActions.updateItem, (state, { item }) =>
-    updateInPosition(state, item)
+    updateListItem(state, item)
   ),
   on(GlobalsActions.updateSearch, (state, { searchQuery }): IGlobalsState => {
     return { ...state, searchQuery };

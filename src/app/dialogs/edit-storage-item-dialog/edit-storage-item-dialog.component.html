@@ -1,103 +1,110 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-button (click)="cancel.emit()">{{
-        'edit-item.dialog.button.close' | translate
-      }}</ion-button>
-    </ion-buttons>
-    <ion-buttons slot="end">
-      <ion-button (click)="submitChanges()">{{ saveButtonText }}</ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
-
-<ion-content>
-  <h3 class="ion-padding-start">{{ dialogTitle }}</h3>
-  <ion-list>
-    <ion-item>
-      <ion-input
-        label="{{ 'edit.item.dialog.name' | translate }}"
-        placeholder="{{ 'edit.item.dialog.name.placeholder' | translate }}"
-        [(ngModel)]="nameValue"
-      ></ion-input>
-    </ion-item>
-
-    <ion-item>
-      <ion-input
-        type="number"
-        class="ion-text-end"
-        label="Menge"
-        [clearOnEdit]="true"
-        [(ngModel)]="quantityValue"
-      ></ion-input>
-    </ion-item>
-
-    <ion-item>
-      <ion-input
-        type="number"
-        class="ion-text-end"
-        label="Mindestmenge"
-        [clearOnEdit]="true"
-        [(ngModel)]="minAmountValue"
-      ></ion-input>
-    </ion-item>
-
-    <ion-item>
-      <ion-input
-        label="{{ 'edit.item.dialog.mhd' | translate }}"
-        class="trigger ion-text-end"
-        [ngModel]="bestBeforeDate ?? '' | date: undefined : undefined : 'de-DE'"
-        type="date_event"
-        id="open_cal"
-      ></ion-input>
-      <ion-modal
-        trigger="open_cal"
-        [keepContentsMounted]="true"
-        [initialBreakpoint]="0.65"
-      >
-        <ng-template>
-          <ion-datetime
-            presentation="date"
-            mode="md"
-            (ionChange)="datePick($event)"
-            [value]="bestBeforeDate"
-            [showDefaultButtons]="true"
-            [showClearButton]="true"
-          ></ion-datetime>
-        </ng-template>
-      </ion-modal>
-    </ion-item>
-
-    <ion-item button (click)="showCategoryDialog()">
-      <ion-label class="ion-text-wrap">
-        {{ 'edit.item.dialog.categories' | translate }}
-        @for (cat of (rxCategory$ | async)?.selection; track cat) {
-          <ion-chip color="category">
-            <!--                <ion-avatar>-->
-            <!--                  <img alt="Image of the category" src="assets/avatar.svg"/>-->
-            <!--                </ion-avatar>-->
-            <ion-label class="ion-text-wrap">{{ cat }}</ion-label>
-            <ion-icon
-              name="close-circle"
-              (click)="removeCategory(cat); $event.stopPropagation()"
-            ></ion-icon>
-          </ion-chip>
-        } @empty {
-          {{ 'edit.item.dialog.categories.empty' | translate }}
-        }
-      </ion-label>
-    </ion-item>
-  </ion-list>
-</ion-content>
-
 <ion-modal
-  [isOpen]="(rxCategory$ | async)?.isSelecting === true"
-  (didDismiss)="closedCategoryDialog()"
+  [isOpen]="(rxState$ | async)?.isEditing === true"
+  (didDismiss)="closedDialog()"
 >
   <ng-template>
-    <app-categories-dialog
-      (confirm)="setCategories($event)"
-      (cancel)="closedCategoryDialog()"
-    ></app-categories-dialog>
+    <ion-header>
+      <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-button (click)="cancelChanges()"
+            >{{ 'edit-item.dialog.button.close' | translate }}
+          </ion-button>
+        </ion-buttons>
+        <ion-buttons slot="end">
+          <ion-button (click)="submitChanges()">{{
+            (rxState$ | async)?.saveButtonText ?? '' | translate
+          }}</ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content #ionContent>
+      <h3 class="ion-padding-start">
+        {{ (rxState$ | async)?.dialogTitle ?? '' | translate }}
+      </h3>
+      <ion-list>
+        <ion-item>
+          <ion-input
+            label="{{ 'edit.item.dialog.name' | translate }}"
+            placeholder="{{ 'edit.item.dialog.name.placeholder' | translate }}"
+            [ngModel]="(rxItem$ | async)?.name"
+            (ionInput)="updateName($event)"
+          ></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-input
+            type="number"
+            class="ion-text-end"
+            label="Menge"
+            [clearOnEdit]="true"
+            [ngModel]="(rxItem$ | async)?.quantity"
+            (ionInput)="updateQuantity($event)"
+          ></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-input
+            type="number"
+            class="ion-text-end"
+            label="Mindestmenge"
+            [clearOnEdit]="true"
+            [ngModel]="(rxItem$ | async)?.minAmount"
+            (ionInput)="changeMinAmount($event)"
+          ></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-input
+            label="{{ 'edit.item.dialog.mhd' | translate }}"
+            class="trigger ion-text-end"
+            [ngModel]="
+              (rxItem$ | async)?.bestBefore ?? ''
+                | date: undefined : undefined : 'de-DE'
+            "
+            type="date_event"
+            id="open_cal"
+          ></ion-input>
+          <ion-modal
+            trigger="open_cal"
+            [keepContentsMounted]="true"
+            [initialBreakpoint]="0.65"
+          >
+            <ng-template>
+              <ion-datetime
+                presentation="date"
+                mode="md"
+                (ionChange)="updateBestBefore($event)"
+                [value]="(rxItem$ | async)?.bestBefore"
+                [showDefaultButtons]="true"
+                [showClearButton]="true"
+              ></ion-datetime>
+            </ng-template>
+          </ion-modal>
+        </ion-item>
+
+        <ion-item button (click)="showCategoryDialog()">
+          <ion-label class="ion-text-wrap">
+            {{ 'edit.item.dialog.categories' | translate }}
+            @for (cat of (rxCategory$ | async)?.selection; track cat) {
+              <ion-chip color="category">
+                <!--                <ion-avatar>-->
+                <!--                  <img alt="Image of the category" src="assets/avatar.svg"/>-->
+                <!--                </ion-avatar>-->
+                <ion-label class="ion-text-wrap">{{ cat }}</ion-label>
+                <ion-icon
+                  name="close-circle"
+                  (click)="removeCategory(cat); $event.stopPropagation()"
+                ></ion-icon>
+              </ion-chip>
+            } @empty {
+              {{ 'edit.item.dialog.categories.empty' | translate }}
+            }
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-content>
+
+    <app-categories-dialog></app-categories-dialog>
   </ng-template>
 </ion-modal>

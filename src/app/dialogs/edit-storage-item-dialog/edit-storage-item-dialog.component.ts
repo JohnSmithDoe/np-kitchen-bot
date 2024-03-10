@@ -1,13 +1,5 @@
 import { AsyncPipe, CurrencyPipe, DatePipe } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  EventEmitter,
-  inject,
-  Input,
-  OnInit,
-  Output,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DatetimeCustomEvent, InputCustomEvent } from '@ionic/angular';
 import {
@@ -33,17 +25,18 @@ import {
 } from '@ionic/angular/standalone';
 import { Store } from '@ngrx/store';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import * as dayjs from 'dayjs';
 import { addIcons } from 'ionicons';
 import { closeCircle } from 'ionicons/icons';
-import {
-  IBaseItem,
-  IStorageItem,
-  TItemListCategory,
-  TUpdateDTO,
-} from '../../@types/types';
+import { combineLatest, take } from 'rxjs';
+import { TItemListCategory } from '../../@types/types';
 import { CategoriesActions } from '../../state/categories/categories.actions';
 import { selectCategoriesState } from '../../state/categories/categories.selector';
+import { EditStorageItemActions } from '../../state/edit-storage-item/edit-storage-item.actions';
+import {
+  selectEditStorageItem,
+  selectEditStorageState,
+} from '../../state/edit-storage-item/edit-storage-item.selector';
+import { selectStorageListItems } from '../../state/storage/storage.selector';
 import { CategoriesDialogComponent } from '../categories-dialog/categories-dialog.component';
 
 @Component({
@@ -80,105 +73,33 @@ import { CategoriesDialogComponent } from '../categories-dialog/categories-dialo
   templateUrl: './edit-storage-item-dialog.component.html',
   styleUrl: './edit-storage-item-dialog.component.scss',
 })
-export class EditStorageItemDialogComponent implements OnInit {
+export class EditStorageItemDialogComponent {
   readonly translate = inject(TranslateService);
   readonly #store = inject(Store);
-
+  /**  [mode]="(rxState$|async)?.editMode ?? 'create'"
+ (cancel)="closeEditDialog()"
+ (saveItem)="updateItem($event)"
+ [item]="(rxState$|async)?.data"
+ [categories]="(rxCategories$ | async) ?? []"
+*/
+  rxState$ = this.#store.select(selectEditStorageState);
+  rxItem$ = this.#store.select(selectEditStorageItem);
   rxCategory$ = this.#store.select(selectCategoriesState);
-  //TODO: state...
-  @Input() item?: TUpdateDTO<IStorageItem> | null;
-  @Input() items?: IBaseItem[] | null;
-  @Input() categories: string[] = [];
-
-  @Input() mode: 'update' | 'create' = 'create';
-
-  @Output() saveItem = new EventEmitter<Partial<IStorageItem>>();
-  @Output() cancel = new EventEmitter();
-
-  dialogTitle = '';
-  saveButtonText = '';
-  currencyCode: 'EUR' | 'USD' = 'EUR';
-
-  nameValue?: string;
-  categoryValue: TItemListCategory[] | undefined;
-  quantityValue?: number;
-  minAmountValue?: number;
-  bestBeforeDate?: string;
-  bestBeforeValue?: string;
-  priceValue?: number;
-
-  showCategoryDialog() {
-    this.#store.dispatch(
-      CategoriesActions.showDialog(this.item ?? undefined, this.items ?? [])
-    );
-  }
-
-  closedCategoryDialog() {
-    this.#store.dispatch(CategoriesActions.abortChanges());
-  }
-
-  setCategories(categories?: TItemListCategory[]) {
-    this.#store.dispatch(CategoriesActions.confirmChanges());
-    this.categoryValue = categories;
-  }
-
-  submitChanges() {
-    this.saveItem.emit({
-      ...this.item,
-      name: this.nameValue,
-      category: this.categoryValue,
-      quantity: this.quantityValue,
-      minAmount: this.minAmountValue,
-      bestBefore: this.bestBeforeValue,
-      price: this.priceValue,
-    });
-  }
-
-  datePick(ev: DatetimeCustomEvent) {
-    if (typeof ev.detail.value === 'string') {
-      this.bestBeforeDate = ev.detail.value?.substring(0, 10);
-      this.bestBeforeValue = dayjs(this.bestBeforeDate).format();
-    } else {
-      this.bestBeforeDate = undefined;
-      this.bestBeforeValue = undefined;
-    }
-  }
 
   constructor() {
     addIcons({ closeCircle });
   }
 
-  ngOnInit(): void {
-    this.currencyCode = this.translate.currentLang !== 'en' ? 'EUR' : 'USD';
-
-    this.nameValue = this.item?.name;
-    this.categoryValue = this.item?.category;
-    this.quantityValue = this.item?.quantity;
-    this.minAmountValue = this.item?.minAmount;
-    this.priceValue = this.item?.price;
-
-    this.bestBeforeValue = this.item?.bestBefore;
-    if (this.bestBeforeValue) {
-      this.bestBeforeDate = dayjs(this.bestBeforeValue).format();
-    }
-
-    this.saveButtonText =
-      this.mode === 'create'
-        ? this.translate.instant('edit.item.dialog.button.create')
-        : this.translate.instant('edit.item.dialog.button.update');
-
-    this.dialogTitle =
-      this.mode === 'create'
-        ? this.translate.instant('edit.item.dialog.title.create')
-        : this.translate.instant('edit.item.dialog.title.update');
+  cancelChanges() {
+    this.#store.dispatch(EditStorageItemActions.abortChanges());
   }
 
-  removeCategory(cat: TItemListCategory) {
-    this.categoryValue?.splice(this.categoryValue?.indexOf(cat), 1);
-    // update object reference
-    this.categoryValue = this.categoryValue
-      ? [...this.categoryValue]
-      : undefined;
+  closedDialog() {
+    this.#store.dispatch(EditStorageItemActions.hideDialog());
+  }
+
+  submitChanges() {
+    this.#store.dispatch(EditStorageItemActions.confirmChanges());
   }
 
   updatePrice(ev: InputCustomEvent<FocusEvent>) {
@@ -196,6 +117,54 @@ export class EditStorageItemDialogComponent implements OnInit {
     const cleanInput = inputValue.replace(/[^0-9,-]+/g, '');
     // swap german , with . e.g. 1234,34 -> 1234.34
     const numberInput = cleanInput.replace(/,+/g, '.');
-    this.priceValue = Number.parseFloat(numberInput);
+    const priceValue = Number.parseFloat(numberInput);
+  }
+
+  updateName(ev: InputCustomEvent) {
+    this.#store.dispatch(
+      EditStorageItemActions.updateItem({
+        name: ev.detail.value ?? undefined,
+      })
+    );
+  }
+
+  updateBestBefore(ev: DatetimeCustomEvent) {
+    const dateValue =
+      typeof ev.detail.value === 'string' ? ev.detail.value : undefined;
+    this.#store.dispatch(
+      EditStorageItemActions.updateItem({
+        bestBefore: dateValue,
+      })
+    );
+  }
+
+  removeCategory(cat: TItemListCategory) {
+    this.#store.dispatch(CategoriesActions.toggleCategory(cat));
+  }
+
+  changeMinAmount(ev: InputCustomEvent) {
+    this.#store.dispatch(
+      EditStorageItemActions.updateItem({
+        minAmount: Number.parseInt(ev.detail.value ?? '0', 10),
+      })
+    );
+  }
+
+  updateQuantity(ev: InputCustomEvent) {
+    this.#store.dispatch(
+      EditStorageItemActions.updateItem({
+        quantity: Number.parseInt(ev.detail.value ?? '0', 10),
+      })
+    );
+  }
+
+  async showCategoryDialog() {
+    combineLatest([this.rxItem$, this.#store.select(selectStorageListItems)])
+      .pipe(take(1))
+      .subscribe((all) => {
+        const item = all[0];
+        const items = all[1];
+        this.#store.dispatch(CategoriesActions.showDialog(item, items));
+      });
   }
 }

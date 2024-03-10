@@ -1,11 +1,18 @@
 import { inject, Injectable } from '@angular/core';
-import { Actions, createEffect, ofType } from '@ngrx/effects';
+import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
 import { ActionCreator, Store } from '@ngrx/store';
-import { exhaustMap, map, mergeMap, take } from 'rxjs';
+import { exhaustMap, map, mergeMap, take, withLatestFrom } from 'rxjs';
 import { fromPromise } from 'rxjs/internal/observable/innerFrom';
-import { IDatastore } from '../@types/types';
+import { IAppState, IDatastore } from '../@types/types';
+import { createStorageItem } from '../app.factory';
 import { DatabaseService } from '../services/database.service';
 import { ApplicationActions } from './application.actions';
+import { EditGlobalItemActions } from './edit-global-item/edit-global-item.actions';
+import { selectEditGlobalState } from './edit-global-item/edit-global-item.selector';
+import { EditShoppingItemActions } from './edit-shopping-item/edit-shopping-item.actions';
+import { selectEditShoppingState } from './edit-shopping-item/edit-shopping-item.selector';
+import { EditStorageItemActions } from './edit-storage-item/edit-storage-item.actions';
+import { selectEditStorageState } from './edit-storage-item/edit-storage-item.selector';
 import { GlobalsActions } from './globals/globals.actions';
 import { selectGlobalsState } from './globals/globals.selector';
 import { SettingsActions } from './settings/settings.actions';
@@ -21,6 +28,39 @@ export class Effects {
   #store = inject(Store);
   #database = inject(DatabaseService);
 
+  confirmStorageItemChanges$ = createEffect(() => {
+    return this.#actions$.pipe(
+      ofType(EditStorageItemActions.confirmChanges),
+      concatLatestFrom(() => this.#store.select(selectEditStorageState)),
+      map(([_, state]) => StorageActions.updateItem(state.item))
+    );
+  });
+  confirmShoppingItemChanges$ = createEffect(() => {
+    return this.#actions$.pipe(
+      ofType(EditShoppingItemActions.confirmChanges),
+      concatLatestFrom(() => this.#store.select(selectEditShoppingState)),
+      map(([_, state]) => ShoppingListActions.updateItem(state.item))
+    );
+  });
+  confirmGlobalItemChanges$ = createEffect(() => {
+    return this.#actions$.pipe(
+      ofType(EditGlobalItemActions.confirmChanges),
+      concatLatestFrom(() => this.#store.select(selectEditGlobalState)),
+      map(([_, state]) => GlobalsActions.updateItem(state.item))
+    );
+  });
+
+  addStorageItemFromSearch$ = createEffect(() => {
+    return this.#actions$.pipe(
+      ofType(StorageActions.addItemFromSearch),
+      withLatestFrom(this.#store, (action, state) => ({ action, state })),
+      map(({ action, state }: { action: any; state: IAppState }) => {
+        const item = createStorageItem(state.storage.searchQuery ?? '');
+        return StorageActions.addItem(item);
+      })
+    );
+  });
+
   initializeApplication$ = createEffect(() => {
     return this.#actions$.pipe(
       ofType(ApplicationActions.load),
@@ -32,16 +72,16 @@ export class Effects {
     );
   });
 
-  createGlobalAndAddAsStorageItem$ = createEffect(() => {
-    return this.#actions$.pipe(
-      ofType(StorageActions.createGlobalAndAddAsItem),
-      mergeMap(({ data }) => [
-        GlobalsActions.createItem(data),
-        StorageActions.createItem(data),
-        StorageActions.endCreateGlobalItem(),
-      ])
-    );
-  });
+  // createGlobalAndAddAsStorageItem$ = createEffect(() => {
+  //   return this.#actions$.pipe(
+  //     ofType(StorageActions.createGlobalAndAddAsItem),
+  //     mergeMap(({ data }) => [
+  //       // GlobalsActions.createItem(data),
+  //       // StorageActions.createItem(data),
+  //       // StorageActions.endCreateGlobalItem(),
+  //     ])
+  //   );
+  // });
 
   createGlobalAndAddAsShoppingItem$ = createEffect(() => {
     return this.#actions$.pipe(
@@ -67,11 +107,8 @@ export class Effects {
     StorageActions.addItem,
     StorageActions.removeItem,
     StorageActions.updateItem,
-    StorageActions.endEditItem,
     StorageActions.endCreateGlobalItem,
-    StorageActions.createGlobalAndAddAsItem,
-    StorageActions.createItem,
-    StorageActions.addItemFromSearch
+    StorageActions.createGlobalAndAddAsItem
   );
 
   saveGlobalsOnChange$ = this.#createSaveEffect(
@@ -95,8 +132,7 @@ export class Effects {
     ShoppingListActions.addStorageItem,
     ShoppingListActions.createGlobalAndAddAsItem,
     ShoppingListActions.addItemFromSearch,
-    ShoppingListActions.endCreateGlobalItem,
-    ShoppingListActions.endEditItem
+    ShoppingListActions.endCreateGlobalItem
   );
 
   saveSettingsOnChange$ = this.#createSaveEffect(

@@ -1,4 +1,4 @@
-import { CurrencyPipe, DatePipe } from '@angular/common';
+import { AsyncPipe, CurrencyPipe, DatePipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -31,6 +31,7 @@ import {
   IonTitle,
   IonToolbar,
 } from '@ionic/angular/standalone';
+import { Store } from '@ngrx/store';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { closeCircle } from 'ionicons/icons';
@@ -39,6 +40,9 @@ import {
   TItemListCategory,
   TUpdateDTO,
 } from '../../@types/types';
+import { selectCategoriesState } from '../../state/categories/categories.selector';
+import { EditShoppingItemActions } from '../../state/edit-shopping-item/edit-shopping-item.actions';
+import { selectEditShoppingState } from '../../state/edit-shopping-item/edit-shopping-item.selector';
 import { CategoriesDialogComponent } from '../categories-dialog/categories-dialog.component';
 
 @Component({
@@ -70,12 +74,16 @@ import { CategoriesDialogComponent } from '../categories-dialog/categories-dialo
     DatePipe,
     IonPopover,
     IonText,
+    AsyncPipe,
   ],
   templateUrl: './edit-shopping-item-dialog.component.html',
   styleUrl: './edit-shopping-item-dialog.component.scss',
 })
 export class EditShoppingItemDialogComponent implements OnInit {
   readonly translate = inject(TranslateService);
+  readonly #store = inject(Store);
+  rxState$ = this.#store.select(selectEditShoppingState);
+  rxCategory$ = this.#store.select(selectCategoriesState);
 
   @Input() item?: TUpdateDTO<IShoppingItem> | null;
   @Input() categories: string[] = [];
@@ -156,5 +164,9 @@ export class EditShoppingItemDialogComponent implements OnInit {
     // swap german , with . e.g. 1234,34 -> 1234.34
     const numberInput = cleanInput.replace(/,+/g, '.');
     this.priceValue = Number.parseFloat(numberInput);
+  }
+
+  closedDialog() {
+    this.#store.dispatch(EditShoppingItemActions.hideDialog());
   }
 }

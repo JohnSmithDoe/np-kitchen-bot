@@ -16,8 +16,8 @@ export const ShoppingListActions = createActionGroup({
     'Create And Edit Item': (data?: Partial<IShoppingItem>) => ({ data }),
     'Create Item': (data?: Partial<IShoppingItem>) => ({ data }),
     'Add Storage Item': (data: IStorageItem) => ({ data }),
-    'Edit Item': (item: TUpdateDTO<IShoppingItem>) => ({ item }),
-    'End Edit Item': (item?: Partial<IShoppingItem>) => ({ item }),
+    // 'Edit Item': (item: TUpdateDTO<IShoppingItem>) => ({ item }),
+    // 'End Edit Item': (item?: Partial<IShoppingItem>) => ({ item }),
     'Update Item': (item: TUpdateDTO<IShoppingItem>) => ({ item }),
 
     'Create Global Item': emptyProps(),

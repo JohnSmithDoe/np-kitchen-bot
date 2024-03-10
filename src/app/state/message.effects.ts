@@ -40,7 +40,6 @@ export class MessageEffects {
       return this.#actions$.pipe(
         ofType(
           StorageActions.updateItem,
-          StorageActions.endEditItem,
           ShoppingListActions.updateItem,
           GlobalsActions.updateItem
         ),

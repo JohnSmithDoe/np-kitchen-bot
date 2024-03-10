@@ -75,32 +75,5 @@
   }
 </ion-content>
 
-<ion-modal
-  [isOpen]="(rxState$ | async)?.isEditing === true"
-  (didDismiss)="closeEditDialog()"
->
-  <ng-template>
-    <app-edit-storage-item-dialog
-      [mode]="(rxState$|async)?.editMode ?? 'create'"
-      (cancel)="closeEditDialog()"
-      (saveItem)="updateItem($event)"
-      [item]="(rxState$|async)?.data"
-      [categories]="(rxCategories$ | async) ?? []"
-      [items]="(rxItems$ | async) ?? []"
-    ></app-edit-storage-item-dialog>
-  </ng-template>
-</ion-modal>
-
-<ion-modal
-  [isOpen]="(rxState$|async)?.isCreating === true"
-  (didDismiss)="closeCreateGlobalDialog()"
->
-  <ng-template>
-    <app-edit-global-item-dialog
-      (cancel)="closeCreateGlobalDialog()"
-      (saveItem)="createAndAddGlobalItem($event)"
-      [item]="(rxState$|async)?.data"
-      [categories]="(rxCategories$|async)??[]"
-    ></app-edit-global-item-dialog>
-  </ng-template>
-</ion-modal>
+<app-edit-storage-item-dialog></app-edit-storage-item-dialog>
+<app-edit-global-item-dialog></app-edit-global-item-dialog>

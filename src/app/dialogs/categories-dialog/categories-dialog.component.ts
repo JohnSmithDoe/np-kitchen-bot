@@ -1,12 +1,5 @@
 import { AsyncPipe } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  EventEmitter,
-  inject,
-  Input,
-  Output,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CheckboxCustomEvent } from '@ionic/angular';
 import {
@@ -43,6 +36,8 @@ import {
   templateUrl: './categories-dialog.component.html',
   styleUrls: ['./categories-dialog.component.scss'],
   imports: [
+    FormsModule,
+    TranslateModule,
     IonModal,
     IonHeader,
     IonToolbar,
@@ -54,8 +49,6 @@ import {
     IonList,
     IonItem,
     IonCheckbox,
-    FormsModule,
-    TranslateModule,
     IonLabel,
     IonNote,
     AsyncPipe,
@@ -63,12 +56,6 @@ import {
 })
 export class CategoriesDialogComponent {
   #store = inject(Store);
-
-  @Input() categories: TItemListCategory[] = [];
-  @Input() itemCategories?: TItemListCategory[];
-
-  @Output() confirm = new EventEmitter<string[]>();
-  @Output() cancel = new EventEmitter();
 
   rxSearchContained$ = this.#store.select(selectContainsSearchResult);
   rxState$ = this.#store.select(selectCategoriesState);
@@ -86,21 +73,22 @@ export class CategoriesDialogComponent {
   }
 
   selectionChange(ev: CheckboxCustomEvent<TItemListCategory>) {
-    const { checked, value } = ev.detail;
-    this.#store.dispatch(CategoriesActions.selectCategory(value));
+    this.#store.dispatch(CategoriesActions.toggleCategory(ev.detail.value));
   }
 
   addNewCategory() {
     this.#store.dispatch(CategoriesActions.addCategory());
   }
 
-  cancelDialog() {
+  cancelChanges() {
     this.#store.dispatch(CategoriesActions.abortChanges());
   }
 
-  confirmDialog() {
-    //TODO: hmmm
-    this.confirm.emit();
+  closedDialog() {
+    this.#store.dispatch(CategoriesActions.abortChanges());
+  }
+
+  confirmChanges() {
     this.#store.dispatch(CategoriesActions.confirmChanges());
   }
 }

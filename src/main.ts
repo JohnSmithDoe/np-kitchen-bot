@@ -21,6 +21,9 @@ import { AppComponent } from './app/app.component';
 import { routes } from './app/app.routes';
 import { DatabaseService } from './app/services/database.service';
 import { categoriesReducer } from './app/state/categories/categories.reducer';
+import { editGlobalItemReducer } from './app/state/edit-global-item/edit-global-item.reducer';
+import { editShoppingItemReducer } from './app/state/edit-shopping-item/edit-shopping-item.reducer';
+import { editStorageItemReducer } from './app/state/edit-storage-item/edit-storage-item.reducer';
 import { Effects } from './app/state/effects';
 import { globalsReducer } from './app/state/globals/globals.reducer';
 import { MessageEffects } from './app/state/message.effects';
@@ -67,6 +70,9 @@ void bootstrapApplication(AppComponent, {
       shoppinglist: shoppingListsReducer,
       globals: globalsReducer,
       categories: categoriesReducer,
+      editStorageItem: editStorageItemReducer,
+      editShoppingItem: editShoppingItemReducer,
+      editGlobalItem: editGlobalItemReducer,
     }),
     {
       provide: LOCALE_ID,

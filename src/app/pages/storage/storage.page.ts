@@ -23,6 +23,8 @@ import { PageHeaderComponent } from '../../components/page-header/page-header.co
 import { EditGlobalItemDialogComponent } from '../../dialogs/edit-global-item-dialog/edit-global-item-dialog.component';
 import { EditStorageItemDialogComponent } from '../../dialogs/edit-storage-item-dialog/edit-storage-item-dialog.component';
 import { CategoriesPipe } from '../../pipes/categories.pipe';
+import { EditGlobalItemActions } from '../../state/edit-global-item/edit-global-item.actions';
+import { EditStorageItemActions } from '../../state/edit-storage-item/edit-storage-item.actions';
 import { StorageActions } from '../../state/storage/storage.actions';
 import {
   selectStorageListCategories,
@@ -77,19 +79,11 @@ export class StoragePage {
   }
 
   showCreateDialog() {
-    this.#store.dispatch(StorageActions.createAndEditItem());
+    this.#store.dispatch(EditStorageItemActions.showDialog());
   }
 
   showEditDialog(item: IStorageItem) {
-    this.#store.dispatch(StorageActions.editItem(item));
-  }
-
-  closeEditDialog() {
-    this.#store.dispatch(StorageActions.endEditItem());
-  }
-
-  updateItem(item: Partial<IStorageItem>) {
-    this.#store.dispatch(StorageActions.endEditItem(item));
+    this.#store.dispatch(EditStorageItemActions.showDialog(item));
   }
 
   searchFor(searchTerm: string) {
@@ -116,11 +110,7 @@ export class StoragePage {
   }
 
   showCreateGlobalDialog() {
-    this.#store.dispatch(StorageActions.createGlobalItem());
-  }
-
-  closeCreateGlobalDialog() {
-    this.#store.dispatch(StorageActions.endCreateGlobalItem());
+    this.#store.dispatch(EditGlobalItemActions.showDialog());
   }
 
   createAndAddGlobalItem(data: Partial<IGlobalItem>) {

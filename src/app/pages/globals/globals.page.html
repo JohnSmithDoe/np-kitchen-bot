@@ -51,17 +51,17 @@
   ></app-item-list-empty>
 </ion-content>
 
-<ion-modal
-  [isOpen]="(rxState$ | async)?.isEditing === true"
-  (didDismiss)="closeEditDialog()"
->
-  <ng-template>
-    <app-edit-global-item-dialog
-      [mode]="(rxState$|async)?.editMode ?? 'create'"
-      (cancel)="closeEditDialog()"
-      (saveItem)="updateItem($event)"
-      [item]="(rxState$|async)?.data"
-      [categories]="(rxCategories$ | async) ?? []"
-    ></app-edit-global-item-dialog>
-  </ng-template>
-</ion-modal>
+<!--<ion-modal-->
+<!--  [isOpen]="(rxState$ | async)?.isEditing === true"-->
+<!--  (didDismiss)="closeEditDialog()"-->
+<!--&gt;-->
+<!--  <ng-template>-->
+<!--    <app-edit-global-item-dialog-->
+<!--      [mode]="(rxState$|async)?.editMode ?? 'create'"-->
+<!--      (cancel)="closeEditDialog()"-->
+<!--      (saveItem)="updateItem($event)"-->
+<!--      [item]="(rxState$|async)?.data"-->
+<!--      [categories]="(rxCategories$ | async) ?? []"-->
+<!--    ></app-edit-global-item-dialog>-->
+<!--  </ng-template>-->
+<!--</ion-modal>-->

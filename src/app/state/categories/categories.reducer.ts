@@ -49,7 +49,7 @@ export const categoriesReducer = createReducer(
     return { ...state, isSelecting: false };
   }),
 
-  on(CategoriesActions.selectCategory, (state, { category }) => {
+  on(CategoriesActions.toggleCategory, (state, { category }) => {
     if (state.selection.includes(category)) {
       const selection = state.selection.filter((item) => item !== category);
       return { ...state, selection };

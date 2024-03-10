@@ -20,11 +20,6 @@ export const routes: Routes = [
           import('../storage/storage.page').then((m) => m.StoragePage),
       },
       {
-        path: 'tasks',
-        loadComponent: () =>
-          import('../tasks/tasks.page').then((m) => m.TasksPage),
-      },
-      {
         path: 'database',
         loadComponent: () =>
           import('../globals/globals.page').then((m) => m.GlobalsPage),
