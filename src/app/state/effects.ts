@@ -3,7 +3,15 @@ import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
 import { ActionCreator, Store } from '@ngrx/store';
 import { exhaustMap, map, take, withLatestFrom } from 'rxjs';
 import { fromPromise } from 'rxjs/internal/observable/innerFrom';
-import { IAppState, IBaseItem, IDatastore } from '../@types/types';
+import {
+  IAppState,
+  IBaseItem,
+  IDatastore,
+  IQuickAddState,
+  TColor,
+  TMarker,
+} from '../@types/types';
+import { marker } from '../app.utils';
 import { DatabaseService } from '../services/database.service';
 import { ApplicationActions } from './application.actions';
 import { CategoriesActions } from './categories/categories.actions';
@@ -14,10 +22,31 @@ import { selectEditShoppingState } from './edit-shopping-item/edit-shopping-item
 import { EditStorageItemActions } from './edit-storage-item/edit-storage-item.actions';
 import { GlobalsActions } from './globals/globals.actions';
 import { selectGlobalsState } from './globals/globals.selector';
+import { QuickAddActions } from './quick-add/quick-add.actions';
 import { SettingsActions } from './settings/settings.actions';
 import { selectSettingsState } from './settings/settings.selector';
 import { ShoppingListActions } from './shoppinglist/shopping-list.actions';
 import { selectShoppinglistState } from './shoppinglist/shopping-list.selector';
+import { StorageActions } from './storage/storage.actions';
+
+function updateQuickAddState(
+  state: IAppState,
+  listName: TMarker,
+  color: TColor
+): IQuickAddState {
+  const searchQuery = state.storage.searchQuery;
+  return {
+    searchQuery,
+    exactMatchLocal: !!state.storage.items.find(
+      (item) => item.name.toLowerCase() === searchQuery
+    ),
+    exactMatchGlobal: !!state.globals.items.find(
+      (item) => item.name.toLowerCase() === searchQuery
+    ),
+    listName,
+    color,
+  };
+}
 
 @Injectable({ providedIn: 'root' })
 export class Effects {
@@ -33,6 +62,37 @@ export class Effects {
           map((data) => ApplicationActions.loadedSuccessfully(data))
         )
       )
+    );
+  });
+  // get the categories for the dialog... hmm
+  updateQuickAddStorage$ = createEffect(() => {
+    return this.#actions$.pipe(
+      ofType(StorageActions.updateSearch),
+      withLatestFrom(this.#store, (action, state) => ({ action, state })),
+      map(({ action, state }: { action: any; state: IAppState }) => {
+        const newState = updateQuickAddState(
+          state,
+          marker('list-header.storage'),
+          'storage'
+        );
+        return QuickAddActions.updateState(newState);
+      })
+    );
+  });
+
+  // get the categories for the dialog... hmm
+  updateQuickAdd$ = createEffect(() => {
+    return this.#actions$.pipe(
+      ofType(ShoppingListActions.updateSearch),
+      withLatestFrom(this.#store, (action, state) => ({ action, state })),
+      map(({ action, state }: { action: any; state: IAppState }) => {
+        const newState = updateQuickAddState(
+          state,
+          marker('list-header.shopping'),
+          'shopping'
+        );
+        return QuickAddActions.updateState(newState);
+      })
     );
   });
 

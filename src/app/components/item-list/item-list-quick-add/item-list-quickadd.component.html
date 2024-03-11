@@ -1,23 +1,30 @@
-@if (showQuickAdd && canQuickAdd && !!quickAddLabel?.length) {
+@if ((rxShowLocal$ | async) === true) {
   <app-text-item
-    [color]="color"
+    [color]="(rxState$ | async)?.color"
     helper="{{
       'item-list.quickadd.add'
-        | translate: { value: quickAddLabel, list: listName }
+        | translate
+          : {
+              value: (rxState$ | async)?.searchQuery,
+              list: (rxState$ | async)?.listName
+            }
     }}"
-    [label]="quickAddLabel"
+    [label]="(rxState$ | async)?.searchQuery"
     (selectItem)="quickAddItem.emit()"
   ></app-text-item>
 }
-
-@if (showQuickAddGlobal && canQuickAddGlobal && !!quickAddLabel?.length) {
+@if ((rxShowGlobal$ | async) === true) {
   <app-text-item
     color="global"
     helper="{{
       'item-list.quickadd.add.global'
-        | translate: { value: quickAddLabel, list: listName }
+        | translate
+          : {
+              value: (rxState$ | async)?.searchQuery,
+              list: (rxState$ | async)?.listName
+            }
     }}"
-    [label]="quickAddLabel"
+    [label]="(rxState$ | async)?.searchQuery"
     (selectItem)="quickCreateGlobal.emit()"
   ></app-text-item>
 }

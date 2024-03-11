@@ -5,7 +5,7 @@ import { SettingsActions } from './settings.actions';
 
 export const initialSettings: ISettings = {
   showQuickAdd: true,
-  showQuickAddGlobal: false,
+  showQuickAddGlobal: true,
 };
 export const settingsReducer = createReducer(
   initialSettings,

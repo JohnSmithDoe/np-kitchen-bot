@@ -16,11 +16,6 @@
 
 <ion-content>
   <app-item-list-quickadd
-    color="global"
-    listName="{{'list-header.global' | translate}}"
-    [showQuickAdd]="(rxSearchResult$ | async)?.showQuickAdd"
-    [showQuickAddGlobal]="false"
-    [quickAddLabel]="(rxSearchResult$ | async)?.searchTerm"
     (quickAddItem)="showCreateDialog()"
   ></app-item-list-quickadd>
 

@@ -1,17 +1,20 @@
+import { AsyncPipe } from '@angular/common';
 import {
-  booleanAttribute,
   ChangeDetectionStrategy,
   Component,
   EventEmitter,
-  Input,
-  OnDestroy,
+  inject,
   Output,
 } from '@angular/core';
+import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { add, cart, list, remove } from 'ionicons/icons';
-import { Subscription } from 'rxjs';
-import { TColor } from '../../../@types/types';
+import {
+  selectQuickAddCanAddGlobal,
+  selectQuickAddCanAddLocal,
+  selectQuickAddState,
+} from '../../../state/quick-add/quick-add.selector';
 import { TextItemComponent } from '../../item-list-items/text-item/text-item.component';
 
 @Component({
@@ -20,36 +23,18 @@ import { TextItemComponent } from '../../item-list-items/text-item/text-item.com
   styleUrls: ['item-list-quickadd.component.scss'],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [TextItemComponent, TranslateModule],
+  imports: [TextItemComponent, TranslateModule, AsyncPipe],
 })
-export class ItemListQuickaddComponent implements OnDestroy {
-  @Input() quickAddLabel?: string;
-  @Input() listName?: string;
-  @Input() color?: TColor;
+export class ItemListQuickaddComponent {
+  readonly #store = inject(Store);
+  rxState$ = this.#store.select(selectQuickAddState);
+  rxShowLocal$ = this.#store.select(selectQuickAddCanAddLocal);
+  rxShowGlobal$ = this.#store.select(selectQuickAddCanAddGlobal);
 
   @Output() quickAddItem = new EventEmitter<void>();
   @Output() quickCreateGlobal = new EventEmitter<void>();
 
-  @Input({ transform: booleanAttribute }) showQuickAdd = true;
-  @Input({ transform: booleanAttribute }) showQuickAddGlobal = true;
-
-  canQuickAdd = true;
-  canQuickAddGlobal = true;
-
-  #settingsChangedSub?: Subscription;
-
   constructor() {
     addIcons({ add, remove, cart, list });
-  }
-
-  // ngOnInit(): void {
-  // this.#settingsChangedSub = this.#database.save$.subscribe(() => {
-  //   this.canQuickAdd = this.#database.settings.showQuickAdd;
-  //   this.canQuickAddGlobal = this.#database.settings.showQuickAddGlobal;
-  // });
-  // }
-
-  ngOnDestroy(): void {
-    this.#settingsChangedSub?.unsubscribe();
   }
 }

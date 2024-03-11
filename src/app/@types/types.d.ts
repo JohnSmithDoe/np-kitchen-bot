@@ -2,7 +2,7 @@ import { Color } from '@ionic/core/dist/types/interface';
 
 // eslint-disable-next-line functional/type-declaration-immutability
 export type TIonDragEvent = CustomEvent<{ amount: number; ratio: number }>;
-
+export type TMarker = string;
 export type TColor =
   | Color
   | 'global'
@@ -147,6 +147,7 @@ export type IListState<T extends IBaseItem> = IItemList<T>;
 export type IStorageState = Readonly<TStorageList>;
 export type IShoppingState = Readonly<TShoppingList>;
 export type IGlobalsState = Readonly<TGlobalsList>;
+
 export type ICategoriesState = Readonly<{
   categories: TItemListCategory[];
   selection: TItemListCategory[];
@@ -168,6 +169,14 @@ export type IEditGlobalItemState = IEditItemState<IGlobalItem> & {
   listId?: TItemListId;
 };
 
+export type IQuickAddState = Readonly<{
+  listName?: string;
+  color?: TColor;
+  searchQuery?: string;
+  exactMatchLocal?: boolean;
+  exactMatchGlobal?: boolean;
+}>;
+
 export interface IAppState {
   settings: ISettings;
   storage: IStorageState;
@@ -177,4 +186,5 @@ export interface IAppState {
   editStorageItem: IEditStorageItemState;
   editShoppingItem: IEditShoppingItemState;
   editGlobalItem: IEditGlobalItemState;
+  quickadd: IQuickAddState;
 }

@@ -1,6 +1,5 @@
 import { IBaseItem, IEditItemState, TEditItemMode } from '../../@types/types';
-
-const marker = (key: string) => key;
+import { marker } from '../../app.utils';
 
 export const showEditDialog = <R extends IBaseItem>(
   state: IEditItemState<R>,

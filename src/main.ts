@@ -27,6 +27,7 @@ import { editStorageItemReducer } from './app/state/edit-storage-item/edit-stora
 import { Effects } from './app/state/effects';
 import { globalsReducer } from './app/state/globals/globals.reducer';
 import { MessageEffects } from './app/state/message.effects';
+import { quickAddReducer } from './app/state/quick-add/quick-add.reducer';
 import { settingsReducer } from './app/state/settings/settings.reducer';
 import { shoppingListsReducer } from './app/state/shoppinglist/shopping-lists.reducer';
 import { StorageEffects } from './app/state/storage/storage.effects';
@@ -74,6 +75,7 @@ void bootstrapApplication(AppComponent, {
       editStorageItem: editStorageItemReducer,
       editShoppingItem: editShoppingItemReducer,
       editGlobalItem: editGlobalItemReducer,
+      quickadd: quickAddReducer,
     }),
     {
       provide: LOCALE_ID,
