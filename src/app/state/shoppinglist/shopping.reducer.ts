@@ -9,7 +9,7 @@ import {
   updateListSort,
 } from '../@shared/item-list.reducer';
 import { ApplicationActions } from '../application.actions';
-import { ShoppingListActions } from './shopping-list.actions';
+import { ShoppingActions } from './shopping.actions';
 
 export const initialState: IShoppingState = {
   title: 'Shopping Items',
@@ -18,15 +18,13 @@ export const initialState: IShoppingState = {
   mode: 'alphabetical',
 };
 
-export const shoppingListsReducer = createReducer(
+export const shoppingReducer = createReducer(
   initialState,
-  on(ShoppingListActions.addItem, (state, { item }) =>
-    addListItem(state, item)
-  ),
-  on(ShoppingListActions.removeItem, (state, { item }) =>
+  on(ShoppingActions.addItem, (state, { item }) => addListItem(state, item)),
+  on(ShoppingActions.removeItem, (state, { item }) =>
     removeListItem(state, item)
   ),
-  on(ShoppingListActions.addStorageItem, (state: IShoppingState, { data }) => {
+  on(ShoppingActions.addStorageItem, (state: IShoppingState, { data }) => {
     const found = state.items.find(
       (item) => item.name.toLowerCase() === data?.name?.toLowerCase()
     );
@@ -47,28 +45,28 @@ export const shoppingListsReducer = createReducer(
   // on(ShoppingListActions.endEditItem, (state, { item }) =>
   //   endEditListItem(state, item)
   // ),
-  on(ShoppingListActions.updateItem, (state, { item }) =>
+  on(ShoppingActions.updateItem, (state, { item }) =>
     updateListItem(state, item)
   ),
   on(
-    ShoppingListActions.updateSearch,
+    ShoppingActions.updateSearch,
     (state, { searchQuery }): IShoppingState => ({
       ...state,
       searchQuery,
     })
   ),
   on(
-    ShoppingListActions.updateFilter,
+    ShoppingActions.updateFilter,
     (state, { filterBy }): IShoppingState => ({
       ...state,
       filterBy,
       mode: 'alphabetical',
     })
   ),
-  on(ShoppingListActions.updateMode, (state, { mode }) =>
+  on(ShoppingActions.updateMode, (state, { mode }) =>
     updateListMode(state, mode)
   ),
-  on(ShoppingListActions.updateSort, (state, { sortBy, sortDir }) => {
+  on(ShoppingActions.updateSort, (state, { sortBy, sortDir }) => {
     const sort = updateListSort(sortBy, sortDir, state.sort?.sortDir);
     return { ...state, sort };
   }),
@@ -79,20 +77,20 @@ export const shoppingListsReducer = createReducer(
     }
   ),
   on(
-    ShoppingListActions.createGlobalItem,
+    ShoppingActions.createGlobalItem,
     (state): IShoppingState => ({
       ...state,
       // data: { id: uuidv4(), name: state.searchQuery ?? '', createdAt: 'now' },
     })
   ),
-  on(ShoppingListActions.buyItem, (state, { item }) =>
+  on(ShoppingActions.buyItem, (state, { item }) =>
     updateListItem<IShoppingState, IShoppingItem>(state, {
       ...item,
       state: 'bought',
     })
   ),
   on(
-    ShoppingListActions.endCreateGlobalItem,
+    ShoppingActions.endCreateGlobalItem,
     (state): IShoppingState => ({
       ...state,
     })

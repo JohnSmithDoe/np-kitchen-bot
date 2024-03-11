@@ -6,13 +6,18 @@ import { exhaustMap, map, take, withLatestFrom } from 'rxjs';
 import { fromPromise } from 'rxjs/internal/observable/innerFrom';
 import { IAppState, IDatastore } from '../../@types/types';
 import {
+  createGlobalItem,
   createStorageItem,
   createStorageItemFromGlobal,
 } from '../../app.factory';
+import { marker } from '../../app.utils';
 import { DatabaseService } from '../../services/database.service';
+import { updateQuickAddState } from '../@shared/item-list.effects';
+import { EditGlobalItemActions } from '../edit-global-item/edit-global-item.actions';
 import { EditStorageItemActions } from '../edit-storage-item/edit-storage-item.actions';
 import { selectEditStorageState } from '../edit-storage-item/edit-storage-item.selector';
-import { ShoppingListActions } from '../shoppinglist/shopping-list.actions';
+import { QuickAddActions } from '../quick-add/quick-add.actions';
+import { ShoppingActions } from '../shoppinglist/shopping.actions';
 import { StorageActions } from './storage.actions';
 import { selectStorageState } from './storage.selector';
 
@@ -59,18 +64,30 @@ export class StorageEffects {
   moveToShoppingList$ = createEffect(() => {
     return this.#actions$.pipe(
       ofType(StorageActions.moveToShoppinglist),
-      map(({ item }) => ShoppingListActions.addStorageItem(item))
+      map(({ item }) => ShoppingActions.addStorageItem(item))
     );
   });
 
-  editItemFromSearch$ = createEffect(() => {
+  showCreateDialogWithSearch$ = createEffect(() => {
     return this.#actions$.pipe(
-      ofType(StorageActions.showCreateDialogFromSearch),
+      ofType(StorageActions.showCreateDialogWithSearch),
       withLatestFrom(this.#store, (action, state) => ({ action, state })),
       map(({ action, state }: { action: any; state: IAppState }) => {
         console.log('add item from search with edit dialog');
         const item = createStorageItem(state.storage.searchQuery ?? '');
         return EditStorageItemActions.showDialog(item);
+      })
+    );
+  });
+
+  showCreateGlobalDialogWithSearch$ = createEffect(() => {
+    return this.#actions$.pipe(
+      ofType(StorageActions.showCreateGlobalDialogWithSearch),
+      withLatestFrom(this.#store, (action, state) => ({ action, state })),
+      map(({ action, state }: { action: any; state: IAppState }) => {
+        console.log('add global item from search with edit dialog');
+        const item = createGlobalItem(state.storage.searchQuery ?? '');
+        return EditGlobalItemActions.showDialog(item, '_storage');
       })
     );
   });
@@ -96,6 +113,21 @@ export class StorageEffects {
         console.log('add global item to storage');
         const storageitem = createStorageItemFromGlobal(item);
         return StorageActions.addItem(storageitem);
+      })
+    );
+  });
+  // get the categories for the dialog... hmm
+  updateQuickAddStorage$ = createEffect(() => {
+    return this.#actions$.pipe(
+      ofType(StorageActions.updateSearch),
+      withLatestFrom(this.#store, (action, state) => ({ action, state })),
+      map(({ action, state }: { action: any; state: IAppState }) => {
+        const newState = updateQuickAddState(
+          state,
+          marker('list-header.storage'),
+          'storage'
+        );
+        return QuickAddActions.updateState(newState);
       })
     );
   });

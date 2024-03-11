@@ -6,8 +6,8 @@ import { fromPromise } from 'rxjs/internal/observable/innerFrom';
 import { isGlobalItem } from '../app.utils';
 import { UiService } from '../services/ui.service';
 import { GlobalsActions } from './globals/globals.actions';
-import { ShoppingListActions } from './shoppinglist/shopping-list.actions';
-import { selectShoppingList } from './shoppinglist/shopping-list.selector';
+import { ShoppingActions } from './shoppinglist/shopping.actions';
+import { selectShoppingList } from './shoppinglist/shopping.selector';
 import { StorageActions } from './storage/storage.actions';
 
 @Injectable({ providedIn: 'root' })
@@ -21,7 +21,7 @@ export class MessageEffects {
       return this.#actions$.pipe(
         ofType(
           StorageActions.addItem,
-          ShoppingListActions.addItem,
+          ShoppingActions.addItem,
           GlobalsActions.addItem
         ),
         exhaustMap(({ item }) => {
@@ -40,7 +40,7 @@ export class MessageEffects {
       return this.#actions$.pipe(
         ofType(
           StorageActions.updateItem,
-          ShoppingListActions.updateItem,
+          ShoppingActions.updateItem,
           GlobalsActions.updateItem
         ),
         exhaustMap(({ item }) => {
@@ -59,7 +59,7 @@ export class MessageEffects {
       return this.#actions$.pipe(
         ofType(
           StorageActions.removeItem,
-          ShoppingListActions.removeItem,
+          ShoppingActions.removeItem,
           GlobalsActions.removeItem
         ),
         tap(({ item }) => {
@@ -73,7 +73,7 @@ export class MessageEffects {
   moveToShoppingListSuccess$ = createEffect(
     () => {
       return this.#actions$.pipe(
-        ofType(ShoppingListActions.addStorageItem),
+        ofType(ShoppingActions.addStorageItem),
         mergeMap(({ data }) => {
           return this.#store.select(selectShoppingList).pipe(
             map((i) => i.find((a) => a.name === data.name)),

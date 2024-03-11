@@ -7,7 +7,7 @@ import {
   TUpdateDTO,
 } from '../../@types/types';
 
-export const ShoppingListActions = createActionGroup({
+export const ShoppingActions = createActionGroup({
   source: 'Shoppinglist',
   events: {
     'Add Item': (item: IShoppingItem) => ({ item }),

@@ -26,7 +26,6 @@ export const addListItem = <T extends IListState<R>, R extends IBaseItem>(
   return {
     ...state,
     items: [item, ...state.items],
-    searchQuery: undefined,
   };
 };
 export const removeListItem = <T extends IListState<R>, R extends IBaseItem>(
@@ -93,8 +92,5 @@ export const updateListMode = <T extends IListState<R>, R extends IBaseItem>(
     ...state,
     sort: sort,
     mode: mode ?? 'alphabetical',
-    // clear search ... maybe
-    searchQuery: undefined,
-    filterBy: undefined,
   };
 };

@@ -24,13 +24,13 @@ import { EditGlobalItemDialogComponent } from '../../dialogs/edit-global-item-di
 import { EditShoppingItemDialogComponent } from '../../dialogs/edit-shopping-item-dialog/edit-shopping-item-dialog.component';
 import { CategoriesPipe } from '../../pipes/categories.pipe';
 import { EditShoppingItemActions } from '../../state/edit-shopping-item/edit-shopping-item.actions';
-import { ShoppingListActions } from '../../state/shoppinglist/shopping-list.actions';
+import { ShoppingActions } from '../../state/shoppinglist/shopping.actions';
 import {
   selectShoppingListCategories,
   selectShoppingListItems,
   selectShoppingListSearchResult,
   selectShoppinglistState,
-} from '../../state/shoppinglist/shopping-list.selector';
+} from '../../state/shoppinglist/shopping.selector';
 
 @Component({
   selector: 'app-page-shopping-list',
@@ -69,15 +69,15 @@ export class ShoppinglistPage {
   }
 
   async removeItem(item: IShoppingItem) {
-    this.#store.dispatch(ShoppingListActions.removeItem(item));
+    this.#store.dispatch(ShoppingActions.removeItem(item));
   }
 
   async addItemFromSearch() {
-    this.#store.dispatch(ShoppingListActions.addItemFromSearch());
+    this.#store.dispatch(ShoppingActions.addItemFromSearch());
   }
 
   showCreateDialog() {
-    this.#store.dispatch(ShoppingListActions.createItem());
+    this.#store.dispatch(ShoppingActions.createItem());
   }
 
   showEditDialog(item: IShoppingItem) {
@@ -85,22 +85,22 @@ export class ShoppinglistPage {
   }
 
   searchFor(searchTerm: string) {
-    this.#store.dispatch(ShoppingListActions.updateSearch(searchTerm));
+    this.#store.dispatch(ShoppingActions.updateSearch(searchTerm));
   }
 
   setDisplayMode(mode: TItemListMode) {
-    this.#store.dispatch(ShoppingListActions.updateMode(mode));
+    this.#store.dispatch(ShoppingActions.updateMode(mode));
   }
   setSortMode(type: TItemListSortType) {
-    this.#store.dispatch(ShoppingListActions.updateSort(type, 'toggle'));
+    this.#store.dispatch(ShoppingActions.updateSort(type, 'toggle'));
   }
   selectCategory(category: TItemListCategory) {
-    this.#store.dispatch(ShoppingListActions.updateFilter(category));
+    this.#store.dispatch(ShoppingActions.updateFilter(category));
   }
 
   changeQuantity(item: IShoppingItem, diff: number) {
     this.#store.dispatch(
-      ShoppingListActions.updateItem({
+      ShoppingActions.updateItem({
         ...item,
         quantity: Math.max(0, item.quantity + diff),
       })
@@ -108,18 +108,18 @@ export class ShoppinglistPage {
   }
 
   showCreateGlobalDialog() {
-    this.#store.dispatch(ShoppingListActions.createGlobalItem());
+    this.#store.dispatch(ShoppingActions.createGlobalItem());
   }
 
   closeCreateGlobalDialog() {
-    this.#store.dispatch(ShoppingListActions.endCreateGlobalItem());
+    this.#store.dispatch(ShoppingActions.endCreateGlobalItem());
   }
 
   createAndAddGlobalItem(data: Partial<IGlobalItem>) {
-    this.#store.dispatch(ShoppingListActions.createGlobalAndAddAsItem(data));
+    this.#store.dispatch(ShoppingActions.createGlobalAndAddAsItem(data));
   }
 
   async buyItem(item: IShoppingItem) {
-    this.#store.dispatch(ShoppingListActions.buyItem(item));
+    this.#store.dispatch(ShoppingActions.buyItem(item));
   }
 }

@@ -20,16 +20,20 @@ import { AppComponent } from './app/app.component';
 
 import { routes } from './app/app.routes';
 import { DatabaseService } from './app/services/database.service';
+import { ApplicationEffects } from './app/state/application.effects';
+import { CategoriesEffects } from './app/state/categories/categories.effects';
 import { categoriesReducer } from './app/state/categories/categories.reducer';
 import { editGlobalItemReducer } from './app/state/edit-global-item/edit-global-item.reducer';
 import { editShoppingItemReducer } from './app/state/edit-shopping-item/edit-shopping-item.reducer';
 import { editStorageItemReducer } from './app/state/edit-storage-item/edit-storage-item.reducer';
-import { Effects } from './app/state/effects';
+import { GlobalsEffects } from './app/state/globals/globals.effects';
 import { globalsReducer } from './app/state/globals/globals.reducer';
 import { MessageEffects } from './app/state/message.effects';
 import { quickAddReducer } from './app/state/quick-add/quick-add.reducer';
+import { SettingsEffects } from './app/state/settings/settings.effects';
 import { settingsReducer } from './app/state/settings/settings.reducer';
-import { shoppingListsReducer } from './app/state/shoppinglist/shopping-lists.reducer';
+import { ShoppingEffects } from './app/state/shoppinglist/shopping.effects';
+import { shoppingReducer } from './app/state/shoppinglist/shopping.reducer';
 import { StorageEffects } from './app/state/storage/storage.effects';
 import { storageReducer } from './app/state/storage/storage.reducer';
 import { environment } from './environments/environment';
@@ -69,7 +73,7 @@ void bootstrapApplication(AppComponent, {
     provideStore({
       settings: settingsReducer,
       storage: storageReducer,
-      shoppinglist: shoppingListsReducer,
+      shoppinglist: shoppingReducer,
       globals: globalsReducer,
       categories: categoriesReducer,
       editStorageItem: editStorageItemReducer,
@@ -87,6 +91,14 @@ void bootstrapApplication(AppComponent, {
       multi: true,
       deps: [DatabaseService],
     },
-    provideEffects(Effects, MessageEffects, StorageEffects),
+    provideEffects(
+      ApplicationEffects,
+      MessageEffects,
+      SettingsEffects,
+      StorageEffects,
+      ShoppingEffects,
+      GlobalsEffects,
+      CategoriesEffects
+    ),
   ],
 });

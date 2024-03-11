@@ -13,8 +13,8 @@ export const StorageActions = createActionGroup({
     'Add Item From Search': emptyProps(),
     'Add Global Item': (item: IGlobalItem) => ({ item }),
 
-    'Show Create Dialog From Search': emptyProps(),
-    'Show Create Global Dialog From Search': emptyProps(),
+    'Show Create Dialog With Search': emptyProps(),
+    'Show Create Global Dialog With Search': emptyProps(),
 
     'Move To Shoppinglist': (item: IStorageItem) => ({ item }),
 

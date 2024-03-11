@@ -12,13 +12,13 @@ export const editGlobalItemReducer = createReducer(
   initialSettings,
   on(
     EditGlobalItemActions.showDialog,
-    (state, { item }): IEditGlobalItemState => ({
+    (state, { item, addToListId }): IEditGlobalItemState => ({
       ...showEditDialog(
         state,
         item ?? createGlobalItem(''),
         item ? 'update' : 'create'
       ),
-      listId: undefined,
+      listId: addToListId,
     })
   ),
   on(
@@ -26,13 +26,6 @@ export const editGlobalItemReducer = createReducer(
     (state, { data }): IEditGlobalItemState => {
       return { ...state, item: { ...state.item, ...data } };
     }
-  ),
-  on(
-    EditGlobalItemActions.showDialogAndAddToList,
-    (state, { listId }): IEditGlobalItemState => ({
-      ...showEditDialog(state, createGlobalItem(''), 'create'),
-      listId,
-    })
   ),
   on(EditGlobalItemActions.hideDialog, (state): IEditGlobalItemState => {
     return { ...state, isEditing: false };

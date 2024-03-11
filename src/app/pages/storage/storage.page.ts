@@ -23,7 +23,6 @@ import { PageHeaderComponent } from '../../components/page-header/page-header.co
 import { EditGlobalItemDialogComponent } from '../../dialogs/edit-global-item-dialog/edit-global-item-dialog.component';
 import { EditStorageItemDialogComponent } from '../../dialogs/edit-storage-item-dialog/edit-storage-item-dialog.component';
 import { CategoriesPipe } from '../../pipes/categories.pipe';
-import { EditGlobalItemActions } from '../../state/edit-global-item/edit-global-item.actions';
 import { EditStorageItemActions } from '../../state/edit-storage-item/edit-storage-item.actions';
 import { StorageActions } from '../../state/storage/storage.actions';
 import {
@@ -79,13 +78,11 @@ export class StoragePage {
   }
 
   showCreateDialog() {
-    this.#store.dispatch(StorageActions.showCreateDialogFromSearch());
+    this.#store.dispatch(StorageActions.showCreateDialogWithSearch());
   }
 
   showCreateGlobalDialog() {
-    this.#store.dispatch(
-      EditGlobalItemActions.showDialogAndAddToList('_storage')
-    );
+    this.#store.dispatch(StorageActions.showCreateGlobalDialogWithSearch());
   }
 
   showEditDialog(item: IStorageItem) {
