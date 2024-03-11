@@ -9,15 +9,20 @@ import {
 export const StorageActions = createActionGroup({
   source: 'Storage',
   events: {
-    'Add Item': (item: IStorageItem) => ({ item }),
-    'Update Item': (item: TUpdateDTO<IStorageItem>) => ({ item }),
-    'Remove Item': (item: IStorageItem) => ({ item }),
-
+    // Effects only
     'Add Item From Search': emptyProps(),
-    'Show Create Dialog From Search': emptyProps(),
     'Add Global Item': (item: IGlobalItem) => ({ item }),
+
+    'Show Create Dialog From Search': emptyProps(),
+    'Show Create Global Dialog From Search': emptyProps(),
+
     'Move To Shoppinglist': (item: IStorageItem) => ({ item }),
 
+    // Operations
+
+    'Add Item': (item: IStorageItem) => ({ item }),
+    'Remove Item': (item: IStorageItem) => ({ item }),
+    'Update Item': (item: TUpdateDTO<IStorageItem>) => ({ item }),
     'Update Search': (searchQuery?: string) => ({ searchQuery }),
     'Update Filter': (filterBy?: string) => ({ filterBy }),
     'Update Mode': (mode?: TItemListMode) => ({ mode }),

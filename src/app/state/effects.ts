@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
 import { ActionCreator, Store } from '@ngrx/store';
-import { exhaustMap, map, take, withLatestFrom } from 'rxjs';
+import { exhaustMap, filter, map, take, withLatestFrom } from 'rxjs';
 import { fromPromise } from 'rxjs/internal/observable/innerFrom';
 import {
   IAppState,
@@ -146,6 +146,14 @@ export class Effects {
       ofType(EditGlobalItemActions.confirmChanges),
       concatLatestFrom(() => this.#store.select(selectEditGlobalState)),
       map(([_, state]) => GlobalsActions.updateItem(state.item))
+    );
+  });
+  confirmGlobalItemAndAddToList$ = createEffect(() => {
+    return this.#actions$.pipe(
+      ofType(EditGlobalItemActions.confirmChanges),
+      concatLatestFrom(() => this.#store.select(selectEditGlobalState)),
+      filter(([action, state]) => state.listId === '_storage'),
+      map(([_, state]) => StorageActions.addGlobalItem(state.item))
     );
   });
 

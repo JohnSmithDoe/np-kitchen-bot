@@ -15,8 +15,10 @@ export const selectQuickAddCanAddLocal = createSelector(
 );
 export const selectQuickAddCanAddGlobal = createSelector(
   selectQuickAddState,
+  selectQuickAddCanAddLocal,
   selectSettingsState,
-  (state, settings): boolean =>
+  (state, canAddLocal, settings): boolean =>
+    canAddLocal &&
     !!state.searchQuery?.length &&
     state.color !== 'global' &&
     !state.exactMatchGlobal &&

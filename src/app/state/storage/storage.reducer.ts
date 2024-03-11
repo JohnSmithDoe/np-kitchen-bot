@@ -1,10 +1,6 @@
 import { createReducer, on } from '@ngrx/store';
 import { IStorageState } from '../../@types/types';
 import {
-  createStorageItem,
-  createStorageItemFromGlobal,
-} from '../../app.factory';
-import {
   addListItem,
   removeListItem,
   updateListItem,
@@ -21,46 +17,23 @@ export const initialState: IStorageState = {
   mode: 'alphabetical',
 };
 
+function updateSearch(
+  state: IStorageState,
+  searchQuery?: string
+): IStorageState {
+  if (searchQuery === state.searchQuery) return state;
+  return { ...state, searchQuery };
+}
+
+// prettier-ignore
 export const storageReducer = createReducer(
   initialState,
-  on(StorageActions.addItem, (state, { item }) => addListItem(state, item)),
-  on(StorageActions.addGlobalItem, (state, { item }) => {
-    const storageItem = createStorageItemFromGlobal(item);
-    return addListItem(state, storageItem);
-  }),
-  on(StorageActions.addItemFromSearch, (state) => {
-    const storageItem = createStorageItem(state.searchQuery ?? '');
-    return addListItem(state, storageItem);
-  }),
-  on(StorageActions.removeItem, (state, { item }) =>
-    removeListItem(state, item)
-  ),
-  on(StorageActions.updateItem, (state, { item }) =>
-    updateListItem(state, item)
-  ),
-  on(
-    StorageActions.updateSearch,
-    (state, { searchQuery }): IStorageState => ({ ...state, searchQuery })
-  ),
-  on(
-    StorageActions.updateFilter,
-    (state, { filterBy }): IStorageState => ({
-      ...state,
-      filterBy,
-      mode: 'alphabetical',
-    })
-  ),
-  on(StorageActions.updateMode, (state, { mode }) =>
-    updateListMode(state, mode)
-  ),
-  on(StorageActions.updateSort, (state, { sortBy, sortDir }) => {
-    const sort = updateListSort(sortBy, sortDir, state.sort?.sortDir);
-    return { ...state, sort };
-  }),
-  on(
-    ApplicationActions.loadedSuccessfully,
-    (_state, { datastore }): IStorageState => {
-      return datastore.storage ?? _state;
-    }
-  )
+  on(StorageActions.addItem,(state, { item }) => addListItem(state, item)),
+  on(StorageActions.removeItem,(state, { item }) => removeListItem(state, item)),
+  on(StorageActions.updateItem,(state, { item }) => updateListItem(state, item)),
+  on(StorageActions.updateSearch,(state, { searchQuery }): IStorageState => updateSearch(state, searchQuery)),
+  on(StorageActions.updateFilter,(state, { filterBy }): IStorageState => ({ ...state, filterBy, mode: 'alphabetical', })),
+  on(StorageActions.updateMode, (state, { mode }) => updateListMode(state, mode)),
+  on(StorageActions.updateSort, (state, { sortBy, sortDir }) => ({ ...state, sort: updateListSort(sortBy, sortDir, state.sort?.sortDir),})),
+  on(ApplicationActions.loadedSuccessfully,(_state, { datastore }): IStorageState => { return datastore.storage ?? _state; })
 );
