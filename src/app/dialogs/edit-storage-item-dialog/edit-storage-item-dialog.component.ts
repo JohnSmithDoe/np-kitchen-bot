@@ -27,7 +27,6 @@ import { Store } from '@ngrx/store';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { closeCircle } from 'ionicons/icons';
-import { combineLatest, take } from 'rxjs';
 import { TItemListCategory } from '../../@types/types';
 import { CategoriesActions } from '../../state/categories/categories.actions';
 import { selectCategoriesState } from '../../state/categories/categories.selector';
@@ -36,7 +35,6 @@ import {
   selectEditStorageItem,
   selectEditStorageState,
 } from '../../state/edit-storage-item/edit-storage-item.selector';
-import { selectStorageListItems } from '../../state/storage/storage.selector';
 import { CategoriesDialogComponent } from '../categories-dialog/categories-dialog.component';
 
 @Component({
@@ -76,12 +74,6 @@ import { CategoriesDialogComponent } from '../categories-dialog/categories-dialo
 export class EditStorageItemDialogComponent {
   readonly translate = inject(TranslateService);
   readonly #store = inject(Store);
-  /**  [mode]="(rxState$|async)?.editMode ?? 'create'"
- (cancel)="closeEditDialog()"
- (saveItem)="updateItem($event)"
- [item]="(rxState$|async)?.data"
- [categories]="(rxCategories$ | async) ?? []"
-*/
   rxState$ = this.#store.select(selectEditStorageState);
   rxItem$ = this.#store.select(selectEditStorageItem);
   rxCategory$ = this.#store.select(selectCategoriesState);
@@ -118,6 +110,11 @@ export class EditStorageItemDialogComponent {
     // swap german , with . e.g. 1234,34 -> 1234.34
     const numberInput = cleanInput.replace(/,+/g, '.');
     const priceValue = Number.parseFloat(numberInput);
+    this.#store.dispatch(
+      EditStorageItemActions.updateItem({
+        price: priceValue,
+      })
+    );
   }
 
   updateName(ev: InputCustomEvent) {
@@ -139,7 +136,7 @@ export class EditStorageItemDialogComponent {
   }
 
   removeCategory(cat: TItemListCategory) {
-    this.#store.dispatch(CategoriesActions.toggleCategory(cat));
+    this.#store.dispatch(EditStorageItemActions.removeCategory(cat));
   }
 
   changeMinAmount(ev: InputCustomEvent) {
@@ -158,13 +155,7 @@ export class EditStorageItemDialogComponent {
     );
   }
 
-  async showCategoryDialog() {
-    combineLatest([this.rxItem$, this.#store.select(selectStorageListItems)])
-      .pipe(take(1))
-      .subscribe((all) => {
-        const item = all[0];
-        const items = all[1];
-        this.#store.dispatch(CategoriesActions.showDialog(item, items));
-      });
+  showCategoryDialog() {
+    this.#store.dispatch(CategoriesActions.showDialog());
   }
 }

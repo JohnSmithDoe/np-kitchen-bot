@@ -1,12 +1,14 @@
 import { createActionGroup, emptyProps } from '@ngrx/store';
-import { IStorageItem } from '../../@types/types';
+import { IGlobalItem, TItemListId } from '../../@types/types';
 
 export const EditGlobalItemActions = createActionGroup({
   source: 'EditGlobalItem',
   events: {
-    'Show Dialog': (item?: IStorageItem) => ({ item }),
+    'Show Dialog': (item?: IGlobalItem) => ({ item }),
+    'Show Dialog And Add To List': (listId: TItemListId) => ({ listId }),
+    'Update Item': (data: Partial<IGlobalItem>) => ({ data }),
     'Hide Dialog': emptyProps(),
-    'Confirm Changes': (item?: IStorageItem) => ({ item }),
+    'Confirm Changes': emptyProps(),
     'Abort Changes': emptyProps(),
   },
 });

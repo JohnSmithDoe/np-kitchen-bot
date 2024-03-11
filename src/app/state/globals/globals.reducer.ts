@@ -1,13 +1,13 @@
 import { createReducer, on } from '@ngrx/store';
 import { IGlobalsState } from '../../@types/types';
-import { ApplicationActions } from '../application.actions';
 import {
   addListItem,
   removeListItem,
   updateListItem,
   updateListMode,
   updateListSort,
-} from '../shared/item-list.reducer';
+} from '../@shared/item-list.reducer';
+import { ApplicationActions } from '../application.actions';
 import { GlobalsActions } from './globals.actions';
 
 export const initialState: IGlobalsState = {

@@ -29,6 +29,7 @@ import { globalsReducer } from './app/state/globals/globals.reducer';
 import { MessageEffects } from './app/state/message.effects';
 import { settingsReducer } from './app/state/settings/settings.reducer';
 import { shoppingListsReducer } from './app/state/shoppinglist/shopping-lists.reducer';
+import { StorageEffects } from './app/state/storage/storage.effects';
 import { storageReducer } from './app/state/storage/storage.reducer';
 import { environment } from './environments/environment';
 
@@ -84,6 +85,6 @@ void bootstrapApplication(AppComponent, {
       multi: true,
       deps: [DatabaseService],
     },
-    provideEffects(Effects, MessageEffects),
+    provideEffects(Effects, MessageEffects, StorageEffects),
   ],
 });

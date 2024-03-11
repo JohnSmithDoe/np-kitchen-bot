@@ -31,8 +31,9 @@ export class ItemListQuickaddComponent implements OnDestroy {
   @Output() quickCreateGlobal = new EventEmitter<void>();
 
   @Input({ transform: booleanAttribute }) showQuickAdd = true;
-  canQuickAdd = true;
   @Input({ transform: booleanAttribute }) showQuickAddGlobal = true;
+
+  canQuickAdd = true;
   canQuickAddGlobal = true;
 
   #settingsChangedSub?: Subscription;

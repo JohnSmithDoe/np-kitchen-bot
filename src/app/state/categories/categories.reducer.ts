@@ -31,14 +31,24 @@ export const categoriesReducer = createReducer(
     return state;
   }),
 
-  on(CategoriesActions.showDialog, (state, { item, items }) => {
+  on(CategoriesActions.updateSelection, (state, { item, items }) => {
     const categories = [
-      ...new Set((items ?? []).flatMap((item) => item.category ?? [])),
+      ...new Set(
+        [...(items ?? []), item]
+          .flatMap((aitem) => aitem?.category ?? [])
+          .filter((cat) => !!cat.length)
+      ),
     ];
     return {
       ...state,
       categories,
       selection: item?.category ?? [],
+      isSelecting: true,
+    };
+  }),
+  on(CategoriesActions.showDialog, (state) => {
+    return {
+      ...state,
       isSelecting: true,
     };
   }),

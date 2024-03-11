@@ -79,7 +79,13 @@ export class StoragePage {
   }
 
   showCreateDialog() {
-    this.#store.dispatch(EditStorageItemActions.showDialog());
+    this.#store.dispatch(StorageActions.showCreateDialogFromSearch());
+  }
+
+  showCreateGlobalDialog() {
+    this.#store.dispatch(
+      EditGlobalItemActions.showDialogAndAddToList('_storage')
+    );
   }
 
   showEditDialog(item: IStorageItem) {
@@ -89,13 +95,13 @@ export class StoragePage {
   searchFor(searchTerm: string) {
     this.#store.dispatch(StorageActions.updateSearch(searchTerm));
   }
-
   setDisplayMode(mode: TItemListMode) {
     this.#store.dispatch(StorageActions.updateMode(mode));
   }
   setSortMode(type: TItemListSortType) {
     this.#store.dispatch(StorageActions.updateSort(type, 'toggle'));
   }
+
   selectCategory(category: TItemListCategory) {
     this.#store.dispatch(StorageActions.updateFilter(category));
   }
@@ -109,12 +115,8 @@ export class StoragePage {
     );
   }
 
-  showCreateGlobalDialog() {
-    this.#store.dispatch(EditGlobalItemActions.showDialog());
-  }
-
-  createAndAddGlobalItem(data: Partial<IGlobalItem>) {
-    this.#store.dispatch(StorageActions.createGlobalAndAddAsItem(data));
+  addGlobalItem(item: IGlobalItem) {
+    this.#store.dispatch(StorageActions.addGlobalItem(item));
   }
 
   async copyToShoppingList(item: IStorageItem) {

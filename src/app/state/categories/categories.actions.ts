@@ -8,7 +8,11 @@ export const CategoriesActions = createActionGroup({
     'Toggle Category': (category: TItemListCategory) => ({ category }),
     'Remove Category': (category: TItemListCategory) => ({ category }),
     'Update Search Query': (query?: string) => ({ query }),
-    'Show Dialog': (item?: IBaseItem, items?: IBaseItem[]) => ({ item, items }),
+    'Update Selection': (item?: IBaseItem, items?: IBaseItem[]) => ({
+      item,
+      items,
+    }),
+    'Show Dialog': emptyProps(),
     'Confirm Changes': emptyProps(),
     'Abort Changes': emptyProps(),
   },

@@ -1,14 +1,14 @@
 import { createReducer, on } from '@ngrx/store';
 import { IShoppingItem, IShoppingState } from '../../@types/types';
 import { createShoppingItemFromStorage } from '../../app.factory';
-import { ApplicationActions } from '../application.actions';
 import {
   addListItem,
   removeListItem,
   updateListItem,
   updateListMode,
   updateListSort,
-} from '../shared/item-list.reducer';
+} from '../@shared/item-list.reducer';
+import { ApplicationActions } from '../application.actions';
 import { ShoppingListActions } from './shopping-list.actions';
 
 export const initialState: IShoppingState = {

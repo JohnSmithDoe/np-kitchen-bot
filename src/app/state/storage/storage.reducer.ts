@@ -1,13 +1,17 @@
 import { createReducer, on } from '@ngrx/store';
 import { IStorageState } from '../../@types/types';
-import { ApplicationActions } from '../application.actions';
+import {
+  createStorageItem,
+  createStorageItemFromGlobal,
+} from '../../app.factory';
 import {
   addListItem,
   removeListItem,
   updateListItem,
   updateListMode,
   updateListSort,
-} from '../shared/item-list.reducer';
+} from '../@shared/item-list.reducer';
+import { ApplicationActions } from '../application.actions';
 import { StorageActions } from './storage.actions';
 
 export const initialState: IStorageState = {
@@ -20,6 +24,14 @@ export const initialState: IStorageState = {
 export const storageReducer = createReducer(
   initialState,
   on(StorageActions.addItem, (state, { item }) => addListItem(state, item)),
+  on(StorageActions.addGlobalItem, (state, { item }) => {
+    const storageItem = createStorageItemFromGlobal(item);
+    return addListItem(state, storageItem);
+  }),
+  on(StorageActions.addItemFromSearch, (state) => {
+    const storageItem = createStorageItem(state.searchQuery ?? '');
+    return addListItem(state, storageItem);
+  }),
   on(StorageActions.removeItem, (state, { item }) =>
     removeListItem(state, item)
   ),

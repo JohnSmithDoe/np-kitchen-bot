@@ -69,7 +69,7 @@
       [label]="item.name"
       [note]="item | appCategories"
       [helper]="'item-helper.search' | translate"
-      (selectItem)="createAndAddGlobalItem(item)"
+      (selectItem)="addGlobalItem(item)"
     ></app-text-item>
   </ng-template>
   }

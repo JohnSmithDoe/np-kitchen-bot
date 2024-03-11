@@ -93,8 +93,10 @@ export type TItemListSort = {
 };
 export type TItemListMode = 'alphabetical' | 'categories';
 
+export type TItemListId = '_storage' | '_globals' | '_shopping';
+
 export interface IItemList<T extends IBaseItem = IBaseItem> {
-  id: string;
+  id: TItemListId;
   title: string;
   items: T[];
   mode: TItemListMode;
@@ -127,7 +129,7 @@ export interface IDatastore {
   shoppinglist: TShoppingList;
   settings: ISettings;
 }
-
+// hmm clean up this and myba add a quick add state
 export interface ISearchResult<T extends IBaseItem> {
   listItems: T[];
   hasSearchTerm: boolean; // length of the searchTerm > 0
@@ -152,17 +154,20 @@ export type ICategoriesState = Readonly<{
   isSelecting?: boolean;
 }>;
 
+export type TEditItemMode = 'update' | 'create';
 export type IEditItemState<T extends IBaseItem> = Readonly<{
   item: T;
   isEditing?: boolean;
-  data?: TUpdateDTO<T>;
-  editMode?: 'update' | 'create';
+  editMode?: TEditItemMode;
   dialogTitle?: string;
   saveButtonText?: string;
 }>;
 export type IEditStorageItemState = IEditItemState<IStorageItem>;
 export type IEditShoppingItemState = IEditItemState<IShoppingItem>;
-export type IEditGlobalItemState = IEditItemState<IGlobalItem>;
+export type IEditGlobalItemState = IEditItemState<IGlobalItem> & {
+  listId?: TItemListId;
+};
+
 export interface IAppState {
   settings: ISettings;
   storage: IStorageState;

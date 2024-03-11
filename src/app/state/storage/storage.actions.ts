@@ -14,11 +14,9 @@ export const StorageActions = createActionGroup({
     'Remove Item': (item: IStorageItem) => ({ item }),
 
     'Add Item From Search': emptyProps(),
+    'Show Create Dialog From Search': emptyProps(),
+    'Add Global Item': (item: IGlobalItem) => ({ item }),
     'Move To Shoppinglist': (item: IStorageItem) => ({ item }),
-
-    'Create Global Item': emptyProps(),
-    'End Create Global Item': emptyProps(),
-    'Create Global And Add As Item': (data: Partial<IGlobalItem>) => ({ data }),
 
     'Update Search': (searchQuery?: string) => ({ searchQuery }),
     'Update Filter': (filterBy?: string) => ({ filterBy }),

@@ -14,15 +14,19 @@ export const addListItem = <T extends IListState<R>, R extends IBaseItem>(
 ): T => {
   // do not add an empty item
   // do not add an already contained item (could be triggered by a shortcut)
+  const name = item.name.trim();
   if (
-    !state.searchQuery?.trim().length ||
-    !!state.items.find((item) => item.name.toLowerCase() === state.searchQuery)
+    !name.length ||
+    !!state.items.find(
+      (listItem) => name.toLowerCase() === listItem.name.toLowerCase()
+    )
   ) {
     return state;
   }
   return {
     ...state,
     items: [item, ...state.items],
+    searchQuery: undefined,
   };
 };
 export const removeListItem = <T extends IListState<R>, R extends IBaseItem>(
@@ -38,17 +42,20 @@ export const updateListItem = <T extends IListState<R>, R extends IBaseItem>(
   item: TUpdateDTO<R> | undefined
 ): T => {
   if (!item) return state;
-  const items = [...state.items];
+  const items: TUpdateDTO<R>[] = [...state.items];
   const itemIdx = state.items.findIndex((listItem) => listItem.id === item.id);
+  let searchQueryAfter = state.searchQuery;
   if (itemIdx >= 0) {
     const original = state.items[itemIdx];
     const updatedItem = { ...original, ...item };
     items.splice(itemIdx, 1, updatedItem);
+    if (!updatedItem.name.includes(searchQueryAfter ?? ''))
+      searchQueryAfter = undefined;
   } else {
-    // hmmmmmmm
-    console.error(item, state.items, 'not found');
+    items.unshift(item);
+    searchQueryAfter = undefined;
   }
-  return { ...state, items };
+  return { ...state, items, searchQuery: searchQueryAfter };
 };
 
 export const updateListSort = (

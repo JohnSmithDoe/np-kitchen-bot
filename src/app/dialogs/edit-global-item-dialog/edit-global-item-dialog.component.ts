@@ -4,8 +4,6 @@ import {
   Component,
   EventEmitter,
   inject,
-  Input,
-  OnInit,
   Output,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -33,21 +31,21 @@ import {
   IonToolbar,
 } from '@ionic/angular/standalone';
 import { Store } from '@ngrx/store';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { closeCircle } from 'ionicons/icons';
 import {
-  IBaseItem,
   IGlobalItem,
   TBestBeforeTimespan,
   TItemListCategory,
-  TItemUnit,
-  TPackagingUnit,
-  TUpdateDTO,
 } from '../../@types/types';
+import { CategoriesActions } from '../../state/categories/categories.actions';
 import { selectCategoriesState } from '../../state/categories/categories.selector';
 import { EditGlobalItemActions } from '../../state/edit-global-item/edit-global-item.actions';
-import { selectEditGlobalState } from '../../state/edit-global-item/edit-global-item.selector';
+import {
+  selectEditGlobalItem,
+  selectEditGlobalState,
+} from '../../state/edit-global-item/edit-global-item.selector';
 import { CategoriesDialogComponent } from '../categories-dialog/categories-dialog.component';
 
 @Component({
@@ -85,98 +83,29 @@ import { CategoriesDialogComponent } from '../categories-dialog/categories-dialo
   templateUrl: './edit-global-item-dialog.component.html',
   styleUrl: './edit-global-item-dialog.component.scss',
 })
-export class EditGlobalItemDialogComponent implements OnInit {
-  readonly translate = inject(TranslateService);
+export class EditGlobalItemDialogComponent {
   readonly #store = inject(Store);
-  /**  [mode]="(rxState$|async)?.editMode ?? 'create'"
- (cancel)="closeEditDialog()"
- (saveItem)="updateItem($event)"
- [item]="(rxState$|async)?.data"
- [categories]="(rxCategories$ | async) ?? []"
-*/
   rxState$ = this.#store.select(selectEditGlobalState);
+  rxItem$ = this.#store.select(selectEditGlobalItem);
   rxCategory$ = this.#store.select(selectCategoriesState);
-  //TODO: state...
-  @Input() item?: TUpdateDTO<IGlobalItem> | null;
-  @Input() items?: IBaseItem[] | null;
-  @Input() mode: 'update' | 'create' = 'create';
 
   @Output() saveItem = new EventEmitter<Partial<IGlobalItem>>();
   @Output() cancel = new EventEmitter();
-
-  selectCategories = false;
-  dialogTitle = '';
-  saveButtonText = '';
-  currencyCode: 'EUR' | 'USD' = 'EUR';
-
-  nameValue?: string;
-  categoryValue: TItemListCategory[] | undefined;
-  priceValue?: number;
-
-  bestBeforeTimespanValue?: TBestBeforeTimespan;
-  bestBeforeTimeValue: undefined | number;
-  packagingValue?: TPackagingUnit;
-  unitValue?: TItemUnit;
-
-  submitChanges() {
-    this.saveItem.emit({
-      ...this.item,
-      name: this.nameValue,
-      category: this.categoryValue,
-      price: this.priceValue,
-    });
-  }
 
   constructor() {
     addIcons({ closeCircle });
   }
 
-  ngOnInit(): void {
-    this.currencyCode = this.translate.currentLang !== 'en' ? 'EUR' : 'USD';
-
-    this.nameValue = this.item?.name;
-    this.categoryValue = this.item?.category;
-    this.priceValue = this.item?.price;
-    this.bestBeforeTimespanValue = this.item?.bestBeforeTimespan;
-    this.bestBeforeTimeValue = this.item?.bestBeforeTimevalue;
-    this.packagingValue = this.item?.packaging;
-    this.unitValue = this.item?.unit;
-
-    this.saveButtonText =
-      this.mode === 'create'
-        ? this.translate.instant('edit.global.item.dialog.button.create')
-        : this.translate.instant('edit.global.item.dialog.button.update');
-
-    this.dialogTitle =
-      this.mode === 'create'
-        ? this.translate.instant('edit.global.item.dialog.title.create')
-        : this.translate.instant('edit.global.item.dialog.title.update');
+  cancelChanges() {
+    this.#store.dispatch(EditGlobalItemActions.abortChanges());
   }
 
-  setCategories(categories?: TItemListCategory[]) {
-    this.selectCategories = false;
-    this.categoryValue = categories;
+  closedDialog() {
+    this.#store.dispatch(EditGlobalItemActions.hideDialog());
   }
 
-  removeCategory(cat: TItemListCategory) {
-    this.categoryValue?.splice(this.categoryValue?.indexOf(cat), 1);
-    // update object reference
-    this.categoryValue = this.categoryValue
-      ? [...this.categoryValue]
-      : undefined;
-  }
-
-  setUnit(ev: SelectCustomEvent<TItemUnit>) {
-    this.unitValue = ev.detail.value;
-    if (this.unitValue === 'ml') {
-      this.packagingValue = 'bottle';
-    } else if (this.packagingValue === 'bottle') {
-      this.packagingValue = 'loose';
-    }
-  }
-
-  setPackaging(ev: SelectCustomEvent<TPackagingUnit>) {
-    this.packagingValue = ev.detail.value;
+  submitChanges() {
+    this.#store.dispatch(EditGlobalItemActions.confirmChanges());
   }
 
   updatePrice(ev: InputCustomEvent<FocusEvent>) {
@@ -194,16 +123,44 @@ export class EditGlobalItemDialogComponent implements OnInit {
     const cleanInput = inputValue.replace(/[^0-9,-]+/g, '');
     // swap german , with . e.g. 1234,34 -> 1234.34
     const numberInput = cleanInput.replace(/,+/g, '.');
-    this.priceValue = Number.parseFloat(numberInput);
+    const priceValue = Number.parseFloat(numberInput);
+    this.#store.dispatch(
+      EditGlobalItemActions.updateItem({
+        price: priceValue,
+      })
+    );
+  }
+
+  updateName(ev: InputCustomEvent) {
+    this.#store.dispatch(
+      EditGlobalItemActions.updateItem({
+        name: ev.detail.value ?? undefined,
+      })
+    );
+  }
+
+  removeCategory(cat: TItemListCategory) {
+    this.#store.dispatch(CategoriesActions.toggleCategory(cat));
   }
 
   setBestBeforeTimespan(ev: SelectCustomEvent<TBestBeforeTimespan>) {
-    this.bestBeforeTimespanValue = ev.detail.value;
-    this.bestBeforeTimeValue =
-      this.bestBeforeTimespanValue === 'forever' ? undefined : 1;
+    this.#store.dispatch(
+      EditGlobalItemActions.updateItem({
+        bestBeforeTimespan: ev.detail.value,
+        bestBeforeTimevalue: ev.detail.value === 'forever' ? undefined : 1,
+      })
+    );
   }
 
-  closedDialog() {
-    this.#store.dispatch(EditGlobalItemActions.hideDialog());
+  async showCategoryDialog() {
+    this.#store.dispatch(CategoriesActions.showDialog());
+  }
+
+  setBestBeforeTimevalue(ev: InputCustomEvent) {
+    this.#store.dispatch(
+      EditGlobalItemActions.updateItem({
+        bestBeforeTimevalue: Number.parseInt(ev.detail.value ?? '0', 10),
+      })
+    );
   }
 }

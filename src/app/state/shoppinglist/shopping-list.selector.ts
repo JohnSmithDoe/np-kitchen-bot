@@ -8,7 +8,7 @@ import {
 import {
   filterAndSortItemList,
   filterBySearchQuery,
-} from '../shared/item-list.selector';
+} from '../@shared/item-list.selector';
 
 export const selectShoppinglistState =
   createFeatureSelector<IShoppingState>('shoppinglist');

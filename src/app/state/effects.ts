@@ -1,65 +1,29 @@
 import { inject, Injectable } from '@angular/core';
 import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
 import { ActionCreator, Store } from '@ngrx/store';
-import { exhaustMap, map, mergeMap, take, withLatestFrom } from 'rxjs';
+import { exhaustMap, map, take, withLatestFrom } from 'rxjs';
 import { fromPromise } from 'rxjs/internal/observable/innerFrom';
-import { IAppState, IDatastore } from '../@types/types';
-import { createStorageItem } from '../app.factory';
+import { IAppState, IBaseItem, IDatastore } from '../@types/types';
 import { DatabaseService } from '../services/database.service';
 import { ApplicationActions } from './application.actions';
+import { CategoriesActions } from './categories/categories.actions';
 import { EditGlobalItemActions } from './edit-global-item/edit-global-item.actions';
 import { selectEditGlobalState } from './edit-global-item/edit-global-item.selector';
 import { EditShoppingItemActions } from './edit-shopping-item/edit-shopping-item.actions';
 import { selectEditShoppingState } from './edit-shopping-item/edit-shopping-item.selector';
 import { EditStorageItemActions } from './edit-storage-item/edit-storage-item.actions';
-import { selectEditStorageState } from './edit-storage-item/edit-storage-item.selector';
 import { GlobalsActions } from './globals/globals.actions';
 import { selectGlobalsState } from './globals/globals.selector';
 import { SettingsActions } from './settings/settings.actions';
 import { selectSettingsState } from './settings/settings.selector';
 import { ShoppingListActions } from './shoppinglist/shopping-list.actions';
 import { selectShoppinglistState } from './shoppinglist/shopping-list.selector';
-import { StorageActions } from './storage/storage.actions';
-import { selectStorageState } from './storage/storage.selector';
 
 @Injectable({ providedIn: 'root' })
 export class Effects {
   #actions$ = inject(Actions);
   #store = inject(Store);
   #database = inject(DatabaseService);
-
-  confirmStorageItemChanges$ = createEffect(() => {
-    return this.#actions$.pipe(
-      ofType(EditStorageItemActions.confirmChanges),
-      concatLatestFrom(() => this.#store.select(selectEditStorageState)),
-      map(([_, state]) => StorageActions.updateItem(state.item))
-    );
-  });
-  confirmShoppingItemChanges$ = createEffect(() => {
-    return this.#actions$.pipe(
-      ofType(EditShoppingItemActions.confirmChanges),
-      concatLatestFrom(() => this.#store.select(selectEditShoppingState)),
-      map(([_, state]) => ShoppingListActions.updateItem(state.item))
-    );
-  });
-  confirmGlobalItemChanges$ = createEffect(() => {
-    return this.#actions$.pipe(
-      ofType(EditGlobalItemActions.confirmChanges),
-      concatLatestFrom(() => this.#store.select(selectEditGlobalState)),
-      map(([_, state]) => GlobalsActions.updateItem(state.item))
-    );
-  });
-
-  addStorageItemFromSearch$ = createEffect(() => {
-    return this.#actions$.pipe(
-      ofType(StorageActions.addItemFromSearch),
-      withLatestFrom(this.#store, (action, state) => ({ action, state })),
-      map(({ action, state }: { action: any; state: IAppState }) => {
-        const item = createStorageItem(state.storage.searchQuery ?? '');
-        return StorageActions.addItem(item);
-      })
-    );
-  });
 
   initializeApplication$ = createEffect(() => {
     return this.#actions$.pipe(
@@ -72,44 +36,58 @@ export class Effects {
     );
   });
 
-  // createGlobalAndAddAsStorageItem$ = createEffect(() => {
-  //   return this.#actions$.pipe(
-  //     ofType(StorageActions.createGlobalAndAddAsItem),
-  //     mergeMap(({ data }) => [
-  //       // GlobalsActions.createItem(data),
-  //       // StorageActions.createItem(data),
-  //       // StorageActions.endCreateGlobalItem(),
-  //     ])
-  //   );
-  // });
-
-  createGlobalAndAddAsShoppingItem$ = createEffect(() => {
+  // get the categories for the dialog... hmm
+  showCategories$ = createEffect(() => {
     return this.#actions$.pipe(
-      ofType(StorageActions.createGlobalAndAddAsItem),
-      mergeMap(({ data }) => [
-        GlobalsActions.createItem(data),
-        ShoppingListActions.createItem(data),
-        ShoppingListActions.endCreateGlobalItem(),
-      ])
+      ofType(CategoriesActions.showDialog),
+      withLatestFrom(this.#store, (action, state) => ({ action, state })),
+      map(({ action, state }: { action: any; state: IAppState }) => {
+        const editItem: IBaseItem = state.editStorageItem.isEditing
+          ? state.editStorageItem.item
+          : state.editShoppingItem.isEditing
+            ? state.editShoppingItem.item
+            : state.editGlobalItem.item;
+        const listItems: IBaseItem[] = state.editStorageItem.isEditing
+          ? state.storage.items
+          : state.editShoppingItem.isEditing
+            ? state.shoppinglist.items
+            : state.globals.items;
+
+        return CategoriesActions.updateSelection(editItem, listItems);
+      })
+    );
+  });
+  // get the selected categories hmm
+  confirmCategories$ = createEffect(() => {
+    return this.#actions$.pipe(
+      ofType(CategoriesActions.confirmChanges),
+      withLatestFrom(this.#store, (action, state) => ({ action, state })),
+      map(({ action, state }: { action: any; state: IAppState }) => {
+        const updateData: Partial<IBaseItem> = {
+          category: state.categories.selection,
+        };
+        return state.editStorageItem.isEditing
+          ? EditStorageItemActions.updateItem(updateData)
+          : EditGlobalItemActions.updateItem(updateData);
+      })
     );
   });
 
-  moveToShoppingList$ = createEffect(() => {
+  confirmShoppingItemChanges$ = createEffect(() => {
     return this.#actions$.pipe(
-      ofType(StorageActions.moveToShoppinglist),
-      map(({ item }) => ShoppingListActions.addStorageItem(item))
+      ofType(EditShoppingItemActions.confirmChanges),
+      concatLatestFrom(() => this.#store.select(selectEditShoppingState)),
+      map(([_, state]) => ShoppingListActions.updateItem(state.item))
     );
   });
 
-  saveStorageOnChange$ = this.#createSaveEffect(
-    'storage',
-    selectStorageState,
-    StorageActions.addItem,
-    StorageActions.removeItem,
-    StorageActions.updateItem,
-    StorageActions.endCreateGlobalItem,
-    StorageActions.createGlobalAndAddAsItem
-  );
+  confirmGlobalItemChanges$ = createEffect(() => {
+    return this.#actions$.pipe(
+      ofType(EditGlobalItemActions.confirmChanges),
+      concatLatestFrom(() => this.#store.select(selectEditGlobalState)),
+      map(([_, state]) => GlobalsActions.updateItem(state.item))
+    );
+  });
 
   saveGlobalsOnChange$ = this.#createSaveEffect(
     'globals',
