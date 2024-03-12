@@ -9,17 +9,20 @@ import {
   IGlobalItem,
   TItemListCategory,
   TItemListMode,
+  TItemListSortType,
 } from '../../@types/types';
 import { GlobalItemComponent } from '../../components/item-list-items/global-item/global-item.component';
 import { TextItemComponent } from '../../components/item-list-items/text-item/text-item.component';
 import { ItemListEmptyComponent } from '../../components/item-list/item-list-empty/item-list-empty.component';
 import { ItemListQuickaddComponent } from '../../components/item-list/item-list-quick-add/item-list-quickadd.component';
+import { ItemListSearchResultComponent } from '../../components/item-list/item-list-search-result/item-list-search-result.component';
 import { ItemListSearchbarComponent } from '../../components/item-list/item-list-searchbar/item-list-searchbar.component';
 import { ItemListToolbarComponent } from '../../components/item-list/item-list-toolbar/item-list-toolbar.component';
 import { ItemListComponent } from '../../components/item-list/item-list.component';
 import { PageHeaderComponent } from '../../components/page-header/page-header.component';
 import { EditGlobalItemDialogComponent } from '../../dialogs/edit-global-item-dialog/edit-global-item-dialog.component';
 import { EditStorageItemDialogComponent } from '../../dialogs/edit-storage-item-dialog/edit-storage-item-dialog.component';
+import { EditGlobalItemActions } from '../../state/edit-global-item/edit-global-item.actions';
 import { GlobalsActions } from '../../state/globals/globals.actions';
 import {
   selectGlobalsListCategories,
@@ -49,6 +52,7 @@ import {
     GlobalItemComponent,
     EditStorageItemDialogComponent,
     AsyncPipe,
+    ItemListSearchResultComponent,
   ],
 })
 export class GlobalsPage {
@@ -72,19 +76,11 @@ export class GlobalsPage {
   }
 
   showCreateDialog() {
-    this.#store.dispatch(GlobalsActions.createAndEditItem());
+    this.#store.dispatch(GlobalsActions.showCreateDialogWithSearch());
   }
 
   showEditDialog(item: IGlobalItem) {
-    this.#store.dispatch(GlobalsActions.editItem(item));
-  }
-
-  closeEditDialog() {
-    this.#store.dispatch(GlobalsActions.endEditItem());
-  }
-
-  async updateItem(item: Partial<IGlobalItem>) {
-    this.#store.dispatch(GlobalsActions.endEditItem(item));
+    this.#store.dispatch(EditGlobalItemActions.showDialog(item));
   }
 
   searchFor(searchTerm: string) {
@@ -93,6 +89,10 @@ export class GlobalsPage {
 
   setDisplayMode(mode: TItemListMode) {
     this.#store.dispatch(GlobalsActions.updateMode(mode));
+  }
+
+  setSortMode(type: TItemListSortType) {
+    this.#store.dispatch(GlobalsActions.updateSort(type, 'toggle'));
   }
 
   selectCategory(category: TItemListCategory) {

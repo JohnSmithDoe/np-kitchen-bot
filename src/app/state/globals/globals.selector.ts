@@ -9,15 +9,11 @@ import {
 import {
   filterAndSortItemList,
   filterBySearchQuery,
+  sortCategoriesFn,
 } from '../@shared/item-list.selector';
 
 export const selectGlobalsState =
   createFeatureSelector<IGlobalsState>('globals');
-
-export const selectGlobalsList = createSelector(
-  selectGlobalsState,
-  (state) => state.items
-);
 
 export const selectGlobalsListSearchResult = createSelector(
   selectGlobalsState,
@@ -32,9 +28,12 @@ export const selectGlobalsListItems = createSelector(
   (state: IGlobalsState, result): IGlobalItem[] | undefined =>
     filterAndSortItemList(state, result)
 );
+
 export const selectGlobalsListCategories = createSelector(
   selectGlobalsState,
   (state: IGlobalsState): TItemListCategory[] | undefined => {
-    return [...new Set(state.items.flatMap((item) => item.category ?? []))];
+    return [
+      ...new Set(state.items.flatMap((item) => item.category ?? [])),
+    ].sort(sortCategoriesFn(state.sort));
   }
 );

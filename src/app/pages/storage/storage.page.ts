@@ -83,10 +83,6 @@ export class StoragePage {
     this.#store.dispatch(StorageActions.showCreateDialogWithSearch());
   }
 
-  showCreateGlobalDialog() {
-    this.#store.dispatch(StorageActions.showCreateGlobalDialogWithSearch());
-  }
-
   showEditDialog(item: IStorageItem) {
     this.#store.dispatch(EditStorageItemActions.showDialog(item));
   }
@@ -98,12 +94,17 @@ export class StoragePage {
   setDisplayMode(mode: TItemListMode) {
     this.#store.dispatch(StorageActions.updateMode(mode));
   }
+
   setSortMode(type: TItemListSortType) {
     this.#store.dispatch(StorageActions.updateSort(type, 'toggle'));
   }
 
   selectCategory(category: TItemListCategory) {
     this.#store.dispatch(StorageActions.updateFilter(category));
+  }
+
+  showCreateGlobalDialog() {
+    this.#store.dispatch(StorageActions.showCreateGlobalDialogWithSearch());
   }
 
   changeQuantity(item: IStorageItem, diff: number) {

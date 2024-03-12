@@ -88,9 +88,6 @@
             {{ 'edit.item.dialog.categories' | translate }}
             @for (cat of (rxItem$ | async)?.category; track cat) {
               <ion-chip color="category">
-                <!--                <ion-avatar>-->
-                <!--                  <img alt="Image of the category" src="assets/avatar.svg"/>-->
-                <!--                </ion-avatar>-->
                 <ion-label class="ion-text-wrap">{{ cat }}</ion-label>
                 <ion-icon
                   name="close-circle"

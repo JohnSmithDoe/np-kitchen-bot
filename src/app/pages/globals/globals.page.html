@@ -11,12 +11,13 @@
   ></app-item-list-searchbar>
   <app-item-list-toolbar
     (selectDisplayMode)="setDisplayMode($event)"
+    (selectSortMode)="setSortMode($event)"
   ></app-item-list-toolbar>
 </app-page-header>
 
 <ion-content>
   <app-item-list-quickadd
-    (quickAddItem)="showCreateDialog()"
+    (quickAddItem)="addItemFromSearch()"
   ></app-item-list-quickadd>
 
   <app-item-list
@@ -44,19 +45,10 @@
     [searchTerm]="(rxSearchResult$ |async)?.searchTerm"
     (emptyItem)="showCreateDialog()"
   ></app-item-list-empty>
+
+  <app-item-list-search-result
+    [results]="(rxSearchResult$| async)"
+  ></app-item-list-search-result>
 </ion-content>
 
-<!--<ion-modal-->
-<!--  [isOpen]="(rxState$ | async)?.isEditing === true"-->
-<!--  (didDismiss)="closeEditDialog()"-->
-<!--&gt;-->
-<!--  <ng-template>-->
-<!--    <app-edit-global-item-dialog-->
-<!--      [mode]="(rxState$|async)?.editMode ?? 'create'"-->
-<!--      (cancel)="closeEditDialog()"-->
-<!--      (saveItem)="updateItem($event)"-->
-<!--      [item]="(rxState$|async)?.data"-->
-<!--      [categories]="(rxCategories$ | async) ?? []"-->
-<!--    ></app-edit-global-item-dialog>-->
-<!--  </ng-template>-->
-<!--</ion-modal>-->
+<app-edit-global-item-dialog></app-edit-global-item-dialog>
