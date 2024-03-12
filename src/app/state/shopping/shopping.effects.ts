@@ -91,6 +91,14 @@ export class ShoppingEffects {
     );
   });
 
+  addItemToList$ = createEffect(() => {
+    return this.#actions$.pipe(
+      ofType(ShoppingActions.addItemToList),
+      map(({ item }) => {
+        return ShoppingActions.addItem(item);
+      })
+    );
+  });
   addItemFromSearch$ = createEffect(() => {
     return this.#actions$.pipe(
       ofType(ShoppingActions.addItemFromSearch),

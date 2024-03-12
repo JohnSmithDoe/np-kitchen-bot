@@ -48,6 +48,8 @@
 
   <app-item-list-search-result
     [results]="(rxSearchResult$| async)"
+    (selectStorageItem)="addStorageItem($event)"
+    (selectShoppingItem)="addShoppingItem($event)"
   ></app-item-list-search-result>
 </ion-content>
 

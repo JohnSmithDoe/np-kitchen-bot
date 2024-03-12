@@ -6,12 +6,17 @@ import { TypedAction } from '@ngrx/store/src/models';
 import { filter, map, withLatestFrom } from 'rxjs';
 import { fromPromise } from 'rxjs/internal/observable/innerFrom';
 import { IAppState } from '../../@types/types';
-import { createGlobalItem } from '../../app.factory';
+import {
+  createGlobalItem,
+  createGlobalItemFrom,
+  createStorageItemFromShopping,
+} from '../../app.factory';
 import { DatabaseService } from '../../services/database.service';
 import { updateQuickAddState } from '../@shared/item-list.effects';
 import { EditGlobalItemActions } from '../edit-global-item/edit-global-item.actions';
 import { selectEditGlobalState } from '../edit-global-item/edit-global-item.selector';
 import { QuickAddActions } from '../quick-add/quick-add.actions';
+import { StorageActions } from '../storage/storage.actions';
 import { GlobalsActions } from './globals.actions';
 import { selectGlobalsState } from './globals.selector';
 
@@ -30,7 +35,7 @@ export class GlobalsEffects {
   });
   clearSearch$ = createEffect(() => {
     return this.#actions$.pipe(
-      ofType(GlobalsActions.addItem),
+      ofType(GlobalsActions.addItemToList),
       map(() => GlobalsActions.updateSearch(''))
     );
   });
@@ -81,6 +86,14 @@ export class GlobalsEffects {
     );
   });
 
+  addItemToList$ = createEffect(() => {
+    return this.#actions$.pipe(
+      ofType(GlobalsActions.addItemToList),
+      map(({ item }) => {
+        return GlobalsActions.addItem(item);
+      })
+    );
+  });
   addItemFromSearch$ = createEffect(() => {
     return this.#actions$.pipe(
       ofType(GlobalsActions.addItemFromSearch),
@@ -90,7 +103,26 @@ export class GlobalsEffects {
       map(({ state }) => {
         console.log('add item from search without dialog');
         const item = createGlobalItem(state.globals.searchQuery ?? '');
-        return GlobalsActions.addItem(item);
+        return GlobalsActions.addItemToList(item);
+      })
+    );
+  });
+  addItemFromStorage$ = createEffect(() => {
+    return this.#actions$.pipe(
+      ofType(GlobalsActions.addStorageItem, GlobalsActions.addShoppingItem),
+      map(({ item }) => {
+        const globalItem = createGlobalItemFrom(item);
+        return GlobalsActions.addItemToList(globalItem);
+      })
+    );
+  });
+  addItemFromShopping$ = createEffect(() => {
+    return this.#actions$.pipe(
+      ofType(StorageActions.addShoppingItem),
+      map(({ item }) => {
+        console.log('add shopping item to storage');
+        const storageitem = createStorageItemFromShopping(item);
+        return StorageActions.addItemToList(storageitem);
       })
     );
   });

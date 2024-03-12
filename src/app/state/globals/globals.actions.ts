@@ -1,6 +1,8 @@
 import { createActionGroup, emptyProps } from '@ngrx/store';
 import {
   IGlobalItem,
+  IShoppingItem,
+  IStorageItem,
   TItemListMode,
   TItemListSortType,
   TUpdateDTO,
@@ -10,8 +12,11 @@ export const GlobalsActions = createActionGroup({
   source: 'Globals',
   events: {
     // Effects only
+    'Add Item To List': (item: IGlobalItem) => ({ item }),
     'Add Item From Search': emptyProps(),
     'Show Create Dialog With Search': emptyProps(),
+    'Add Storage Item': (item: IStorageItem) => ({ item }),
+    'Add Shopping Item': (item: IShoppingItem) => ({ item }),
 
     // Operations
 

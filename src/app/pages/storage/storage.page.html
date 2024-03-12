@@ -54,6 +54,8 @@
 
   <app-item-list-search-result
     [results]="(rxSearchResult$| async)"
+    (selectGlobalItem)="addGlobalItem($event)"
+    (selectShoppingItem)="addShoppingItem($event)"
   ></app-item-list-search-result>
 </ion-content>
 

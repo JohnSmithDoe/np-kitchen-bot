@@ -45,6 +45,12 @@ export function createStorageItemFromGlobal(
   }
   return createStorageItem(global.name, global.category, quantity, bestBefore);
 }
+export function createStorageItemFromShopping(
+  shopping: IShoppingItem,
+  quantity = 1
+): IStorageItem {
+  return createStorageItem(shopping.name, shopping.category, quantity);
+}
 export function createShoppingItemFromGlobal(
   global: IGlobalItem,
   quantity = 1

@@ -8,6 +8,7 @@ import { add, remove } from 'ionicons/icons';
 import {
   IGlobalItem,
   IShoppingItem,
+  IStorageItem,
   TItemListCategory,
   TItemListMode,
   TItemListSortType,
@@ -32,7 +33,6 @@ import {
   selectShoppingSearchResult,
   selectShoppingState,
 } from '../../state/shopping/shopping.selector';
-import { StorageActions } from '../../state/storage/storage.actions';
 
 @Component({
   selector: 'app-page-shopping',
@@ -116,7 +116,11 @@ export class ShoppingPage {
   }
 
   addGlobalItem(item: IGlobalItem) {
-    this.#store.dispatch(StorageActions.addGlobalItem(item));
+    this.#store.dispatch(ShoppingActions.addGlobalItem(item));
+  }
+
+  addStorageItem(item: IStorageItem) {
+    this.#store.dispatch(ShoppingActions.addStorageItem(item));
   }
 
   async buyItem(item: IShoppingItem) {

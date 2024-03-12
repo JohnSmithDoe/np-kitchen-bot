@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
 import {
   IBaseItem,
@@ -25,8 +25,7 @@ import { ItemListComponent } from '../item-list.component';
 })
 export class ItemListSearchResultComponent<T extends IBaseItem> {
   @Input() results?: ISearchResult<T> | null;
-
-  selectGlobalItem(item: IGlobalItem) {}
-  selectShoppingItem(item: IShoppingItem) {}
-  selectStorageItem(item: IStorageItem) {}
+  @Output() selectGlobalItem = new EventEmitter<IGlobalItem>();
+  @Output() selectShoppingItem = new EventEmitter<IShoppingItem>();
+  @Output() selectStorageItem = new EventEmitter<IStorageItem>();
 }

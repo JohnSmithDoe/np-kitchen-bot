@@ -10,6 +10,7 @@ import {
   createGlobalItem,
   createStorageItem,
   createStorageItemFromGlobal,
+  createStorageItemFromShopping,
 } from '../../app.factory';
 import { DatabaseService } from '../../services/database.service';
 import { updateQuickAddState } from '../@shared/item-list.effects';
@@ -118,6 +119,16 @@ export class StorageEffects {
       map(({ item }) => {
         console.log('add global item to storage');
         const storageitem = createStorageItemFromGlobal(item);
+        return StorageActions.addItemToList(storageitem);
+      })
+    );
+  });
+  addItemFromShopping$ = createEffect(() => {
+    return this.#actions$.pipe(
+      ofType(StorageActions.addShoppingItem),
+      map(({ item }) => {
+        console.log('add shopping item to storage');
+        const storageitem = createStorageItemFromShopping(item);
         return StorageActions.addItemToList(storageitem);
       })
     );

@@ -13,7 +13,7 @@
       [label]="item.name"
       [note]="item | appCategories"
       [helper]="'item-helper.search' | translate"
-      (selectItem)="selectGlobalItem(item)"
+      (selectItem)="selectGlobalItem.emit(item)"
     ></app-text-item>
   </ng-template>
 }
@@ -32,7 +32,7 @@
       [label]="item.name"
       [note]="item | appCategories"
       [helper]="'item-helper.search' | translate"
-      (selectItem)="selectShoppingItem(item)"
+      (selectItem)="selectShoppingItem.emit(item)"
     ></app-text-item>
   </ng-template>
 }
@@ -51,7 +51,7 @@
       [label]="item.name"
       [note]="item | appCategories"
       [helper]="'item-helper.search' | translate"
-      (selectItem)="selectStorageItem(item)"
+      (selectItem)="selectStorageItem.emit(item)"
     ></app-text-item>
   </ng-template>
 }

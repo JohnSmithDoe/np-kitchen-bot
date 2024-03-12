@@ -23,7 +23,7 @@ export class MessageEffects {
           StorageActions.addItemToList,
           StorageActions.copyToShoppinglist,
           ShoppingActions.addItemToList,
-          GlobalsActions.addItem
+          GlobalsActions.addItemToList
         ),
         concatLatestFrom(() => this.#store),
         map(([{ item, type }, state]) => {
@@ -40,7 +40,7 @@ export class MessageEffects {
                 (sitem) => sitem.name === item.name
               );
               break;
-            case '[Globals] Add Item':
+            case '[Globals] Add Item To List':
               foundItem = appState.globals.items.find(
                 (sitem) => sitem.name === item.name
               );

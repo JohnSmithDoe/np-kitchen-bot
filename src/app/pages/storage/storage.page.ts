@@ -7,6 +7,7 @@ import { addIcons } from 'ionicons';
 import { add, remove } from 'ionicons/icons';
 import {
   IGlobalItem,
+  IShoppingItem,
   IStorageItem,
   TItemListCategory,
   TItemListMode,
@@ -118,6 +119,10 @@ export class StoragePage {
 
   addGlobalItem(item: IGlobalItem) {
     this.#store.dispatch(StorageActions.addGlobalItem(item));
+  }
+
+  addShoppingItem(item: IShoppingItem) {
+    this.#store.dispatch(StorageActions.addShoppingItem(item));
   }
 
   async copyToShoppingList(item: IStorageItem) {

@@ -7,6 +7,8 @@ import { addIcons } from 'ionicons';
 import { add, remove } from 'ionicons/icons';
 import {
   IGlobalItem,
+  IShoppingItem,
+  IStorageItem,
   TItemListCategory,
   TItemListMode,
   TItemListSortType,
@@ -97,5 +99,13 @@ export class GlobalsPage {
 
   selectCategory(category: TItemListCategory) {
     this.#store.dispatch(GlobalsActions.updateFilter(category));
+  }
+
+  addStorageItem(item: IStorageItem) {
+    this.#store.dispatch(GlobalsActions.addStorageItem(item));
+  }
+
+  addShoppingItem(item: IShoppingItem) {
+    this.#store.dispatch(GlobalsActions.addShoppingItem(item));
   }
 }
