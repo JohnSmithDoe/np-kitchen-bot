@@ -7,6 +7,7 @@ import {
   TItemListSortType,
   TUpdateDTO,
 } from '../../@types/types';
+import { isGlobalItem, isShoppingItem, isStorageItem } from '../../app.utils';
 
 export const addListItem = <T extends IListState<R>, R extends IBaseItem>(
   state: T,
@@ -15,13 +16,16 @@ export const addListItem = <T extends IListState<R>, R extends IBaseItem>(
   // do not add an empty item
   // do not add an already contained item (could be triggered by a shortcut)
   const name = item.name.trim();
-  if (
-    !name.length ||
-    !!state.items.find(
-      (listItem) => name.toLowerCase() === listItem.name.toLowerCase()
-    )
-  ) {
+  const foundItem = state.items.find(
+    (listItem) => name.toLowerCase() === listItem.name.toLowerCase()
+  );
+  if (!name.length || (!!foundItem && isGlobalItem(foundItem))) {
     return state;
+  }
+  // hmm update quantity if contained -> could be an effect i guess
+  if (foundItem && (isStorageItem(foundItem) || isShoppingItem(foundItem))) {
+    item = { ...foundItem, quantity: foundItem.quantity + 1 };
+    return updateListItem<T, R>(state, item);
   }
   return {
     ...state,

@@ -1,9 +1,8 @@
 import { inject, Injectable } from '@angular/core';
 import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
-import { ActionCreator, Store } from '@ngrx/store';
-import { exhaustMap, map, take } from 'rxjs';
+import { Store } from '@ngrx/store';
+import { map } from 'rxjs';
 import { fromPromise } from 'rxjs/internal/observable/innerFrom';
-import { IDatastore } from '../../@types/types';
 import { DatabaseService } from '../../services/database.service';
 import { SettingsActions } from './settings.actions';
 import { selectSettingsState } from './settings.selector';
@@ -17,42 +16,24 @@ export class SettingsEffects {
     return this.#actions$.pipe(
       ofType(SettingsActions.toggleFlag),
       concatLatestFrom(() => this.#store.select(selectSettingsState)),
-      map(([{ flag }, settings]) => {
-        console.log('toggle flag', flag);
-        return SettingsActions.updateSettings({
+      map(([{ flag }, settings]) =>
+        SettingsActions.updateSettings({
           ...settings,
           [flag]: !settings[flag],
-        });
-      })
+        })
+      )
     );
   });
 
-  saveSettingsOnChange$ = this.#createSaveEffect(
-    'settings',
-    selectSettingsState,
-    SettingsActions.updateSettings
+  saveSettingsOnChange$ = createEffect(
+    () => {
+      return this.#actions$.pipe(
+        ofType(SettingsActions.updateSettings),
+        map(({ settings }) =>
+          fromPromise(this.#database.save('settings', settings))
+        )
+      );
+    },
+    { dispatch: false }
   );
-
-  #createSaveEffect<T extends keyof IDatastore>(
-    storageKey: T,
-    select: (state: any) => IDatastore[T],
-    ...events: ActionCreator<any>[]
-  ) {
-    return createEffect(
-      () => {
-        return this.#actions$.pipe(
-          ofType(...events),
-          exhaustMap(() =>
-            this.#store.select(select).pipe(
-              map((value) =>
-                fromPromise(this.#database.save(storageKey, value))
-              ),
-              take(1) // TODO: this closes the obs i think... should be done by better piping i guess
-            )
-          )
-        );
-      },
-      { dispatch: false }
-    );
-  }
 }

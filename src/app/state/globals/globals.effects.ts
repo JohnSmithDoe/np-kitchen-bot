@@ -1,11 +1,11 @@
 import { inject, Injectable } from '@angular/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
-import { ActionCreator, Store } from '@ngrx/store';
+import { Store } from '@ngrx/store';
 import { TypedAction } from '@ngrx/store/src/models';
-import { exhaustMap, filter, map, take, withLatestFrom } from 'rxjs';
+import { filter, map, withLatestFrom } from 'rxjs';
 import { fromPromise } from 'rxjs/internal/observable/innerFrom';
-import { IAppState, IDatastore } from '../../@types/types';
+import { IAppState } from '../../@types/types';
 import { createGlobalItem } from '../../app.factory';
 import { DatabaseService } from '../../services/database.service';
 import { updateQuickAddState } from '../@shared/item-list.effects';
@@ -25,7 +25,7 @@ export class GlobalsEffects {
     return this.#actions$.pipe(
       ofType(GlobalsActions.updateMode),
       filter(({ mode }) => mode !== 'categories'),
-      map(({ mode }) => GlobalsActions.updateFilter())
+      map(() => GlobalsActions.updateFilter())
     );
   });
   clearSearch$ = createEffect(() => {
@@ -40,7 +40,6 @@ export class GlobalsEffects {
       ofType(GlobalsActions.updateItem),
       concatLatestFrom(() => this.#store.select(selectGlobalsState)),
       map(([{ item }, state]) => {
-        console.log('update search for real');
         let searchQueryAfter = state.searchQuery;
         if (!!item.name && !item.name.includes(state.searchQuery ?? '')) {
           searchQueryAfter = undefined;
@@ -62,7 +61,6 @@ export class GlobalsEffects {
       ofType(GlobalsActions.showCreateDialogWithSearch),
       withLatestFrom(this.#store, (action, state) => ({ action, state })),
       map(({ action, state }: { action: any; state: IAppState }) => {
-        console.log('add item from search with edit dialog');
         const item = createGlobalItem(state.globals.searchQuery ?? '');
         return EditGlobalItemActions.showDialog(item);
       })
@@ -97,34 +95,18 @@ export class GlobalsEffects {
     );
   });
 
-  saveGlobalsOnChange$ = this.#createSaveEffect(
-    'globals',
-    selectGlobalsState,
-    GlobalsActions.addItem,
-    GlobalsActions.removeItem,
-    GlobalsActions.updateItem
+  saveOnChange$ = createEffect(
+    () => {
+      return this.#actions$.pipe(
+        ofType(
+          GlobalsActions.addItem,
+          GlobalsActions.removeItem,
+          GlobalsActions.updateItem
+        ),
+        concatLatestFrom(() => this.#store.select(selectGlobalsState)),
+        map(([_, state]) => fromPromise(this.#database.save('globals', state)))
+      );
+    },
+    { dispatch: false }
   );
-
-  #createSaveEffect<T extends keyof IDatastore>(
-    storageKey: T,
-    select: (state: any) => IDatastore[T],
-    ...events: ActionCreator<any>[]
-  ) {
-    return createEffect(
-      () => {
-        return this.#actions$.pipe(
-          ofType(...events),
-          exhaustMap(() =>
-            this.#store.select(select).pipe(
-              map((value) =>
-                fromPromise(this.#database.save(storageKey, value))
-              ),
-              take(1) // TODO: this closes the obs i think... should be done by better piping i guess
-            )
-          )
-        );
-      },
-      { dispatch: false }
-    );
-  }
 }

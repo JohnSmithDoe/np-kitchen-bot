@@ -2,7 +2,6 @@ import { inject, Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage-angular';
 import { Store } from '@ngrx/store';
 import { IDatastore, IItemList } from '../@types/types';
-import { ApplicationActions } from '../state/application.actions';
 
 export const CSTORAGE_KEY = 'np-kitchen-helper';
 
@@ -12,10 +11,6 @@ export const CSTORAGE_KEY = 'np-kitchen-helper';
 export class DatabaseService {
   readonly #storageService = inject(Storage);
   readonly store = inject(Store);
-
-  async initialize() {
-    this.store.dispatch(ApplicationActions.load());
-  }
 
   async create() {
     await this.#storageService.create();

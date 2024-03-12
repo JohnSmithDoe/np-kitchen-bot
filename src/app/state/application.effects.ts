@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { exhaustMap, map } from 'rxjs';
+import { combineLatestWith, map } from 'rxjs';
 import { fromPromise } from 'rxjs/internal/observable/innerFrom';
 import { DatabaseService } from '../services/database.service';
 import { ApplicationActions } from './application.actions';
@@ -15,11 +15,8 @@ export class ApplicationEffects {
   initializeApplication$ = createEffect(() => {
     return this.#actions$.pipe(
       ofType(ApplicationActions.load),
-      exhaustMap(() =>
-        fromPromise(this.#database.create()).pipe(
-          map((data) => ApplicationActions.loadedSuccessfully(data))
-        )
-      )
+      combineLatestWith(fromPromise(this.#database.create())),
+      map(([_, data]) => ApplicationActions.loadedSuccessfully(data))
     );
   });
 }

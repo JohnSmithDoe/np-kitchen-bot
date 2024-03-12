@@ -11,6 +11,7 @@ export const StorageActions = createActionGroup({
   source: 'Storage',
   events: {
     // Effects only
+    'Add Item To List': (item: IStorageItem) => ({ item }),
     'Add Item From Search': emptyProps(),
     'Add Global Item': (item: IGlobalItem) => ({ item }),
 

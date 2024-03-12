@@ -12,6 +12,7 @@ export const ShoppingActions = createActionGroup({
   source: 'Shopping',
   events: {
     // Effects only
+    'Add Item To List': (item: IShoppingItem) => ({ item }),
     'Add Item From Search': emptyProps(),
     'Add Global Item': (item: IGlobalItem) => ({ item }),
     'Add Storage Item': (item: IStorageItem) => ({ item }),

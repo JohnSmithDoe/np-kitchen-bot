@@ -10,11 +10,11 @@ import {
 export function isGlobalItem(value: TAllItemTypes): value is IGlobalItem {
   return value.hasOwnProperty('unit');
 }
-export function isStorageItem(value: TAllItemTypes): value is IStorageItem {
-  return value.hasOwnProperty('bestBefore');
+export function isStorageItem(value?: TAllItemTypes): value is IStorageItem {
+  return !!value?.hasOwnProperty('bestBefore');
 }
-export function isShoppingItem(value: TAllItemTypes): value is IShoppingItem {
-  return value.hasOwnProperty('state');
+export function isShoppingItem(value?: TAllItemTypes): value is IShoppingItem {
+  return !!value?.hasOwnProperty('state');
 }
 // create a unique id the 4 is a fixed number in it
 export function uuidv4() {

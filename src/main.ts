@@ -13,13 +13,13 @@ import {
 } from '@ionic/angular/standalone';
 import { IonicStorageModule } from '@ionic/storage-angular';
 import { provideEffects } from '@ngrx/effects';
-import { provideStore } from '@ngrx/store';
+import { provideStore, Store } from '@ngrx/store';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { AppComponent } from './app/app.component';
 
 import { routes } from './app/app.routes';
-import { DatabaseService } from './app/services/database.service';
+import { ApplicationActions } from './app/state/application.actions';
 import { ApplicationEffects } from './app/state/application.effects';
 import { CategoriesEffects } from './app/state/categories/categories.effects';
 import { categoriesReducer } from './app/state/categories/categories.reducer';
@@ -81,16 +81,6 @@ void bootstrapApplication(AppComponent, {
       editGlobalItem: editGlobalItemReducer,
       quickadd: quickAddReducer,
     }),
-    {
-      provide: LOCALE_ID,
-      useValue: 'de-DE',
-    },
-    {
-      provide: APP_INITIALIZER,
-      useFactory: (db: DatabaseService) => () => db.initialize(),
-      multi: true,
-      deps: [DatabaseService],
-    },
     provideEffects(
       ApplicationEffects,
       MessageEffects,
@@ -100,5 +90,16 @@ void bootstrapApplication(AppComponent, {
       GlobalsEffects,
       CategoriesEffects
     ),
+    {
+      provide: LOCALE_ID,
+      useValue: 'de-DE',
+    },
+    {
+      provide: APP_INITIALIZER,
+      useFactory: (store: Store) => () =>
+        store.dispatch(ApplicationActions.load()),
+      multi: true,
+      deps: [Store],
+    },
   ],
 });

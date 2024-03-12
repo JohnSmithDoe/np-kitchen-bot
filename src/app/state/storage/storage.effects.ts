@@ -1,11 +1,11 @@
 import { inject, Injectable } from '@angular/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
-import { ActionCreator, Store } from '@ngrx/store';
+import { Store } from '@ngrx/store';
 import { TypedAction } from '@ngrx/store/src/models';
-import { exhaustMap, filter, map, take, withLatestFrom } from 'rxjs';
+import { filter, map, withLatestFrom } from 'rxjs';
 import { fromPromise } from 'rxjs/internal/observable/innerFrom';
-import { IAppState, IDatastore } from '../../@types/types';
+import { IAppState } from '../../@types/types';
 import {
   createGlobalItem,
   createStorageItem,
@@ -36,11 +36,10 @@ export class StorageEffects {
   });
   clearSearch$ = createEffect(() => {
     return this.#actions$.pipe(
-      ofType(StorageActions.addItem),
+      ofType(StorageActions.addItemToList),
       map(() => StorageActions.updateSearch(''))
     );
   });
-
   updateSearch$ = createEffect(() => {
     return this.#actions$.pipe(
       ofType(StorageActions.updateItem),
@@ -63,7 +62,6 @@ export class StorageEffects {
       map(([_, state]) => StorageActions.updateItem(state.item))
     );
   });
-
   copyToShoppingList$ = createEffect(() => {
     return this.#actions$.pipe(
       ofType(StorageActions.copyToShoppinglist),
@@ -82,7 +80,6 @@ export class StorageEffects {
       })
     );
   });
-
   showCreateGlobalDialogWithSearch$ = createEffect(() => {
     return this.#actions$.pipe(
       ofType(StorageActions.showCreateGlobalDialogWithSearch),
@@ -92,6 +89,13 @@ export class StorageEffects {
         const item = createGlobalItem(state.storage.searchQuery ?? '');
         return EditGlobalItemActions.showDialog(item, '_storage');
       })
+    );
+  });
+  // message hook
+  addItemToList$ = createEffect(() => {
+    return this.#actions$.pipe(
+      ofType(StorageActions.addItemToList),
+      map(({ item }) => StorageActions.addItem(item))
     );
   });
 
@@ -104,18 +108,17 @@ export class StorageEffects {
       map(({ state }) => {
         console.log('add item from search without dialog');
         const item = createStorageItem(state.storage.searchQuery ?? '');
-        return StorageActions.addItem(item);
+        return StorageActions.addItemToList(item);
       })
     );
   });
-
   addItemFromGlobal$ = createEffect(() => {
     return this.#actions$.pipe(
       ofType(StorageActions.addGlobalItem),
       map(({ item }) => {
         console.log('add global item to storage');
         const storageitem = createStorageItemFromGlobal(item);
-        return StorageActions.addItem(storageitem);
+        return StorageActions.addItemToList(storageitem);
       })
     );
   });
@@ -135,34 +138,18 @@ export class StorageEffects {
     );
   });
 
-  saveStorageOnChange$ = this.createSaveEffect(
-    'storage',
-    selectStorageState,
-    StorageActions.addItem,
-    StorageActions.removeItem,
-    StorageActions.updateItem
+  saveOnChange$ = createEffect(
+    () => {
+      return this.#actions$.pipe(
+        ofType(
+          StorageActions.addItem,
+          StorageActions.removeItem,
+          StorageActions.updateItem
+        ),
+        concatLatestFrom(() => this.#store.select(selectStorageState)),
+        map(([_, state]) => fromPromise(this.#database.save('storage', state)))
+      );
+    },
+    { dispatch: false }
   );
-
-  createSaveEffect<T extends keyof IDatastore>(
-    storageKey: T,
-    select: (state: any) => IDatastore[T],
-    ...events: ActionCreator<any>[]
-  ) {
-    return createEffect(
-      () => {
-        return this.#actions$.pipe(
-          ofType(...events),
-          exhaustMap(() =>
-            this.#store.select(select).pipe(
-              map((value) =>
-                fromPromise(this.#database.save(storageKey, value))
-              ),
-              take(1) // TODO: this closes the obs i think... should be done by better piping i guess
-            )
-          )
-        );
-      },
-      { dispatch: false }
-    );
-  }
 }

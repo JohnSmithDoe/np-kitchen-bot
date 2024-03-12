@@ -1,31 +1,65 @@
 import { inject, Injectable } from '@angular/core';
-import { Actions, createEffect, ofType } from '@ngrx/effects';
+import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { EMPTY, exhaustMap, map, mergeMap, take, tap } from 'rxjs';
+import { EMPTY, exhaustMap, map, tap } from 'rxjs';
 import { fromPromise } from 'rxjs/internal/observable/innerFrom';
-import { isGlobalItem } from '../app.utils';
+import { IAppState, TAllItemTypes } from '../@types/types';
+import { isShoppingItem, isStorageItem } from '../app.utils';
 import { UiService } from '../services/ui.service';
 import { GlobalsActions } from './globals/globals.actions';
 import { ShoppingActions } from './shopping/shopping.actions';
-import { selectShoppingItems } from './shopping/shopping.selector';
 import { StorageActions } from './storage/storage.actions';
 
 @Injectable({ providedIn: 'root' })
 export class MessageEffects {
   #actions$ = inject(Actions);
   #uiService = inject(UiService);
-  #store = inject(Store);
+  #store = inject(Store<IAppState>);
 
   addItemSussess$ = createEffect(
     () => {
       return this.#actions$.pipe(
         ofType(
-          StorageActions.addItem,
-          ShoppingActions.addItem,
+          StorageActions.addItemToList,
+          StorageActions.copyToShoppinglist,
+          ShoppingActions.addItemToList,
           GlobalsActions.addItem
         ),
-        exhaustMap(({ item }) => {
-          const quantity = isGlobalItem(item) ? undefined : item.quantity;
+        concatLatestFrom(() => this.#store),
+        map(([{ item, type }, state]) => {
+          const appState: IAppState = state;
+          if (!item.name.length) return;
+          // this next one is sadly not right since we add already existing items by raising the quantity...
+          // const quantity = isGlobalItem(item) ? undefined : item.quantity;
+          // need to get the current item
+          let foundItem: TAllItemTypes | undefined;
+          switch (type) {
+            case '[Shopping] Add Item To List':
+            case '[Storage] Copy To Shoppinglist':
+              foundItem = appState.shopping.items.find(
+                (sitem) => sitem.name === item.name
+              );
+              break;
+            case '[Globals] Add Item':
+              foundItem = appState.globals.items.find(
+                (sitem) => sitem.name === item.name
+              );
+              break;
+            case '[Storage] Add Item To List':
+              foundItem = appState.storage.items.find(
+                (sitem) => sitem.name === item.name
+              );
+              break;
+          }
+          const quantity =
+            isStorageItem(foundItem) || isShoppingItem(foundItem)
+              ? foundItem.quantity
+              : 1;
+          if (type === '[Storage] Copy To Shoppinglist') {
+            return fromPromise(
+              this.#uiService.showCopyToShoppingListToast(item.name, quantity)
+            );
+          }
           return fromPromise(
             this.#uiService.showAddItemToast(item.name, quantity)
           );
@@ -64,29 +98,6 @@ export class MessageEffects {
         ),
         tap(({ item }) => {
           return this.#uiService.showRemoveItemToast(item.name);
-        })
-      );
-    },
-    { dispatch: false }
-  );
-
-  copyToShoppingListSuccess$ = createEffect(
-    () => {
-      return this.#actions$.pipe(
-        ofType(ShoppingActions.addStorageItem),
-        mergeMap(({ item }) => {
-          return this.#store.select(selectShoppingItems).pipe(
-            map((i) => i?.find((a) => a.name === item.name)),
-            map((item) => {
-              return fromPromise(
-                this.#uiService.showCopyToShoppingListToast(
-                  item?.name ?? 'Error',
-                  item?.quantity ?? -1
-                )
-              );
-            }),
-            take(1)
-          );
         })
       );
     },
