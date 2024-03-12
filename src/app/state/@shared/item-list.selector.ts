@@ -1,83 +1,67 @@
 import * as dayjs from 'dayjs';
 import {
+  IAppState,
   IBaseItem,
   IListState,
   ISearchResult,
+  TItemListCategory,
   TItemListSort,
 } from '../../@types/types';
 import { isStorageItem } from '../../app.utils';
+
+const matchesNameExactly = (item: IBaseItem, other: IBaseItem) =>
+  item.name.toLowerCase() === other.name.toLowerCase();
+const matchesSearch = (item: IBaseItem, searchQuery: string) =>
+  item.name.toLowerCase().includes(searchQuery.toLowerCase());
+const matchesSearchExactly = (item: IBaseItem, searchQuery: string) =>
+  item.name.toLowerCase() === searchQuery.toLowerCase();
+const matchesCategory = (item: IBaseItem, searchQuery: string) =>
+  (item.category?.findIndex(
+    (cat) => cat.toLowerCase().indexOf(searchQuery) >= 0
+  ) ?? -1) >= 0;
 
 export const filterBySearchQuery = <
   T extends IListState<R>,
   R extends IBaseItem,
 >(
-  state: T
+  state: IAppState,
+  listState: T
 ): ISearchResult<R> | undefined => {
-  const searchQuery = state.searchQuery?.trim();
+  const searchQuery = listState.searchQuery?.trim();
   if (!searchQuery || !searchQuery.length) return;
-
-  const matchesName = (item: IBaseItem, other: IBaseItem) =>
-    item.name.toLowerCase() === other.name.toLowerCase();
-  const matchesSearch = (item: IBaseItem) =>
-    item.name.toLowerCase().includes(searchQuery.toLowerCase());
-  const matchesSearchExactly = (item: IBaseItem) =>
-    item.name.toLowerCase() === searchQuery.toLowerCase();
-  const matchesCategory = (item: IBaseItem) =>
-    (item.category?.findIndex(
-      (cat) => cat.toLowerCase().indexOf(searchQuery) >= 0
-    ) ?? -1) >= 0;
-
-  const listItems = state.items.filter((item) => matchesSearch(item));
-
-  // const storageItems = state.items.filter(
-  //   (item) =>
-  //     !listItems.find((litem) => matchesName(item, litem)) &&
-  //     matchesSearch(item)
-  // );
-
-  // const globalItemsByName = this.all.items.filter(
-  //   (item) =>
-  //     !listItems.find((litem) => matchesName(item, litem)) &&
-  //     !storageItems.find((sitem) => matchesName(item, sitem)) &&
-  //     matchesSearch(item)
-  // );
-  // const globalItemsByCat = this.all.items.filter(
-  //   (item) =>
-  //     !listItems.find((litem) => matchesName(item, litem)) &&
-  //     !globalItemsByName.includes(item) &&
-  //     matchesCategory(item)
-  // );
-  // const globalItems = [...globalItemsByName, ...globalItemsByCat];
-
-  // const all: IBaseItem[] = ([] as IBaseItem[])
-  //   .concat(listItems)
-  //   // .concat(globalItems)
-  //   .concat(storageItems);
-  // function findCategory(item: IBaseItem, category?: string) {
-  //   if (!category) return true;
-  //   return !!item.category?.find(
-  //     (cat) => cat.toLowerCase() === category.toLowerCase()
-  //   );
-  // }
-  //
-  // function findByName(item: IBaseItem, searchQuery?: string) {
-  //   return item.name.toLowerCase().includes(searchQuery ?? '');
-  // }
-
-  const exactMatch = listItems.find((base) => matchesSearchExactly(base));
-  return {
+  const result: ISearchResult<R> = {
     searchTerm: searchQuery,
     hasSearchTerm: !!searchQuery.length,
-    exactMatch,
-    foundInGlobal: undefined,
-    showQuickAdd: !exactMatch && !!searchQuery.length,
-    showQuickAddGlobal: false,
-    all: [],
-    listItems,
+    listItems: [],
     globalItems: [],
     storageItems: [],
+    shoppingItems: [],
   };
+  result.listItems = listState.items.filter((item) =>
+    matchesSearch(item, searchQuery)
+  );
+  if (listState.id !== '_globals') {
+    // group search by name first
+    const globalItemsByName = state.globals.items.filter(
+      (item) =>
+        !result.listItems.find((litem) => matchesNameExactly(item, litem)) &&
+        matchesSearch(item, searchQuery)
+    );
+    // then by category
+    const globalItemsByCat = state.globals.items.filter(
+      (item) =>
+        !result.listItems.find((litem) => matchesNameExactly(item, litem)) &&
+        !globalItemsByName.includes(item) &&
+        matchesCategory(item, searchQuery)
+    );
+    result.globalItems = [...globalItemsByName, ...globalItemsByCat];
+  }
+  result.exactMatch = result.listItems.find((base) =>
+    matchesSearchExactly(base, searchQuery)
+  );
+  return result;
 };
+
 function sortItemListFn<T extends IBaseItem>(sort?: TItemListSort) {
   const MAXDATE = '5000-1-1';
   const MINDATE = '1970-1-1';
@@ -118,4 +102,10 @@ export const filterAndSortItemList = <
       (item) => !state.filterBy || item.category?.includes(state.filterBy)
     )
     .sort(sortItemListFn<R>(state.sort));
+};
+
+export const sortCategoriesFn = (sort?: TItemListSort) => {
+  return (a: TItemListCategory, b: TItemListCategory) => {
+    return sort?.sortDir === 'desc' ? b.localeCompare(a) : a.localeCompare(b);
+  };
 };

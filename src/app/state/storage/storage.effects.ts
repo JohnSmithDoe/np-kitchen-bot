@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
 import { ActionCreator, Store } from '@ngrx/store';
 import { TypedAction } from '@ngrx/store/src/models';
-import { exhaustMap, map, take, withLatestFrom } from 'rxjs';
+import { exhaustMap, filter, map, take, withLatestFrom } from 'rxjs';
 import { fromPromise } from 'rxjs/internal/observable/innerFrom';
 import { IAppState, IDatastore } from '../../@types/types';
 import {
@@ -27,6 +27,13 @@ export class StorageEffects {
   #store = inject(Store);
   #database = inject(DatabaseService);
 
+  clearFilter$ = createEffect(() => {
+    return this.#actions$.pipe(
+      ofType(StorageActions.updateMode),
+      filter(({ mode }) => mode !== 'categories'),
+      map(({ mode }) => StorageActions.updateFilter())
+    );
+  });
   clearSearch$ = createEffect(() => {
     return this.#actions$.pipe(
       ofType(

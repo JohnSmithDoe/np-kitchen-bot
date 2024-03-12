@@ -1,5 +1,6 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import {
+  IAppState,
   IGlobalItem,
   IGlobalsState,
   ISearchResult,
@@ -20,8 +21,9 @@ export const selectGlobalsList = createSelector(
 
 export const selectGlobalsListSearchResult = createSelector(
   selectGlobalsState,
-  (state: IGlobalsState): ISearchResult<IGlobalItem> | undefined =>
-    filterBySearchQuery(state)
+  (state: IAppState) => state,
+  (listState, state): ISearchResult<IGlobalItem> | undefined =>
+    filterBySearchQuery(state, listState)
 );
 
 export const selectGlobalsListItems = createSelector(

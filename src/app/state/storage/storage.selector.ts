@@ -1,5 +1,6 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import {
+  IAppState,
   ISearchResult,
   IStorageItem,
   IStorageState,
@@ -8,6 +9,7 @@ import {
 import {
   filterAndSortItemList,
   filterBySearchQuery,
+  sortCategoriesFn,
 } from '../@shared/item-list.selector';
 
 export const selectStorageState =
@@ -17,11 +19,11 @@ export const selectStorageList = createSelector(
   selectStorageState,
   (state) => state.items
 );
-
 export const selectStorageListSearchResult = createSelector(
   selectStorageState,
-  (state: IStorageState): ISearchResult<IStorageItem> | undefined =>
-    filterBySearchQuery(state)
+  (state: IAppState) => state,
+  (listState: IStorageState, state): ISearchResult<IStorageItem> | undefined =>
+    filterBySearchQuery(state, listState)
 );
 
 export const selectStorageListItems = createSelector(
@@ -34,6 +36,8 @@ export const selectStorageListItems = createSelector(
 export const selectStorageListCategories = createSelector(
   selectStorageState,
   (state: IStorageState): TItemListCategory[] | undefined => {
-    return [...new Set(state.items.flatMap((item) => item.category ?? []))];
+    return [
+      ...new Set(state.items.flatMap((item) => item.category ?? [])),
+    ].sort(sortCategoriesFn(state.sort));
   }
 );

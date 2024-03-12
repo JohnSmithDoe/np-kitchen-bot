@@ -9,7 +9,10 @@
     (queryChange)="searchFor($event)"
     (hitEnter)="addItemFromSearch()"
   ></app-item-list-searchbar>
-  <app-item-list-toolbar (selectDisplayMode)="setDisplayMode($event)">
+  <app-item-list-toolbar
+    (selectDisplayMode)="setDisplayMode($event)"
+    (selectSortMode)="setSortMode($event)"
+  >
     <ion-button (click)="setSortMode('bestBefore')">Mhd</ion-button>
   </app-item-list-toolbar>
 </app-page-header>

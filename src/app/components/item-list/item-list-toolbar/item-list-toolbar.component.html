@@ -1,16 +1,17 @@
-<ion-toolbar [hidden]="!showToolbar">
-  <ion-buttons slot="start" [hidden]="!showReorder">
-    <ion-button (click)="toggleReorder.emit()">
+<ion-toolbar>
+  <ion-buttons slot="start">
+    <ion-button (click)="toggleReorder.emit()" [hidden]="true">
       <ion-icon slot="icon-only" name="list"></ion-icon>
     </ion-button>
+    <ion-button (click)="selectSortMode.emit('name')">A-Z</ion-button>
+    <ng-content></ng-content>
   </ion-buttons>
   <ion-buttons slot="end">
-    <ng-content></ng-content>
-    <ion-button (click)="selectDisplayMode.emit('alphabetical')"
-      >A-Z</ion-button
-    >
-    <ion-button (click)="selectDisplayMode.emit('categories')"
-      >Categories</ion-button
-    >
+    <ion-button (click)="selectDisplayMode.emit('alphabetical')">
+      Liste
+    </ion-button>
+    <ion-button (click)="selectDisplayMode.emit('categories')">
+      Kategorien
+    </ion-button>
   </ion-buttons>
 </ion-toolbar>

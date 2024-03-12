@@ -14,6 +14,7 @@ import {
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { add, cart, list, remove } from 'ionicons/icons';
+import { TItemListMode, TItemListSortType } from '../../../@types/types';
 
 @Component({
   selector: 'app-item-list-toolbar',
@@ -24,12 +25,10 @@ import { add, cart, list, remove } from 'ionicons/icons';
   imports: [IonToolbar, IonButtons, IonButton, IonIcon],
 })
 export class ItemListToolbarComponent {
-  @Input({ transform: booleanAttribute }) showToolbar = true;
   @Input({ transform: booleanAttribute }) showReorder = false;
 
-  @Output() selectDisplayMode = new EventEmitter<
-    'alphabetical' | 'categories'
-  >();
+  @Output() selectDisplayMode = new EventEmitter<TItemListMode>();
+  @Output() selectSortMode = new EventEmitter<TItemListSortType>();
   @Output() toggleReorder = new EventEmitter<void>();
 
   constructor() {

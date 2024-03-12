@@ -1,5 +1,6 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import {
+  IAppState,
   ISearchResult,
   IShoppingItem,
   IShoppingState,
@@ -20,8 +21,12 @@ export const selectShoppingList = createSelector(
 
 export const selectShoppingListSearchResult = createSelector(
   selectShoppinglistState,
-  (state: IShoppingState): ISearchResult<IShoppingItem> | undefined =>
-    filterBySearchQuery(state)
+  (state: IAppState) => state,
+  (
+    listState: IShoppingState,
+    state
+  ): ISearchResult<IShoppingItem> | undefined =>
+    filterBySearchQuery(state, listState)
 );
 
 export const selectShoppingListItems = createSelector(
