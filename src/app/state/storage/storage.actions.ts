@@ -16,7 +16,7 @@ export const StorageActions = createActionGroup({
     'Show Create Dialog With Search': emptyProps(),
     'Show Create Global Dialog With Search': emptyProps(),
 
-    'Move To Shoppinglist': (item: IStorageItem) => ({ item }),
+    'Copy To Shoppinglist': (item: IStorageItem) => ({ item }),
 
     // Operations
 

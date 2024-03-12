@@ -8,7 +8,7 @@ import {
 } from '../../@types/types';
 
 export const ShoppingActions = createActionGroup({
-  source: 'Shoppinglist',
+  source: 'Shopping',
   events: {
     'Add Item': (item: IShoppingItem) => ({ item }),
     'Add Item From Search': emptyProps(),

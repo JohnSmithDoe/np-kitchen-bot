@@ -73,7 +73,7 @@ void bootstrapApplication(AppComponent, {
     provideStore({
       settings: settingsReducer,
       storage: storageReducer,
-      shoppinglist: shoppingReducer,
+      shopping: shoppingReducer,
       globals: globalsReducer,
       categories: categoriesReducer,
       editStorageItem: editStorageItemReducer,

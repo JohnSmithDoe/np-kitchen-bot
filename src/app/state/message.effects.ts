@@ -7,7 +7,7 @@ import { isGlobalItem } from '../app.utils';
 import { UiService } from '../services/ui.service';
 import { GlobalsActions } from './globals/globals.actions';
 import { ShoppingActions } from './shopping/shopping.actions';
-import { selectShoppingList } from './shopping/shopping.selector';
+import { selectShoppingItems } from './shopping/shopping.selector';
 import { StorageActions } from './storage/storage.actions';
 
 @Injectable({ providedIn: 'root' })
@@ -70,16 +70,16 @@ export class MessageEffects {
     { dispatch: false }
   );
 
-  moveToShoppingListSuccess$ = createEffect(
+  copyToShoppingListSuccess$ = createEffect(
     () => {
       return this.#actions$.pipe(
         ofType(ShoppingActions.addStorageItem),
         mergeMap(({ data }) => {
-          return this.#store.select(selectShoppingList).pipe(
-            map((i) => i.find((a) => a.name === data.name)),
+          return this.#store.select(selectShoppingItems).pipe(
+            map((i) => i?.find((a) => a.name === data.name)),
             map((item) => {
               return fromPromise(
-                this.#uiService.showMovedToShoppingListToast(
+                this.#uiService.showCopyToShoppingListToast(
                   item?.name ?? 'Error',
                   item?.quantity ?? -1
                 )

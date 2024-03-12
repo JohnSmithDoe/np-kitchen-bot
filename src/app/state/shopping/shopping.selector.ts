@@ -11,16 +11,11 @@ import {
   filterBySearchQuery,
 } from '../@shared/item-list.selector';
 
-export const selectShoppinglistState =
-  createFeatureSelector<IShoppingState>('shoppinglist');
+export const selectShoppingState =
+  createFeatureSelector<IShoppingState>('shopping');
 
-export const selectShoppingList = createSelector(
-  selectShoppinglistState,
-  (state) => state.items
-);
-
-export const selectShoppingListSearchResult = createSelector(
-  selectShoppinglistState,
+export const selectShoppingSearchResult = createSelector(
+  selectShoppingState,
   (state: IAppState) => state,
   (
     listState: IShoppingState,
@@ -29,14 +24,14 @@ export const selectShoppingListSearchResult = createSelector(
     filterBySearchQuery(state, listState)
 );
 
-export const selectShoppingListItems = createSelector(
-  selectShoppinglistState,
-  selectShoppingListSearchResult,
+export const selectShoppingItems = createSelector(
+  selectShoppingState,
+  selectShoppingSearchResult,
   (state: IShoppingState, result): IShoppingItem[] | undefined =>
     filterAndSortItemList(state, result)
 );
-export const selectShoppingListCategories = createSelector(
-  selectShoppinglistState,
+export const selectShoppingCategories = createSelector(
+  selectShoppingState,
   (state: IShoppingState): TItemListCategory[] | undefined => {
     return [...new Set(state.items.flatMap((item) => item.category ?? []))];
   }

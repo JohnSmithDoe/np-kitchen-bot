@@ -11,7 +11,7 @@ import { EditShoppingItemActions } from '../edit-shopping-item/edit-shopping-ite
 import { selectEditShoppingState } from '../edit-shopping-item/edit-shopping-item.selector';
 import { QuickAddActions } from '../quick-add/quick-add.actions';
 import { ShoppingActions } from './shopping.actions';
-import { selectShoppinglistState } from './shopping.selector';
+import { selectShoppingState } from './shopping.selector';
 
 @Injectable({ providedIn: 'root' })
 export class ShoppingEffects {
@@ -43,8 +43,8 @@ export class ShoppingEffects {
   });
 
   saveShoppinglistOnChange$ = this.#createSaveEffect(
-    'shoppinglist',
-    selectShoppinglistState,
+    'shopping',
+    selectShoppingState,
     ShoppingActions.addItem,
     ShoppingActions.removeItem,
     ShoppingActions.updateItem,

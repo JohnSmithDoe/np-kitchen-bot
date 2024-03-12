@@ -68,9 +68,9 @@ export class StorageEffects {
     );
   });
 
-  moveToShoppingList$ = createEffect(() => {
+  copyToShoppingList$ = createEffect(() => {
     return this.#actions$.pipe(
-      ofType(StorageActions.moveToShoppinglist),
+      ofType(StorageActions.copyToShoppinglist),
       map(({ item }) => ShoppingActions.addStorageItem(item))
     );
   });

@@ -8,7 +8,7 @@ export const routes: Routes = [
     component: HomePage,
     children: [
       {
-        path: 'shoppinglist',
+        path: 'shopping',
         loadComponent: () =>
           import('../shopping/shopping.page').then((m) => m.ShoppingPage),
       },

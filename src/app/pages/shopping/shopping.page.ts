@@ -26,14 +26,14 @@ import { CategoriesPipe } from '../../pipes/categories.pipe';
 import { EditShoppingItemActions } from '../../state/edit-shopping-item/edit-shopping-item.actions';
 import { ShoppingActions } from '../../state/shopping/shopping.actions';
 import {
-  selectShoppingListCategories,
-  selectShoppingListItems,
-  selectShoppingListSearchResult,
-  selectShoppinglistState,
+  selectShoppingCategories,
+  selectShoppingItems,
+  selectShoppingSearchResult,
+  selectShoppingState,
 } from '../../state/shopping/shopping.selector';
 
 @Component({
-  selector: 'app-page-shopping-list',
+  selector: 'app-page-shopping',
   templateUrl: 'shopping.page.html',
   styleUrls: ['shopping.page.scss'],
   standalone: true,
@@ -59,10 +59,10 @@ import {
 export class ShoppingPage {
   readonly #store = inject(Store);
 
-  rxState$ = this.#store.select(selectShoppinglistState);
-  rxItems$ = this.#store.select(selectShoppingListItems);
-  rxCategories$ = this.#store.select(selectShoppingListCategories);
-  rxSearchResult$ = this.#store.select(selectShoppingListSearchResult);
+  rxState$ = this.#store.select(selectShoppingState);
+  rxItems$ = this.#store.select(selectShoppingItems);
+  rxCategories$ = this.#store.select(selectShoppingCategories);
+  rxSearchResult$ = this.#store.select(selectShoppingSearchResult);
 
   constructor() {
     addIcons({ add, remove });

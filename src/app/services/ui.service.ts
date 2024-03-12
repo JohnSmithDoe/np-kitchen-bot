@@ -47,7 +47,7 @@ export class UiService {
     });
     return this.showToast(msg, 'warning');
   }
-  showMovedToShoppingListToast(name: string, quantity: number) {
+  showCopyToShoppingListToast(name: string, quantity: number) {
     const msg = this.translate.instant('toast.moved.item.shopping', {
       name,
       quantity,

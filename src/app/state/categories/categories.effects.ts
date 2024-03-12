@@ -28,7 +28,7 @@ export class CategoriesEffects {
         const listItems: IBaseItem[] = state.editStorageItem.isEditing
           ? state.storage.items
           : state.editShoppingItem.isEditing
-            ? state.shoppinglist.items
+            ? state.shopping.items
             : state.globals.items;
 
         return CategoriesActions.updateSelection(editItem, listItems);

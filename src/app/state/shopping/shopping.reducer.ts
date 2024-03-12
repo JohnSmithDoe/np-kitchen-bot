@@ -73,7 +73,7 @@ export const shoppingReducer = createReducer(
   on(
     ApplicationActions.loadedSuccessfully,
     (_state, { datastore }): IShoppingState => {
-      return datastore.shoppinglist ?? _state;
+      return datastore.shopping ?? _state;
     }
   ),
   on(

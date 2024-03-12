@@ -134,7 +134,7 @@ export type TShoppingList = IItemList<IShoppingItem> & {
 export interface IDatastore {
   globals: TGlobalsList;
   storage: TStorageList;
-  shoppinglist: TShoppingList;
+  shopping: TShoppingList;
   settings: ISettings;
 }
 // hmm clean up this and myba add a quick add state
@@ -185,7 +185,7 @@ export type IQuickAddState = Readonly<{
 export interface IAppState {
   settings: ISettings;
   storage: IStorageState;
-  shoppinglist: IShoppingState;
+  shopping: IShoppingState;
   globals: IGlobalsState;
   categories: ICategoriesState;
   editStorageItem: IEditStorageItemState;

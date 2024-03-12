@@ -119,6 +119,6 @@ export class StoragePage {
   }
 
   async copyToShoppingList(item: IStorageItem) {
-    this.#store.dispatch(StorageActions.moveToShoppinglist(item));
+    this.#store.dispatch(StorageActions.copyToShoppinglist(item));
   }
 }

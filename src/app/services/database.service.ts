@@ -22,7 +22,7 @@ export class DatabaseService {
     const initialData: IDatastore = {
       globals: await this.#loadAs('globals'),
       storage: await this.#loadAs('storage'),
-      shoppinglist: await this.#loadAs('shoppinglist'),
+      shopping: await this.#loadAs('shopping'),
       settings: await this.#loadAs('settings'),
     };
     return initialData;

@@ -34,7 +34,7 @@ import {
 import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
-import { selectShoppingList } from './state/shopping/shopping.selector';
+import { selectShoppingItems } from './state/shopping/shopping.selector';
 
 @Component({
   selector: 'app-root',
@@ -126,10 +126,10 @@ export class AppComponent implements OnInit {
   }
 
   async shareShoppingList() {
-    const list = await firstValueFrom(this.#store.select(selectShoppingList));
-    const text = list
-      .map((item) => item.quantity + ' x ' + item.name)
-      .join('\n');
+    const list = await firstValueFrom(this.#store.select(selectShoppingItems));
+    const text =
+      list?.map((item) => item.quantity + ' x ' + item.name).join('\n') ??
+      'Nix drin';
     await Share.share({
       title: 'Einkaufsliste',
       text,
