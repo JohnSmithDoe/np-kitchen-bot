@@ -34,7 +34,7 @@ import {
 import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
-import { selectShoppingList } from './state/shoppinglist/shopping.selector';
+import { selectShoppingList } from './state/shopping/shopping.selector';
 
 @Component({
   selector: 'app-root',

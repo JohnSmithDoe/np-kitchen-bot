@@ -6,8 +6,8 @@ import { fromPromise } from 'rxjs/internal/observable/innerFrom';
 import { isGlobalItem } from '../app.utils';
 import { UiService } from '../services/ui.service';
 import { GlobalsActions } from './globals/globals.actions';
-import { ShoppingActions } from './shoppinglist/shopping.actions';
-import { selectShoppingList } from './shoppinglist/shopping.selector';
+import { ShoppingActions } from './shopping/shopping.actions';
+import { selectShoppingList } from './shopping/shopping.selector';
 import { StorageActions } from './storage/storage.actions';
 
 @Injectable({ providedIn: 'root' })

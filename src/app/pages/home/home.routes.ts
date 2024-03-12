@@ -10,9 +10,7 @@ export const routes: Routes = [
       {
         path: 'shoppinglist',
         loadComponent: () =>
-          import('../shoppinglist/shoppinglist.page').then(
-            (m) => m.ShoppinglistPage
-          ),
+          import('../shopping/shopping.page').then((m) => m.ShoppingPage),
       },
       {
         path: 'storage',

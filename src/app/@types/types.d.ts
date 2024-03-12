@@ -108,6 +108,14 @@ export interface IItemList<T extends IBaseItem = IBaseItem> {
 export interface ISettings {
   showQuickAdd: boolean;
   showQuickAddGlobal: boolean;
+  showGlobalsInStorage: boolean;
+  showShoppingInStorage: boolean;
+
+  showGlobalsInShopping: boolean;
+  showStorageInShopping: boolean;
+
+  showStorageInGlobals: boolean;
+  showShoppingInGlobals: boolean;
 }
 
 export type TStorageList = IItemList<IStorageItem> & {

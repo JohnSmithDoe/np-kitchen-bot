@@ -16,6 +16,7 @@ import { StorageItemComponent } from '../../components/item-list-items/storage-i
 import { TextItemComponent } from '../../components/item-list-items/text-item/text-item.component';
 import { ItemListEmptyComponent } from '../../components/item-list/item-list-empty/item-list-empty.component';
 import { ItemListQuickaddComponent } from '../../components/item-list/item-list-quick-add/item-list-quickadd.component';
+import { ItemListSearchResultComponent } from '../../components/item-list/item-list-search-result/item-list-search-result.component';
 import { ItemListSearchbarComponent } from '../../components/item-list/item-list-searchbar/item-list-searchbar.component';
 import { ItemListToolbarComponent } from '../../components/item-list/item-list-toolbar/item-list-toolbar.component';
 import { ItemListComponent } from '../../components/item-list/item-list.component';
@@ -55,6 +56,7 @@ import {
     CategoriesPipe,
     IonButton,
     AsyncPipe,
+    ItemListSearchResultComponent,
   ],
 })
 export class StoragePage {

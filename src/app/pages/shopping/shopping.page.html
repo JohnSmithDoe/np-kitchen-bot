@@ -1,6 +1,6 @@
 <app-page-header
   color="shopping"
-  label="{{'page-title.shoppinglist' | translate}}"
+  label="{{'page-title.shopping' | translate}}"
   [disabled]="!!(rxSearchResult$ | async)?.exactMatch"
   (addItem)="showCreateDialog()"
 >
@@ -23,7 +23,7 @@
   <app-item-list
     #shoppinglistComponent
     headerColor="shopping"
-    header="{{'list-header.shoppinglist' | translate}}"
+    header="{{'list-header.shopping' | translate}}"
     [mode]="(rxState$ | async)?.mode ?? 'alphabetical'"
     [items]="(rxItems$ | async)"
     [categories]="(rxCategories$ | async)"

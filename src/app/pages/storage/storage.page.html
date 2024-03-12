@@ -52,25 +52,9 @@
     (emptyItem)="showCreateDialog()"
   ></app-item-list-empty>
 
-  <!--  global search result-->
-  @if ((rxSearchResult$| async)?.globalItems?.length) {
-  <app-item-list
-    header="{{'list-header.global.search' | translate}}"
-    headerColor="global"
-    [items]="(rxSearchResult$| async)?.globalItems??[]"
-    [itemTemplate]="globalItem"
-  ></app-item-list>
-  <ng-template #globalItem let-item>
-    <app-text-item
-      color="global"
-      class="tinted"
-      [label]="item.name"
-      [note]="item | appCategories"
-      [helper]="'item-helper.search' | translate"
-      (selectItem)="addGlobalItem(item)"
-    ></app-text-item>
-  </ng-template>
-  }
+  <app-item-list-search-result
+    [results]="(rxSearchResult$| async)"
+  ></app-item-list-search-result>
 </ion-content>
 
 <app-edit-storage-item-dialog></app-edit-storage-item-dialog>

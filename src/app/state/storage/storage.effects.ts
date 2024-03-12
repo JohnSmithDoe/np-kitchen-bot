@@ -17,7 +17,7 @@ import { EditGlobalItemActions } from '../edit-global-item/edit-global-item.acti
 import { EditStorageItemActions } from '../edit-storage-item/edit-storage-item.actions';
 import { selectEditStorageState } from '../edit-storage-item/edit-storage-item.selector';
 import { QuickAddActions } from '../quick-add/quick-add.actions';
-import { ShoppingActions } from '../shoppinglist/shopping.actions';
+import { ShoppingActions } from '../shopping/shopping.actions';
 import { StorageActions } from './storage.actions';
 import { selectStorageState } from './storage.selector';
 

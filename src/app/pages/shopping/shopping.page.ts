@@ -24,18 +24,18 @@ import { EditGlobalItemDialogComponent } from '../../dialogs/edit-global-item-di
 import { EditShoppingItemDialogComponent } from '../../dialogs/edit-shopping-item-dialog/edit-shopping-item-dialog.component';
 import { CategoriesPipe } from '../../pipes/categories.pipe';
 import { EditShoppingItemActions } from '../../state/edit-shopping-item/edit-shopping-item.actions';
-import { ShoppingActions } from '../../state/shoppinglist/shopping.actions';
+import { ShoppingActions } from '../../state/shopping/shopping.actions';
 import {
   selectShoppingListCategories,
   selectShoppingListItems,
   selectShoppingListSearchResult,
   selectShoppinglistState,
-} from '../../state/shoppinglist/shopping.selector';
+} from '../../state/shopping/shopping.selector';
 
 @Component({
   selector: 'app-page-shopping-list',
-  templateUrl: 'shoppinglist.page.html',
-  styleUrls: ['shoppinglist.page.scss'],
+  templateUrl: 'shopping.page.html',
+  styleUrls: ['shopping.page.scss'],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
@@ -56,7 +56,7 @@ import {
     AsyncPipe,
   ],
 })
-export class ShoppinglistPage {
+export class ShoppingPage {
   readonly #store = inject(Store);
 
   rxState$ = this.#store.select(selectShoppinglistState);
