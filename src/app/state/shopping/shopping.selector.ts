@@ -9,6 +9,7 @@ import {
 import {
   filterAndSortItemList,
   filterBySearchQuery,
+  sortCategoriesFn,
 } from '../@shared/item-list.selector';
 
 export const selectShoppingState =
@@ -30,9 +31,12 @@ export const selectShoppingItems = createSelector(
   (state: IShoppingState, result): IShoppingItem[] | undefined =>
     filterAndSortItemList(state, result)
 );
+
 export const selectShoppingCategories = createSelector(
   selectShoppingState,
   (state: IShoppingState): TItemListCategory[] | undefined => {
-    return [...new Set(state.items.flatMap((item) => item.category ?? []))];
+    return [
+      ...new Set(state.items.flatMap((item) => item.category ?? [])),
+    ].sort(sortCategoriesFn(state.sort));
   }
 );

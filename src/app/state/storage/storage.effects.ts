@@ -36,11 +36,7 @@ export class StorageEffects {
   });
   clearSearch$ = createEffect(() => {
     return this.#actions$.pipe(
-      ofType(
-        StorageActions.addGlobalItem,
-        StorageActions.addItemFromSearch,
-        StorageActions.addItem
-      ),
+      ofType(StorageActions.addItem),
       map(() => StorageActions.updateSearch(''))
     );
   });
@@ -123,8 +119,8 @@ export class StorageEffects {
       })
     );
   });
-  // get the categories for the dialog... hmm
-  updateQuickAddStorage$ = createEffect(() => {
+
+  updateQuickAdd$ = createEffect(() => {
     return this.#actions$.pipe(
       ofType(StorageActions.updateSearch),
       withLatestFrom(this.#store, (action, state) => ({ action, state })),

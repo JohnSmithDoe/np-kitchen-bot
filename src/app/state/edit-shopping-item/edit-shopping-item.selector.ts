@@ -1,5 +1,9 @@
-import { createFeatureSelector } from '@ngrx/store';
-import { IEditShoppingItemState } from '../../@types/types';
+import { createFeatureSelector, createSelector } from '@ngrx/store';
+import { IEditShoppingItemState, IStorageItem } from '../../@types/types';
 
 export const selectEditShoppingState =
   createFeatureSelector<IEditShoppingItemState>('editShoppingItem');
+export const selectEditShoppingItem = createSelector(
+  selectEditShoppingState,
+  (state): IStorageItem | undefined => state.item
+);

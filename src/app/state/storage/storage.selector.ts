@@ -15,10 +15,6 @@ import {
 export const selectStorageState =
   createFeatureSelector<IStorageState>('storage');
 
-export const selectStorageList = createSelector(
-  selectStorageState,
-  (state) => state.items
-);
 export const selectStorageListSearchResult = createSelector(
   selectStorageState,
   (state: IAppState) => state,

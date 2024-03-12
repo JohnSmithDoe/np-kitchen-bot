@@ -94,6 +94,7 @@ export class StoragePage {
   searchFor(searchTerm: string) {
     this.#store.dispatch(StorageActions.updateSearch(searchTerm));
   }
+
   setDisplayMode(mode: TItemListMode) {
     this.#store.dispatch(StorageActions.updateMode(mode));
   }

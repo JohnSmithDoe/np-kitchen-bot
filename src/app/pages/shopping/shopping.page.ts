@@ -16,6 +16,7 @@ import { ShoppingItemComponent } from '../../components/item-list-items/shopping
 import { TextItemComponent } from '../../components/item-list-items/text-item/text-item.component';
 import { ItemListEmptyComponent } from '../../components/item-list/item-list-empty/item-list-empty.component';
 import { ItemListQuickaddComponent } from '../../components/item-list/item-list-quick-add/item-list-quickadd.component';
+import { ItemListSearchResultComponent } from '../../components/item-list/item-list-search-result/item-list-search-result.component';
 import { ItemListSearchbarComponent } from '../../components/item-list/item-list-searchbar/item-list-searchbar.component';
 import { ItemListToolbarComponent } from '../../components/item-list/item-list-toolbar/item-list-toolbar.component';
 import { ItemListComponent } from '../../components/item-list/item-list.component';
@@ -31,6 +32,7 @@ import {
   selectShoppingSearchResult,
   selectShoppingState,
 } from '../../state/shopping/shopping.selector';
+import { StorageActions } from '../../state/storage/storage.actions';
 
 @Component({
   selector: 'app-page-shopping',
@@ -54,6 +56,7 @@ import {
     EditShoppingItemDialogComponent,
     CategoriesPipe,
     AsyncPipe,
+    ItemListSearchResultComponent,
   ],
 })
 export class ShoppingPage {
@@ -77,7 +80,11 @@ export class ShoppingPage {
   }
 
   showCreateDialog() {
-    this.#store.dispatch(ShoppingActions.createItem());
+    this.#store.dispatch(ShoppingActions.showCreateDialogWithSearch());
+  }
+
+  showCreateGlobalDialog() {
+    this.#store.dispatch(ShoppingActions.showCreateGlobalDialogWithSearch());
   }
 
   showEditDialog(item: IShoppingItem) {
@@ -94,6 +101,7 @@ export class ShoppingPage {
   setSortMode(type: TItemListSortType) {
     this.#store.dispatch(ShoppingActions.updateSort(type, 'toggle'));
   }
+
   selectCategory(category: TItemListCategory) {
     this.#store.dispatch(ShoppingActions.updateFilter(category));
   }
@@ -107,16 +115,8 @@ export class ShoppingPage {
     );
   }
 
-  showCreateGlobalDialog() {
-    this.#store.dispatch(ShoppingActions.createGlobalItem());
-  }
-
-  closeCreateGlobalDialog() {
-    this.#store.dispatch(ShoppingActions.endCreateGlobalItem());
-  }
-
-  createAndAddGlobalItem(data: Partial<IGlobalItem>) {
-    this.#store.dispatch(ShoppingActions.createGlobalAndAddAsItem(data));
+  addGlobalItem(item: IGlobalItem) {
+    this.#store.dispatch(StorageActions.addGlobalItem(item));
   }
 
   async buyItem(item: IShoppingItem) {

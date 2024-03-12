@@ -11,6 +11,7 @@
   ></app-item-list-searchbar>
   <app-item-list-toolbar
     (selectDisplayMode)="setDisplayMode($event)"
+    (selectSortMode)="setSortMode($event)"
   ></app-item-list-toolbar>
 </app-page-header>
 
@@ -49,44 +50,9 @@
     (emptyItem)="showCreateDialog()"
   ></app-item-list-empty>
 
-  <!--  &lt;!&ndash;  storage search results&ndash;&gt;-->
-  <!--  @if (searchResult?.storageItems?.length) {-->
-  <!--  <app-item-list-->
-  <!--    header="{{'list-header.storage.search' | translate}}"-->
-  <!--    headerColor="storage"-->
-  <!--    [items]="searchResult?.storageItems??[]"-->
-  <!--    [itemTemplate]="storageItem"-->
-  <!--  ></app-item-list>-->
-  <!--  <ng-template #storageItem let-item>-->
-  <!--    <app-text-item-->
-  <!--      color="storage"-->
-  <!--      class="tinted"-->
-  <!--      [label]="item.name"-->
-  <!--      [note]="item | appCategories"-->
-  <!--      [helper]="'item-helper.search' | translate"-->
-  <!--      (selectItem)="addStorageItem(item)"-->
-  <!--    ></app-text-item>-->
-  <!--  </ng-template>-->
-  <!--  }-->
-  <!--  global search result-->
-  @if ((rxSearchResult$| async)?.globalItems?.length) {
-  <app-item-list
-    header="{{'list-header.global.search' | translate}}"
-    headerColor="global"
-    [items]="(rxSearchResult$| async)?.globalItems??[]"
-    [itemTemplate]="globalItem"
-  ></app-item-list>
-  <ng-template #globalItem let-item>
-    <app-text-item
-      color="global"
-      class="tinted"
-      [label]="item.name"
-      [note]="item | appCategories"
-      [helper]="'item-helper.search' | translate"
-      (selectItem)="createAndAddGlobalItem(item)"
-    ></app-text-item>
-  </ng-template>
-  }
+  <app-item-list-search-result
+    [results]="(rxSearchResult$| async)"
+  ></app-item-list-search-result>
 </ion-content>
 
 <app-edit-shopping-item-dialog></app-edit-shopping-item-dialog>

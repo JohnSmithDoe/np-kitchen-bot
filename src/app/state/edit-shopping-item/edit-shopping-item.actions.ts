@@ -1,15 +1,11 @@
 import { createActionGroup, emptyProps } from '@ngrx/store';
-import {
-  IShoppingItem,
-  IStorageItem,
-  TItemListCategory,
-} from '../../@types/types';
+import { IShoppingItem, TItemListCategory } from '../../@types/types';
 
 export const EditShoppingItemActions = createActionGroup({
   source: 'EditShoppingItem',
   events: {
-    'Show Dialog': (item?: IShoppingItem) => ({ item }),
-    'Update Item': (data: Partial<IStorageItem>) => ({ data }),
+    'Show Dialog': (item: IShoppingItem) => ({ item }),
+    'Update Item': (data: Partial<IShoppingItem>) => ({ data }),
     'Remove Category': (category: TItemListCategory) => ({ category }),
     'Hide Dialog': emptyProps(),
     'Confirm Changes': emptyProps(),

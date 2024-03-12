@@ -74,9 +74,9 @@ export class MessageEffects {
     () => {
       return this.#actions$.pipe(
         ofType(ShoppingActions.addStorageItem),
-        mergeMap(({ data }) => {
+        mergeMap(({ item }) => {
           return this.#store.select(selectShoppingItems).pipe(
-            map((i) => i?.find((a) => a.name === data.name)),
+            map((i) => i?.find((a) => a.name === item.name)),
             map((item) => {
               return fromPromise(
                 this.#uiService.showCopyToShoppingListToast(

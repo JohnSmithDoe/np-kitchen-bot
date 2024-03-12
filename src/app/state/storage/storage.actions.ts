@@ -3,6 +3,7 @@ import {
   IGlobalItem,
   IStorageItem,
   TItemListMode,
+  TItemListSortType,
   TUpdateDTO,
 } from '../../@types/types';
 
@@ -27,7 +28,7 @@ export const StorageActions = createActionGroup({
     'Update Filter': (filterBy?: string) => ({ filterBy }),
     'Update Mode': (mode?: TItemListMode) => ({ mode }),
     'Update Sort': (
-      sortBy?: 'name' | 'bestBefore',
+      sortBy?: TItemListSortType,
       sortDir?: 'asc' | 'desc' | 'keep' | 'toggle'
     ) => ({ sortBy, sortDir }),
   },
