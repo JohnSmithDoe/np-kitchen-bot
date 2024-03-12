@@ -1,5 +1,9 @@
 import { Color } from '@ionic/core/dist/types/interface';
 
+export type BooleanKeys<T> = {
+  [k in keyof T]: T[k] extends boolean ? k : never;
+}[keyof T];
+
 // eslint-disable-next-line functional/type-declaration-immutability
 export type TIonDragEvent = CustomEvent<{ amount: number; ratio: number }>;
 export type TMarker = string;

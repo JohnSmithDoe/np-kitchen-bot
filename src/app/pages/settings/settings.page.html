@@ -6,11 +6,11 @@
 
 <ion-content>
   <ion-list>
-    <ion-list-header>Schnell-Hinzufügen</ion-list-header>
+    <ion-list-header color="settings">Schnell-Hinzufügen</ion-list-header>
     <ion-item>
       <ion-toggle
         [checked]="(settings$ |async)?.showQuickAdd"
-        (ionChange)="toggleQuickAdd()"
+        (ionChange)="toggleFlag('showQuickAdd')"
         >"{{ 'item-list.quickadd.add'|translate:{list:
         'list-header.base'|translate} }}" anzeigen</ion-toggle
       >
@@ -18,8 +18,59 @@
     <ion-item>
       <ion-toggle
         [checked]="(settings$ |async)?.showQuickAddGlobal"
-        (ionChange)="toggleQuickAddGlobal()"
-        >"{{'item-list.quickadd.add.global'|translate}}" anzeigen</ion-toggle
+        (ionChange)="toggleFlag('showQuickAddGlobal')"
+        >"{{'item-list.quickadd.add.global'|translate}}" anzeigen
+      </ion-toggle>
+    </ion-item>
+    <ion-list-header color="storage">Suchergebnisse Lagerliste</ion-list-header>
+    <ion-item>
+      <ion-toggle
+        [checked]="(settings$ |async)?.showGlobalsInStorage"
+        (ionChange)="toggleFlag('showGlobalsInStorage')"
+      >
+        Dauerhafte Einträge anzeigen
+      </ion-toggle>
+    </ion-item>
+    <ion-item>
+      <ion-toggle
+        [checked]="(settings$ |async)?.showShoppingInStorage"
+        (ionChange)="toggleFlag('showShoppingInStorage')"
+        >Einkaufsliste anzeigen</ion-toggle
+      >
+    </ion-item>
+    <ion-list-header color="shopping"
+      >Suchergebnisse Einkaufsliste</ion-list-header
+    >
+    <ion-item>
+      <ion-toggle
+        [checked]="(settings$ |async)?.showGlobalsInShopping"
+        (ionChange)="toggleFlag('showGlobalsInShopping')"
+      >
+        Dauerhafte Einträge anzeigen
+      </ion-toggle>
+    </ion-item>
+    <ion-item>
+      <ion-toggle
+        [checked]="(settings$ |async)?.showStorageInShopping"
+        (ionChange)="toggleFlag('showStorageInShopping')"
+        >Lagerliste anzeigen</ion-toggle
+      >
+    </ion-item>
+    <ion-list-header color="global"
+      >Suchergebnisse Dauerhafte Einträge</ion-list-header
+    >
+    <ion-item>
+      <ion-toggle
+        [checked]="(settings$ |async)?.showStorageInGlobals"
+        (ionChange)="toggleFlag('showStorageInGlobals')"
+        >Lagerliste anzeigen</ion-toggle
+      >
+    </ion-item>
+    <ion-item>
+      <ion-toggle
+        [checked]="(settings$ |async)?.showShoppingInGlobals"
+        (ionChange)="toggleFlag('showShoppingInGlobals')"
+        >Einkaufsliste anzeigen</ion-toggle
       >
     </ion-item>
   </ion-list>

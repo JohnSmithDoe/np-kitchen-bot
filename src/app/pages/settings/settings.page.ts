@@ -8,11 +8,12 @@ import {
   IonToggle,
 } from '@ionic/angular/standalone';
 import { Store } from '@ngrx/store';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { add, remove } from 'ionicons/icons';
+import { BooleanKeys, ISettings } from '../../@types/types';
 import { PageHeaderComponent } from '../../components/page-header/page-header.component';
-import { UiService } from '../../services/ui.service';
+import { SettingsActions } from '../../state/settings/settings.actions';
 import { selectSettingsState } from '../../state/settings/settings.selector';
 
 @Component({
@@ -34,27 +35,13 @@ import { selectSettingsState } from '../../state/settings/settings.selector';
 })
 export class SettingsPage {
   readonly #store = inject(Store);
-  readonly #uiService = inject(UiService);
-  readonly translate = inject(TranslateService);
   readonly settings$ = this.#store.select(selectSettingsState);
 
   constructor() {
     addIcons({ add, remove });
   }
 
-  async save() {
-    await this.#uiService.showToast(
-      this.translate.instant('toast.save.setting')
-    );
-    // this.#database.saveSettings();
-  }
-
-  toggleQuickAdd() {
-    // this.settings.showQuickAdd = !this.settings.showQuickAdd;
-    return this.save();
-  }
-  toggleQuickAddGlobal() {
-    // this.settings.showQuickAddGlobal = !this.settings.showQuickAddGlobal;
-    return this.save();
+  toggleFlag(flag: BooleanKeys<ISettings>) {
+    this.#store.dispatch(SettingsActions.toggleFlag(flag));
   }
 }

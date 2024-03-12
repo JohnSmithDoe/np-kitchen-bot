@@ -6,8 +6,6 @@ import {
   TIonDragEvent,
 } from './@types/types';
 
-export const marker = (key: string) => key;
-
 // type guards
 export function isGlobalItem(value: TAllItemTypes): value is IGlobalItem {
   return value.hasOwnProperty('unit');

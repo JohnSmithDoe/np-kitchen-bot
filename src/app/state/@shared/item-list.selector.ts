@@ -19,6 +19,29 @@ const matchesCategory = (item: IBaseItem, searchQuery: string) =>
   (item.category?.findIndex(
     (cat) => cat.toLowerCase().indexOf(searchQuery) >= 0
   ) ?? -1) >= 0;
+const additionalSearch = <R extends IBaseItem, T extends IBaseItem>(
+  items: T[],
+  result: ISearchResult<R>,
+  searchQuery: string,
+  others?: IBaseItem[]
+) => {
+  others = others || [];
+  const additionalItemsByName = items.filter(
+    (item) =>
+      !others?.find((litem) => matchesNameExactly(item, litem)) &&
+      !result.listItems.find((litem) => matchesNameExactly(item, litem)) &&
+      matchesSearch(item, searchQuery)
+  );
+  // then by category
+  const additionalItemsByCat = items.filter(
+    (item) =>
+      !others?.find((litem) => matchesNameExactly(item, litem)) &&
+      !result.listItems.find((litem) => matchesNameExactly(item, litem)) &&
+      !additionalItemsByName.includes(item) &&
+      matchesCategory(item, searchQuery)
+  );
+  return [...additionalItemsByName, ...additionalItemsByCat];
+};
 
 export const filterBySearchQuery = <
   T extends IListState<R>,
@@ -40,22 +63,29 @@ export const filterBySearchQuery = <
   result.listItems = listState.items.filter((item) =>
     matchesSearch(item, searchQuery)
   );
-  if (listState.id !== '_globals') {
-    // group search by name first
-    const globalItemsByName = state.globals.items.filter(
-      (item) =>
-        !result.listItems.find((litem) => matchesNameExactly(item, litem)) &&
-        matchesSearch(item, searchQuery)
-    );
-    // then by category
-    const globalItemsByCat = state.globals.items.filter(
-      (item) =>
-        !result.listItems.find((litem) => matchesNameExactly(item, litem)) &&
-        !globalItemsByName.includes(item) &&
-        matchesCategory(item, searchQuery)
-    );
-    result.globalItems = [...globalItemsByName, ...globalItemsByCat];
+  //prettier-ignore
+  switch (listState.id) {
+    case "_storage":
+      if(state.settings.showGlobalsInStorage)
+        result.globalItems = additionalSearch(state.globals.items, result, searchQuery);
+      if(state.settings.showShoppingInStorage)
+        result.shoppingItems = additionalSearch(state.shopping.items, result, searchQuery, result.globalItems);
+      break;
+    case "_globals":
+      if(state.settings.showStorageInGlobals)
+        result.storageItems = additionalSearch(state.storage.items, result, searchQuery);
+      if(state.settings.showShoppingInGlobals)
+        result.shoppingItems = additionalSearch(state.shopping.items, result, searchQuery, result.storageItems);
+      break;
+    case "_shopping":
+      console.log('additional shopping');
+      if(state.settings.showGlobalsInShopping)
+        result.globalItems = additionalSearch(state.globals.items, result, searchQuery);
+      if(state.settings.showStorageInShopping)
+        result.storageItems = additionalSearch(state.storage.items, result, searchQuery, result.globalItems);
+      break;
   }
+
   result.exactMatch = result.listItems.find((base) =>
     matchesSearchExactly(base, searchQuery)
   );

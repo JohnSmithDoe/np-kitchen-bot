@@ -1,5 +1,5 @@
+import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { IBaseItem, IEditItemState, TEditItemMode } from '../../@types/types';
-import { marker } from '../../app.utils';
 
 export const showEditDialog = <R extends IBaseItem>(
   state: IEditItemState<R>,

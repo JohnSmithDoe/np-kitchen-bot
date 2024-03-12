@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { Actions, createEffect, ofType } from '@ngrx/effects';
+import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
 import { ActionCreator, Store } from '@ngrx/store';
 import { exhaustMap, map, take } from 'rxjs';
 import { fromPromise } from 'rxjs/internal/observable/innerFrom';
@@ -13,6 +13,19 @@ export class SettingsEffects {
   #actions$ = inject(Actions);
   #store = inject(Store);
   #database = inject(DatabaseService);
+  toggleFlag$ = createEffect(() => {
+    return this.#actions$.pipe(
+      ofType(SettingsActions.toggleFlag),
+      concatLatestFrom(() => this.#store.select(selectSettingsState)),
+      map(([{ flag }, settings]) => {
+        console.log('toggle flag', flag);
+        return SettingsActions.updateSettings({
+          ...settings,
+          [flag]: !settings[flag],
+        });
+      })
+    );
+  });
 
   saveSettingsOnChange$ = this.#createSaveEffect(
     'settings',

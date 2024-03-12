@@ -1,4 +1,5 @@
 import { inject, Injectable } from '@angular/core';
+import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
 import { ActionCreator, Store } from '@ngrx/store';
 import { TypedAction } from '@ngrx/store/src/models';
@@ -11,7 +12,6 @@ import {
   createShoppingItemFromGlobal,
   createShoppingItemFromStorage,
 } from '../../app.factory';
-import { marker } from '../../app.utils';
 import { DatabaseService } from '../../services/database.service';
 import { updateQuickAddState } from '../@shared/item-list.effects';
 import { EditGlobalItemActions } from '../edit-global-item/edit-global-item.actions';
