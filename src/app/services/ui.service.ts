@@ -1,7 +1,8 @@
 import { inject, Injectable } from '@angular/core';
 import { ToastController } from '@ionic/angular/standalone';
 import { TranslateService } from '@ngx-translate/core';
-import { TColor } from '../@types/types';
+import { TAllItemTypes, TColor, TUpdateDTO } from '../@types/types';
+import { hasQuantity } from '../app.utils';
 
 @Injectable({
   providedIn: 'root',
@@ -35,10 +36,16 @@ export class UiService {
     return this.showToast(msg);
   }
 
-  showUpdateItemToast(name: string) {
-    const msg = this.translate.instant('toast.update.item', {
-      name,
-    });
+  showUpdateItemToast(item: TUpdateDTO<TAllItemTypes>) {
+    const msg = hasQuantity(item)
+      ? this.translate.instant('toast.update.item.with.quantity', {
+          name: item.name,
+          quantity: item.quantity,
+        })
+      : this.translate.instant('toast.update.item', {
+          name: item.name,
+        });
+
     return this.showToast(msg);
   }
   showRemoveItemToast(name: string) {

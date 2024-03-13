@@ -1,6 +1,16 @@
-import { AsyncPipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { AsyncPipe, NgClass } from '@angular/common';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  OnDestroy,
+} from '@angular/core';
+import {
+  FormControl,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { InputCustomEvent } from '@ionic/angular';
 import {
   IonButton,
@@ -20,7 +30,9 @@ import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { closeCircle } from 'ionicons/icons';
+import { Subscription } from 'rxjs';
 import { TItemListCategory } from '../../@types/types';
+import { parseNumberInput } from '../../app.utils';
 import { CategoriesActions } from '../../state/categories/categories.actions';
 import { selectCategoriesState } from '../../state/categories/categories.selector';
 import { EditShoppingItemActions } from '../../state/edit-shopping-item/edit-shopping-item.actions';
@@ -51,18 +63,44 @@ import { CategoriesDialogComponent } from '../categories-dialog/categories-dialo
     IonHeader,
     IonModal,
     CategoriesDialogComponent,
+    NgClass,
+    ReactiveFormsModule,
   ],
   templateUrl: './edit-shopping-item-dialog.component.html',
   styleUrl: './edit-shopping-item-dialog.component.scss',
 })
-export class EditShoppingItemDialogComponent {
+export class EditShoppingItemDialogComponent implements OnDestroy {
   readonly #store = inject(Store);
   rxState$ = this.#store.select(selectEditShoppingState);
   rxItem$ = this.#store.select(selectEditShoppingItem);
   rxCategory$ = this.#store.select(selectCategoriesState);
+  nameControl: FormControl = new FormControl('', Validators.maxLength(3));
+  readonly #subscription: Subscription[];
 
   constructor() {
     addIcons({ closeCircle });
+    // Hmm this seems a bit much only to get validation on the input....
+    this.#subscription = [
+      // subscribe to the input changes and update the state
+      this.nameControl.valueChanges.subscribe((value: string | null) => {
+        this.#store.dispatch(
+          EditShoppingItemActions.updateItem({
+            name: value ?? undefined,
+          })
+        );
+      }),
+      // subscribe to the state changes and update the input value so we can have validation
+      this.rxItem$.subscribe((item) => {
+        if (this.nameControl.value !== item?.name) {
+          this.nameControl.setValue(item?.name);
+          this.nameControl.markAsTouched();
+        }
+      }),
+    ];
+  }
+
+  ngOnDestroy(): void {
+    this.#subscription.forEach((sub) => sub.unsubscribe());
   }
 
   cancelChanges() {
@@ -76,7 +114,7 @@ export class EditShoppingItemDialogComponent {
   submitChanges() {
     this.#store.dispatch(EditShoppingItemActions.confirmChanges());
   }
-
+  // dry -> maybe pass the string to the update action... convert somewhere else
   updatePrice(ev: InputCustomEvent<FocusEvent>) {
     let inputValue = ev.target.value as string;
     // get rid of all non-numeric chars
@@ -113,9 +151,10 @@ export class EditShoppingItemDialogComponent {
   }
 
   updateQuantity(ev: InputCustomEvent) {
+    const quantity = parseNumberInput(ev);
     this.#store.dispatch(
       EditShoppingItemActions.updateItem({
-        quantity: Number.parseInt(ev.detail.value ?? '0', 10),
+        quantity,
       })
     );
   }

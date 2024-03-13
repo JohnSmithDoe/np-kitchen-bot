@@ -39,6 +39,7 @@ import {
   TBestBeforeTimespan,
   TItemListCategory,
 } from '../../@types/types';
+import { parseNumberInput } from '../../app.utils';
 import { CategoriesActions } from '../../state/categories/categories.actions';
 import { selectCategoriesState } from '../../state/categories/categories.selector';
 import { EditGlobalItemActions } from '../../state/edit-global-item/edit-global-item.actions';
@@ -159,7 +160,7 @@ export class EditGlobalItemDialogComponent {
   setBestBeforeTimevalue(ev: InputCustomEvent) {
     this.#store.dispatch(
       EditGlobalItemActions.updateItem({
-        bestBeforeTimevalue: Number.parseInt(ev.detail.value ?? '0', 10),
+        bestBeforeTimevalue: parseNumberInput(ev),
       })
     );
   }

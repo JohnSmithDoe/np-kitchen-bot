@@ -29,6 +29,7 @@ function updateSearch(
 export const shoppingReducer = createReducer(
   initialState,
   on(ShoppingActions.addItem,(state, { item }) => addListItem(state, item)),
+  // on(ShoppingActions.addItemOrIncreaseQuantity,(state, { item }) => addListItemOrIncreaseQuantity(state, item)),
   on(ShoppingActions.removeItem,(state, { item }) => removeListItem(state, item)),
   on(ShoppingActions.updateItem,(state, { item }) => updateListItem(state, item)),
   on(ShoppingActions.updateSearch,(state, { searchQuery }): IShoppingState => updateSearch(state, searchQuery)),

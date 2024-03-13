@@ -28,6 +28,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { closeCircle } from 'ionicons/icons';
 import { TItemListCategory } from '../../@types/types';
+import { parseNumberInput } from '../../app.utils';
 import { CategoriesActions } from '../../state/categories/categories.actions';
 import { selectCategoriesState } from '../../state/categories/categories.selector';
 import { EditStorageItemActions } from '../../state/edit-storage-item/edit-storage-item.actions';
@@ -142,7 +143,7 @@ export class EditStorageItemDialogComponent {
   changeMinAmount(ev: InputCustomEvent) {
     this.#store.dispatch(
       EditStorageItemActions.updateItem({
-        minAmount: Number.parseInt(ev.detail.value ?? '0', 10),
+        minAmount: parseNumberInput(ev),
       })
     );
   }
@@ -150,7 +151,7 @@ export class EditStorageItemDialogComponent {
   updateQuantity(ev: InputCustomEvent) {
     this.#store.dispatch(
       EditStorageItemActions.updateItem({
-        quantity: Number.parseInt(ev.detail.value ?? '0', 10),
+        quantity: parseNumberInput(ev),
       })
     );
   }

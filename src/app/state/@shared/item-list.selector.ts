@@ -4,22 +4,19 @@ import {
   IBaseItem,
   IListState,
   ISearchResult,
+  TAllItemTypes,
   TItemListCategory,
   TItemListSort,
 } from '../../@types/types';
-import { isStorageItem } from '../../app.utils';
+import {
+  isStorageItem,
+  matchesCategory,
+  matchesNameExactly,
+  matchesSearch,
+  matchesSearchExactly,
+} from '../../app.utils';
 
-const matchesNameExactly = (item: IBaseItem, other: IBaseItem) =>
-  item.name.toLowerCase() === other.name.toLowerCase();
-const matchesSearch = (item: IBaseItem, searchQuery: string) =>
-  item.name.toLowerCase().includes(searchQuery.toLowerCase());
-const matchesSearchExactly = (item: IBaseItem, searchQuery: string) =>
-  item.name.toLowerCase() === searchQuery.toLowerCase();
-const matchesCategory = (item: IBaseItem, searchQuery: string) =>
-  (item.category?.findIndex(
-    (cat) => cat.toLowerCase().indexOf(searchQuery) >= 0
-  ) ?? -1) >= 0;
-const additionalSearch = <R extends IBaseItem, T extends IBaseItem>(
+const additionalSearch = <R extends TAllItemTypes, T extends TAllItemTypes>(
   items: T[],
   result: ISearchResult<R>,
   searchQuery: string,
@@ -45,7 +42,7 @@ const additionalSearch = <R extends IBaseItem, T extends IBaseItem>(
 
 export const filterBySearchQuery = <
   T extends IListState<R>,
-  R extends IBaseItem,
+  R extends TAllItemTypes,
 >(
   state: IAppState,
   listState: T
@@ -92,7 +89,7 @@ export const filterBySearchQuery = <
   return result;
 };
 
-function sortItemListFn<T extends IBaseItem>(sort?: TItemListSort) {
+function sortItemListFn<T extends TAllItemTypes>(sort?: TItemListSort) {
   const MAXDATE = '5000-1-1';
   const MINDATE = '1970-1-1';
   return (a: T, b: T): number => {
@@ -122,7 +119,7 @@ function sortItemListFn<T extends IBaseItem>(sort?: TItemListSort) {
 
 export const filterAndSortItemList = <
   T extends IListState<R>,
-  R extends IBaseItem,
+  R extends TAllItemTypes,
 >(
   state: T,
   result?: ISearchResult<R>

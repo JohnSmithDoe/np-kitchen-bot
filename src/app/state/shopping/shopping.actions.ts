@@ -14,6 +14,14 @@ export const ShoppingActions = createActionGroup({
     // Effects only
     'Add Item To List': (item: IShoppingItem) => ({ item }),
     'Add Item From Search': emptyProps(),
+    'Add Item Or Increase Quantity': (item: IShoppingItem) => ({ item }),
+    'Add Item Or Increase Quantity Success': (item: IShoppingItem) => ({
+      item,
+    }),
+
+    //hmmm or GlobalsAction.addToShopping globals and storage
+    //hmm then it is Add To Storage and Add To Globals here Shopping Items only though
+    //
     'Add Global Item': (item: IGlobalItem) => ({ item }),
     'Add Storage Item': (item: IStorageItem) => ({ item }),
 

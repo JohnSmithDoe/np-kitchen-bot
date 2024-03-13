@@ -1,8 +1,8 @@
 {
 	"add-item.dialog.button.cancel": "Abbrechen",
 	"add-item.dialog.title": "Eintrag hinzufügen",
-	"categories-dialog.empty": "Es gibt noch keine Kategorien.",
-	"categories-dialog.empty.helper": "Gib etwas in die Suche ein.",
+	"categories-dialog.empty": "Es gibt noch keine Kategorien",
+	"categories-dialog.empty.helper": "Gib etwas in die Suche ein",
 	"categories-dialog.notfound.create": "{{name}} erstellen",
 	"categories-dialog.notfound.create.helper": "Kategorie anlegen",
 	"categories.dialog.cancel": "Abbrechen",
@@ -44,8 +44,9 @@
 	"page-title.storage": "Lagerliste",
 	"searchbar.placeholder": "Suchen oder neu anlegen",
 	"toast.add.item": "{{name}} wurde der Liste hinzugefügt ({{quantity}})",
-	"toast.moved.item.shopping": "{{name}} wurde der Einkaufsliste hinzugefügt. ({{quantity}})",
-	"toast.remove.item": "{{name}} wurde entfernt.",
+	"toast.moved.item.shopping": "{{name}} wurde der Einkaufsliste hinzugefügt ({{quantity}})",
+	"toast.remove.item": "{{name}} wurde entfernt",
 	"toast.save.setting": "Einstellungen wurden gespeichert",
-	"toast.update.item": "{{name}} wurde aktualisiert"
+	"toast.update.item": "{{name}} wurde aktualisiert",
+	"toast.update.item.with.quantity": "{{name}} wurde aktualisiert ({{quantity}})"
 }

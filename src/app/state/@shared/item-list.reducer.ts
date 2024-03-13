@@ -1,38 +1,54 @@
 import {
-  IBaseItem,
   IListState,
+  IShoppingItem,
+  IStorageItem,
+  TAllItemTypes,
   TItemListMode,
   TItemListSort,
   TItemListSortDir,
   TItemListSortType,
   TUpdateDTO,
 } from '../../@types/types';
-import { isGlobalItem, isShoppingItem, isStorageItem } from '../../app.utils';
+import { matchesItem, matchesItemIdx } from '../../app.utils';
 
-export const addListItem = <T extends IListState<R>, R extends IBaseItem>(
+export const addListItem = <T extends IListState<R>, R extends TAllItemTypes>(
   state: T,
   item: R
 ): T => {
   // do not add an empty item
-  // do not add an already contained item (could be triggered by a shortcut)
   const name = item.name.trim();
-  const foundItem = state.items.find(
-    (listItem) => name.toLowerCase() === listItem.name.toLowerCase()
-  );
-  if (!name.length || (!!foundItem && isGlobalItem(foundItem))) {
+  if (!name.length) {
     return state;
-  }
-  // hmm update quantity if contained -> could be an effect i guess
-  if (foundItem && (isStorageItem(foundItem) || isShoppingItem(foundItem))) {
-    item = { ...foundItem, quantity: foundItem.quantity + 1 };
-    return updateListItem<T, R>(state, item);
   }
   return {
     ...state,
     items: [item, ...state.items],
   };
 };
-export const removeListItem = <T extends IListState<R>, R extends IBaseItem>(
+
+export const addListItemOrIncreaseQuantity = <
+  T extends IListState<R>,
+  R extends IStorageItem | IShoppingItem,
+>(
+  state: T,
+  item: R
+): T => {
+  const found = matchesItem(item, state.items);
+  if (found) {
+    console.log('found so inc quantity', found.quantity + 1);
+    return updateListItem<T, R>(state, {
+      ...found,
+      quantity: found.quantity + 1,
+    });
+  }
+  console.log('not found so add');
+  return addListItem<T, R>(state, item);
+};
+
+export const removeListItem = <
+  T extends IListState<R>,
+  R extends TAllItemTypes,
+>(
   state: T,
   item: R
 ): T => ({
@@ -40,19 +56,23 @@ export const removeListItem = <T extends IListState<R>, R extends IBaseItem>(
   items: state.items.filter((listItem) => listItem.id !== item.id),
 });
 
-export const updateListItem = <T extends IListState<R>, R extends IBaseItem>(
+export const updateListItem = <
+  T extends IListState<R>,
+  R extends TAllItemTypes,
+>(
   state: T,
   item: TUpdateDTO<R> | undefined
 ): T => {
   if (!item) return state;
   const items: TUpdateDTO<R>[] = [...state.items];
-  const itemIdx = state.items.findIndex((listItem) => listItem.id === item.id);
+  const itemIdx = matchesItemIdx(item, state.items);
   if (itemIdx >= 0) {
     const original = state.items[itemIdx];
     const updatedItem = { ...original, ...item };
     items.splice(itemIdx, 1, updatedItem);
   } else {
-    items.unshift(item);
+    console.error(item);
+    throw new Error('Dont update an item that is not in the list');
   }
   return { ...state, items };
 };
@@ -83,7 +103,10 @@ export const updateListSort = (
   return result;
 };
 
-export const updateListMode = <T extends IListState<R>, R extends IBaseItem>(
+export const updateListMode = <
+  T extends IListState<R>,
+  R extends TAllItemTypes,
+>(
   state: T,
   mode?: TItemListMode
 ): T => {

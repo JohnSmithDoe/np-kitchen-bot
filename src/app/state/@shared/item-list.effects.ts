@@ -1,4 +1,5 @@
 import { IAppState, IQuickAddState, TColor, TMarker } from '../../@types/types';
+import { matchesSearchExactly } from '../../app.utils';
 
 export const updateQuickAddState = (
   state: IAppState,
@@ -8,11 +9,11 @@ export const updateQuickAddState = (
   const searchQuery = state.storage.searchQuery;
   return {
     searchQuery,
-    exactMatchLocal: !!state.storage.items.find(
-      (item) => item.name.toLowerCase() === searchQuery
+    exactMatchLocal: !!state.storage.items.find((item) =>
+      matchesSearchExactly(item, searchQuery)
     ),
-    exactMatchGlobal: !!state.globals.items.find(
-      (item) => item.name.toLowerCase() === searchQuery
+    exactMatchGlobal: !!state.globals.items.find((item) =>
+      matchesSearchExactly(item, searchQuery)
     ),
     listName,
     color,

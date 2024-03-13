@@ -27,8 +27,9 @@
           <ion-input
             label="{{ 'edit.item.dialog.name' | translate }}"
             placeholder="{{ 'edit.item.dialog.name.placeholder' | translate }}"
-            [ngModel]="(rxItem$ | async)?.name"
+            [formControl]="nameControl"
             (ionInput)="updateName($event)"
+            [errorText]="'error'"
           ></ion-input>
         </ion-item>
 
@@ -38,7 +39,7 @@
             class="ion-text-end"
             label="Menge"
             [clearOnEdit]="true"
-            [ngModel]="(rxItem$ | async)?.quantity"
+            [ngModel]="(rxItem$ | async)?.quantity ?? 1"
             (ionInput)="updateQuantity($event)"
           ></ion-input>
         </ion-item>

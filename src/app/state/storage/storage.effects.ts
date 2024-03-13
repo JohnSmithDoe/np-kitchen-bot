@@ -8,10 +8,12 @@ import { fromPromise } from 'rxjs/internal/observable/innerFrom';
 import { IAppState } from '../../@types/types';
 import {
   createGlobalItem,
+  createShoppingItemFromStorage,
   createStorageItem,
   createStorageItemFromGlobal,
   createStorageItemFromShopping,
 } from '../../app.factory';
+import { matchesItem } from '../../app.utils';
 import { DatabaseService } from '../../services/database.service';
 import { updateQuickAddState } from '../@shared/item-list.effects';
 import { EditGlobalItemActions } from '../edit-global-item/edit-global-item.actions';
@@ -35,6 +37,7 @@ export class StorageEffects {
       map(({ mode }) => StorageActions.updateFilter())
     );
   });
+
   clearSearch$ = createEffect(() => {
     return this.#actions$.pipe(
       ofType(StorageActions.addItemToList),
@@ -66,7 +69,11 @@ export class StorageEffects {
   copyToShoppingList$ = createEffect(() => {
     return this.#actions$.pipe(
       ofType(StorageActions.copyToShoppinglist),
-      map(({ item }) => ShoppingActions.addStorageItem(item))
+      map(({ item, type }) => {
+        console.log(type, item);
+        const shoppingItem = createShoppingItemFromStorage(item);
+        return ShoppingActions.addItemOrIncreaseQuantity(shoppingItem);
+      })
     );
   });
 
@@ -92,11 +99,18 @@ export class StorageEffects {
       })
     );
   });
-  // message hook
-  addItemToList$ = createEffect(() => {
+  addOrUpdateIteme$ = createEffect(() => {
     return this.#actions$.pipe(
       ofType(StorageActions.addItemToList),
-      map(({ item }) => StorageActions.addItem(item))
+      concatLatestFrom(() => this.#store.select(selectStorageState)),
+      map(([{ item }, state]) => {
+        if (matchesItem(item, state.items)) {
+          console.log('found so update');
+          return StorageActions.updateItem(item);
+        }
+        console.log('not found so add');
+        return StorageActions.addItem(item);
+      })
     );
   });
 

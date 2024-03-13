@@ -1,5 +1,6 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import { ICategoriesState } from '../../@types/types';
+import { matchesSearchString } from '../../app.utils';
 
 export const selectCategoriesState =
   createFeatureSelector<ICategoriesState>('categories');
@@ -20,7 +21,7 @@ export const selectCategories = createSelector(
     return !state.searchQuery || !state.searchQuery.length
       ? allCategories
       : allCategories.filter((cat) =>
-          cat.toLowerCase().includes(state.searchQuery?.toLowerCase() ?? '')
+          matchesSearchString(cat, state.searchQuery)
         );
   }
 );

@@ -12,6 +12,7 @@ import {
   createShoppingItemFromGlobal,
   createShoppingItemFromStorage,
 } from '../../app.factory';
+import { matchesItem } from '../../app.utils';
 import { DatabaseService } from '../../services/database.service';
 import { updateQuickAddState } from '../@shared/item-list.effects';
 import { EditGlobalItemActions } from '../edit-global-item/edit-global-item.actions';
@@ -58,7 +59,7 @@ export class ShoppingEffects {
     return this.#actions$.pipe(
       ofType(EditShoppingItemActions.confirmChanges),
       concatLatestFrom(() => this.#store.select(selectEditShoppingState)),
-      map(([_, state]) => ShoppingActions.updateItem(state.item))
+      map(([_, state]) => ShoppingActions.addItemToList(state.item))
     );
   });
   buyItem$ = createEffect(() => {
@@ -91,11 +92,37 @@ export class ShoppingEffects {
     );
   });
 
-  addItemToList$ = createEffect(() => {
+  // add or update item
+  addItemToListOrUpdate$ = createEffect(() => {
     return this.#actions$.pipe(
       ofType(ShoppingActions.addItemToList),
-      map(({ item }) => {
+      concatLatestFrom(() => this.#store.select(selectShoppingState)),
+      map(([{ item }, state]) => {
+        if (matchesItem(item, state.items)) {
+          console.log('found so update');
+          return ShoppingActions.updateItem(item);
+        }
+        console.log('not found so add');
         return ShoppingActions.addItem(item);
+      })
+    );
+  });
+  addItemOrIncreaseQuantity$ = createEffect(() => {
+    return this.#actions$.pipe(
+      ofType(ShoppingActions.addItemOrIncreaseQuantity),
+      concatLatestFrom(() => this.#store.select(selectShoppingState)),
+      map(([{ item }, state]) => {
+        console.log('add item or inc effect', item.quantity);
+        const found = matchesItem(item, state.items);
+        if (found) {
+          console.log('found so inc quantity', found.quantity + 1);
+          return ShoppingActions.updateItem({
+            ...found,
+            quantity: found.quantity + 1,
+          });
+        }
+        console.log('not found so add');
+        return ShoppingActions.addItemToList(item);
       })
     );
   });
@@ -125,7 +152,7 @@ export class ShoppingEffects {
       ofType(ShoppingActions.addStorageItem),
       map(({ item }) => {
         const shoppingItem = createShoppingItemFromStorage(item);
-        return ShoppingActions.addItem(shoppingItem);
+        return ShoppingActions.addItemToList(shoppingItem);
       })
     );
   });

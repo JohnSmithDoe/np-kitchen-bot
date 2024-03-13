@@ -70,18 +70,8 @@ export interface IShoppingItem extends IBaseItem {
 }
 export type TUpdateDTO<T extends IBaseItem> = IBaseItem &
   Partial<T> & { id: string };
-export type TAllItemTypes =
-  | IBaseItem
-  | IGlobalItem
-  | IShoppingItem
-  | IStorageItem;
-// export type IStorageItem = Readonly<
-//   IBaseItem & {
-//     quantity: number;
-//     minAmount?: number;
-//     bestBefore?: TTimestamp;
-//   }
-// >;
+export type TAllItemTypes = IGlobalItem | IShoppingItem | IStorageItem;
+
 export type IStorageItem = IBaseItem & {
   quantity: number;
   minAmount?: number;
@@ -99,7 +89,7 @@ export type TItemListMode = 'alphabetical' | 'categories';
 
 export type TItemListId = '_storage' | '_globals' | '_shopping';
 
-export interface IItemList<T extends IBaseItem = IBaseItem> {
+export interface IItemList<T extends TAllItemTypes> {
   id: TItemListId;
   title: string;
   items: T[];
@@ -107,19 +97,6 @@ export interface IItemList<T extends IBaseItem = IBaseItem> {
   searchQuery?: string;
   filterBy?: string;
   sort?: TItemListSort;
-}
-
-export interface ISettings {
-  showQuickAdd: boolean;
-  showQuickAddGlobal: boolean;
-  showGlobalsInStorage: boolean;
-  showShoppingInStorage: boolean;
-
-  showGlobalsInShopping: boolean;
-  showStorageInShopping: boolean;
-
-  showStorageInGlobals: boolean;
-  showShoppingInGlobals: boolean;
 }
 
 export type TStorageList = IItemList<IStorageItem> & {
@@ -134,6 +111,24 @@ export type TShoppingList = IItemList<IShoppingItem> & {
   id: '_shopping';
   title: 'Shopping Items';
 };
+
+export type IStorageState = Readonly<TStorageList>;
+export type IShoppingState = Readonly<TShoppingList>;
+export type IGlobalsState = Readonly<TGlobalsList>;
+export type IListState<T extends TAllItemTypes> = IItemList<T>;
+
+export interface ISettings {
+  showQuickAdd: boolean;
+  showQuickAddGlobal: boolean;
+  showGlobalsInStorage: boolean;
+  showShoppingInStorage: boolean;
+
+  showGlobalsInShopping: boolean;
+  showStorageInShopping: boolean;
+
+  showStorageInGlobals: boolean;
+  showShoppingInGlobals: boolean;
+}
 
 export interface IDatastore {
   globals: TGlobalsList;
@@ -151,11 +146,6 @@ export interface ISearchResult<T extends IBaseItem> {
   storageItems: IStorageItem[];
   shoppingItems: IShoppingItem[];
 }
-
-export type IListState<T extends IBaseItem> = IItemList<T>;
-export type IStorageState = Readonly<TStorageList>;
-export type IShoppingState = Readonly<TShoppingList>;
-export type IGlobalsState = Readonly<TGlobalsList>;
 
 export type ICategoriesState = Readonly<{
   categories: TItemListCategory[];
