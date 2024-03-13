@@ -1,17 +1,49 @@
-import { IAppState, IQuickAddState, TColor, TMarker } from '../../@types/types';
+import { marker } from '@colsen1991/ngx-translate-extract-marker';
+import {
+  IAppState,
+  IQuickAddState,
+  TColor,
+  TItemListId,
+} from '../../@types/types';
 import { matchesSearchExactly } from '../../app.utils';
 
-export const updateQuickAddState = (
+export const createQuickAddState = (
   state: IAppState,
-  listName: TMarker,
-  color: TColor
+  listId: TItemListId
 ): IQuickAddState => {
-  const searchQuery = state.storage.searchQuery;
+  let searchQuery: string | undefined;
+  let exactMatchLocal = false;
+  let listName: string | undefined;
+  let color: TColor | undefined;
+  switch (listId) {
+    case '_storage':
+      searchQuery = state.storage.searchQuery;
+      listName = marker('list-header.storage');
+      color = 'storage';
+      exactMatchLocal = !!state.storage.items.find((item) =>
+        matchesSearchExactly(item, searchQuery)
+      );
+      break;
+    case '_globals':
+      searchQuery = state.globals.searchQuery;
+      listName = marker('list-header.globals');
+      color = 'global';
+      exactMatchLocal = !!state.globals.items.find((item) =>
+        matchesSearchExactly(item, searchQuery)
+      );
+      break;
+    case '_shopping':
+      searchQuery = state.shopping.searchQuery;
+      listName = marker('list-header.shopping');
+      color = 'shopping';
+      exactMatchLocal = !!state.shopping.items.find((item) =>
+        matchesSearchExactly(item, searchQuery)
+      );
+      break;
+  }
   return {
     searchQuery,
-    exactMatchLocal: !!state.storage.items.find((item) =>
-      matchesSearchExactly(item, searchQuery)
-    ),
+    exactMatchLocal,
     exactMatchGlobal: !!state.globals.items.find((item) =>
       matchesSearchExactly(item, searchQuery)
     ),

@@ -157,15 +157,18 @@ export type ICategoriesState = Readonly<{
 export type TEditItemMode = 'update' | 'create';
 export type IEditItemState<T extends IBaseItem> = Readonly<{
   item: T;
+  listId: TItemListId;
   isEditing?: boolean;
   editMode?: TEditItemMode;
   dialogTitle?: string;
   saveButtonText?: string;
+  category: ICategoriesState;
 }>;
+export type TDialogsState = IEditItemState<TAllItemTypes>;
 export type IEditStorageItemState = IEditItemState<IStorageItem>;
 export type IEditShoppingItemState = IEditItemState<IShoppingItem>;
 export type IEditGlobalItemState = IEditItemState<IGlobalItem> & {
-  listId?: TItemListId;
+  addTo?: TItemListId;
 };
 
 export type IQuickAddState = Readonly<{
@@ -182,7 +185,7 @@ export interface IAppState {
   shopping: IShoppingState;
   globals: IGlobalsState;
   categories: ICategoriesState;
-  editStorageItem: IEditStorageItemState;
+  dialogs: TDialogsState;
   editShoppingItem: IEditShoppingItemState;
   editGlobalItem: IEditGlobalItemState;
   quickadd: IQuickAddState;

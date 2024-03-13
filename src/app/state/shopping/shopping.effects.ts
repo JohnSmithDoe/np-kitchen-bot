@@ -1,5 +1,4 @@
 import { inject, Injectable } from '@angular/core';
-import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { TypedAction } from '@ngrx/store/src/models';
@@ -14,11 +13,8 @@ import {
 } from '../../app.factory';
 import { matchesItem } from '../../app.utils';
 import { DatabaseService } from '../../services/database.service';
-import { updateQuickAddState } from '../@shared/item-list.effects';
-import { EditGlobalItemActions } from '../edit-global-item/edit-global-item.actions';
-import { EditShoppingItemActions } from '../edit-shopping-item/edit-shopping-item.actions';
-import { selectEditShoppingState } from '../edit-shopping-item/edit-shopping-item.selector';
-import { QuickAddActions } from '../quick-add/quick-add.actions';
+import { DialogsActions } from '../dialogs/dialogs.actions';
+import { selectEditShoppingState } from '../dialogs/dialogs.selector';
 import { ShoppingActions } from './shopping.actions';
 import { selectShoppingState } from './shopping.selector';
 
@@ -57,8 +53,9 @@ export class ShoppingEffects {
 
   confirmShoppingItemChanges$ = createEffect(() => {
     return this.#actions$.pipe(
-      ofType(EditShoppingItemActions.confirmChanges),
+      ofType(DialogsActions.confirmChanges),
       concatLatestFrom(() => this.#store.select(selectEditShoppingState)),
+      filter(([_, state]) => state.listId === '_shopping'),
       map(([_, state]) => ShoppingActions.addItemToList(state.item))
     );
   });
@@ -77,7 +74,7 @@ export class ShoppingEffects {
       withLatestFrom(this.#store, (action, state) => ({ action, state })),
       map(({ action, state }: { action: any; state: IAppState }) => {
         const item = createShoppingItem(state.shopping.searchQuery ?? '');
-        return EditShoppingItemActions.showDialog(item);
+        return DialogsActions.showDialog(item, '_shopping');
       })
     );
   });
@@ -87,7 +84,7 @@ export class ShoppingEffects {
       withLatestFrom(this.#store, (action, state) => ({ action, state })),
       map(({ action, state }: { action: any; state: IAppState }) => {
         const item = createGlobalItem(state.shopping.searchQuery ?? '');
-        return EditGlobalItemActions.showDialog(item, '_shopping');
+        return DialogsActions.showDialog(item, '_shopping');
       })
     );
   });
@@ -157,20 +154,6 @@ export class ShoppingEffects {
     );
   });
 
-  updateQuickAdd$ = createEffect(() => {
-    return this.#actions$.pipe(
-      ofType(ShoppingActions.updateSearch),
-      withLatestFrom(this.#store, (action, state) => ({ action, state })),
-      map(({ action, state }: { action: any; state: IAppState }) => {
-        const newState = updateQuickAddState(
-          state,
-          marker('list-header.shopping'),
-          'shopping'
-        );
-        return QuickAddActions.updateState(newState);
-      })
-    );
-  });
   saveOnChange$ = createEffect(
     () => {
       return this.#actions$.pipe(

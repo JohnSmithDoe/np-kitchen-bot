@@ -1,5 +1,8 @@
 <ion-modal
-  [isOpen]="(rxState$ | async)?.isEditing === true"
+  [isOpen]="
+    (rxState$ | async)?.isEditing === true &&
+    (rxState$ | async)?.listId === '_storage'
+  "
   (didDismiss)="closedDialog()"
 >
   <ng-template>

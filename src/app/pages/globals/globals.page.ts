@@ -24,7 +24,7 @@ import { ItemListComponent } from '../../components/item-list/item-list.componen
 import { PageHeaderComponent } from '../../components/page-header/page-header.component';
 import { EditGlobalItemDialogComponent } from '../../dialogs/edit-global-item-dialog/edit-global-item-dialog.component';
 import { EditStorageItemDialogComponent } from '../../dialogs/edit-storage-item-dialog/edit-storage-item-dialog.component';
-import { EditGlobalItemActions } from '../../state/edit-global-item/edit-global-item.actions';
+import { DialogsActions } from '../../state/dialogs/dialogs.actions';
 import { GlobalsActions } from '../../state/globals/globals.actions';
 import {
   selectGlobalsListCategories,
@@ -82,7 +82,7 @@ export class GlobalsPage {
   }
 
   showEditDialog(item: IGlobalItem) {
-    this.#store.dispatch(EditGlobalItemActions.showDialog(item));
+    this.#store.dispatch(DialogsActions.showDialog(item, '_globals'));
   }
 
   searchFor(searchTerm: string) {

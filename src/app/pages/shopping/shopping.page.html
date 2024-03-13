@@ -23,8 +23,8 @@
 
   <app-item-list
     #shoppinglistComponent
-    headerColor="shopping"
-    header="{{'list-header.shopping' | translate}}"
+    [headerColor]="(rxState$ | async)?.filterBy ? 'category' : 'shopping'"
+    [header]="(rxState$ | async)?.filterBy ?? ('list-header.shopping' | translate)"
     [mode]="(rxState$ | async)?.mode ?? 'alphabetical'"
     [items]="(rxItems$ | async)"
     [categories]="(rxCategories$ | async)"

@@ -21,11 +21,9 @@ import { AppComponent } from './app/app.component';
 import { routes } from './app/app.routes';
 import { ApplicationActions } from './app/state/application.actions';
 import { ApplicationEffects } from './app/state/application.effects';
-import { CategoriesEffects } from './app/state/categories/categories.effects';
-import { categoriesReducer } from './app/state/categories/categories.reducer';
-import { editGlobalItemReducer } from './app/state/edit-global-item/edit-global-item.reducer';
-import { editShoppingItemReducer } from './app/state/edit-shopping-item/edit-shopping-item.reducer';
-import { editStorageItemReducer } from './app/state/edit-storage-item/edit-storage-item.reducer';
+import { CategoriesEffects } from './app/state/dialogs/categories.effects';
+
+import { dialogsReducer } from './app/state/dialogs/dialogs.reducer';
 import { GlobalsEffects } from './app/state/globals/globals.effects';
 import { globalsReducer } from './app/state/globals/globals.reducer';
 import { MessageEffects } from './app/state/message.effects';
@@ -75,10 +73,7 @@ void bootstrapApplication(AppComponent, {
       storage: storageReducer,
       shopping: shoppingReducer,
       globals: globalsReducer,
-      categories: categoriesReducer,
-      editStorageItem: editStorageItemReducer,
-      editShoppingItem: editShoppingItemReducer,
-      editGlobalItem: editGlobalItemReducer,
+      dialogs: dialogsReducer,
       quickadd: quickAddReducer,
     }),
     provideEffects(

@@ -22,8 +22,8 @@
 
   <app-item-list
     #globalListComponent
-    headerColor="global"
-    header="{{'list-header.global' | translate}}"
+    [headerColor]="(rxState$ | async)?.filterBy ? 'category' : 'global'"
+    [header]="(rxState$ | async)?.filterBy ?? ('list-header.global' | translate)"
     [mode]="(rxState$ | async)?.mode ?? 'alphabetical'"
     [items]="(rxItems$ | async)"
     [categories]="(rxCategories$ | async)"

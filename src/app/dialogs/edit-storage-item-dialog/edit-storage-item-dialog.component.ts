@@ -29,13 +29,13 @@ import { addIcons } from 'ionicons';
 import { closeCircle } from 'ionicons/icons';
 import { TItemListCategory } from '../../@types/types';
 import { parseNumberInput } from '../../app.utils';
-import { CategoriesActions } from '../../state/categories/categories.actions';
-import { selectCategoriesState } from '../../state/categories/categories.selector';
-import { EditStorageItemActions } from '../../state/edit-storage-item/edit-storage-item.actions';
+import { CategoriesActions } from '../../state/dialogs/categories.actions';
+import { selectCategoriesState } from '../../state/dialogs/categories.selector';
+import { DialogsActions } from '../../state/dialogs/dialogs.actions';
 import {
   selectEditStorageItem,
   selectEditStorageState,
-} from '../../state/edit-storage-item/edit-storage-item.selector';
+} from '../../state/dialogs/dialogs.selector';
 import { CategoriesDialogComponent } from '../categories-dialog/categories-dialog.component';
 
 @Component({
@@ -84,15 +84,15 @@ export class EditStorageItemDialogComponent {
   }
 
   cancelChanges() {
-    this.#store.dispatch(EditStorageItemActions.abortChanges());
+    this.#store.dispatch(DialogsActions.abortChanges());
   }
 
   closedDialog() {
-    this.#store.dispatch(EditStorageItemActions.hideDialog());
+    this.#store.dispatch(DialogsActions.hideDialog());
   }
 
   submitChanges() {
-    this.#store.dispatch(EditStorageItemActions.confirmChanges());
+    this.#store.dispatch(DialogsActions.confirmChanges());
   }
 
   updatePrice(ev: InputCustomEvent<FocusEvent>) {
@@ -112,7 +112,7 @@ export class EditStorageItemDialogComponent {
     const numberInput = cleanInput.replace(/,+/g, '.');
     const priceValue = Number.parseFloat(numberInput);
     this.#store.dispatch(
-      EditStorageItemActions.updateItem({
+      DialogsActions.updateItem({
         price: priceValue,
       })
     );
@@ -120,7 +120,7 @@ export class EditStorageItemDialogComponent {
 
   updateName(ev: InputCustomEvent) {
     this.#store.dispatch(
-      EditStorageItemActions.updateItem({
+      DialogsActions.updateItem({
         name: ev.detail.value ?? undefined,
       })
     );
@@ -130,19 +130,20 @@ export class EditStorageItemDialogComponent {
     const dateValue =
       typeof ev.detail.value === 'string' ? ev.detail.value : undefined;
     this.#store.dispatch(
-      EditStorageItemActions.updateItem({
+      DialogsActions.updateItem({
         bestBefore: dateValue,
       })
     );
   }
 
   removeCategory(cat: TItemListCategory) {
-    this.#store.dispatch(EditStorageItemActions.removeCategory(cat));
+    console.log('should remove it');
+    this.#store.dispatch(DialogsActions.removeCategory(cat));
   }
 
   changeMinAmount(ev: InputCustomEvent) {
     this.#store.dispatch(
-      EditStorageItemActions.updateItem({
+      DialogsActions.updateItem({
         minAmount: parseNumberInput(ev),
       })
     );
@@ -150,7 +151,7 @@ export class EditStorageItemDialogComponent {
 
   updateQuantity(ev: InputCustomEvent) {
     this.#store.dispatch(
-      EditStorageItemActions.updateItem({
+      DialogsActions.updateItem({
         quantity: parseNumberInput(ev),
       })
     );

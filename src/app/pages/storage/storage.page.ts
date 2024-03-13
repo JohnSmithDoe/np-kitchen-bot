@@ -25,7 +25,7 @@ import { PageHeaderComponent } from '../../components/page-header/page-header.co
 import { EditGlobalItemDialogComponent } from '../../dialogs/edit-global-item-dialog/edit-global-item-dialog.component';
 import { EditStorageItemDialogComponent } from '../../dialogs/edit-storage-item-dialog/edit-storage-item-dialog.component';
 import { CategoriesPipe } from '../../pipes/categories.pipe';
-import { EditStorageItemActions } from '../../state/edit-storage-item/edit-storage-item.actions';
+import { DialogsActions } from '../../state/dialogs/dialogs.actions';
 import { StorageActions } from '../../state/storage/storage.actions';
 import {
   selectStorageListCategories,
@@ -85,7 +85,7 @@ export class StoragePage {
   }
 
   showEditDialog(item: IStorageItem) {
-    this.#store.dispatch(EditStorageItemActions.showDialog(item));
+    this.#store.dispatch(DialogsActions.showDialog(item, '_storage'));
   }
 
   searchFor(searchTerm: string) {

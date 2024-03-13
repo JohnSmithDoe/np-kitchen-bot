@@ -33,13 +33,13 @@ import { closeCircle } from 'ionicons/icons';
 import { Subscription } from 'rxjs';
 import { TItemListCategory } from '../../@types/types';
 import { parseNumberInput } from '../../app.utils';
-import { CategoriesActions } from '../../state/categories/categories.actions';
-import { selectCategoriesState } from '../../state/categories/categories.selector';
-import { EditShoppingItemActions } from '../../state/edit-shopping-item/edit-shopping-item.actions';
+import { CategoriesActions } from '../../state/dialogs/categories.actions';
+import { selectCategoriesState } from '../../state/dialogs/categories.selector';
+import { DialogsActions } from '../../state/dialogs/dialogs.actions';
 import {
   selectEditShoppingItem,
   selectEditShoppingState,
-} from '../../state/edit-shopping-item/edit-shopping-item.selector';
+} from '../../state/dialogs/dialogs.selector';
 import { CategoriesDialogComponent } from '../categories-dialog/categories-dialog.component';
 
 @Component({
@@ -84,7 +84,7 @@ export class EditShoppingItemDialogComponent implements OnDestroy {
       // subscribe to the input changes and update the state
       this.nameControl.valueChanges.subscribe((value: string | null) => {
         this.#store.dispatch(
-          EditShoppingItemActions.updateItem({
+          DialogsActions.updateItem({
             name: value ?? undefined,
           })
         );
@@ -104,15 +104,15 @@ export class EditShoppingItemDialogComponent implements OnDestroy {
   }
 
   cancelChanges() {
-    this.#store.dispatch(EditShoppingItemActions.abortChanges());
+    this.#store.dispatch(DialogsActions.abortChanges());
   }
 
   closedDialog() {
-    this.#store.dispatch(EditShoppingItemActions.hideDialog());
+    this.#store.dispatch(DialogsActions.hideDialog());
   }
 
   submitChanges() {
-    this.#store.dispatch(EditShoppingItemActions.confirmChanges());
+    this.#store.dispatch(DialogsActions.confirmChanges());
   }
   // dry -> maybe pass the string to the update action... convert somewhere else
   updatePrice(ev: InputCustomEvent<FocusEvent>) {
@@ -132,7 +132,7 @@ export class EditShoppingItemDialogComponent implements OnDestroy {
     const numberInput = cleanInput.replace(/,+/g, '.');
     const priceValue = Number.parseFloat(numberInput);
     this.#store.dispatch(
-      EditShoppingItemActions.updateItem({
+      DialogsActions.updateItem({
         price: priceValue,
       })
     );
@@ -140,20 +140,20 @@ export class EditShoppingItemDialogComponent implements OnDestroy {
 
   updateName(ev: InputCustomEvent) {
     this.#store.dispatch(
-      EditShoppingItemActions.updateItem({
+      DialogsActions.updateItem({
         name: ev.detail.value ?? undefined,
       })
     );
   }
 
   removeCategory(cat: TItemListCategory) {
-    this.#store.dispatch(EditShoppingItemActions.removeCategory(cat));
+    this.#store.dispatch(CategoriesActions.toggleCategory(cat));
   }
 
   updateQuantity(ev: InputCustomEvent) {
     const quantity = parseNumberInput(ev);
     this.#store.dispatch(
-      EditShoppingItemActions.updateItem({
+      DialogsActions.updateItem({
         quantity,
       })
     );

@@ -25,7 +25,7 @@ import { PageHeaderComponent } from '../../components/page-header/page-header.co
 import { EditGlobalItemDialogComponent } from '../../dialogs/edit-global-item-dialog/edit-global-item-dialog.component';
 import { EditShoppingItemDialogComponent } from '../../dialogs/edit-shopping-item-dialog/edit-shopping-item-dialog.component';
 import { CategoriesPipe } from '../../pipes/categories.pipe';
-import { EditShoppingItemActions } from '../../state/edit-shopping-item/edit-shopping-item.actions';
+import { DialogsActions } from '../../state/dialogs/dialogs.actions';
 import { ShoppingActions } from '../../state/shopping/shopping.actions';
 import {
   selectShoppingCategories,
@@ -88,7 +88,7 @@ export class ShoppingPage {
   }
 
   showEditDialog(item: IShoppingItem) {
-    this.#store.dispatch(EditShoppingItemActions.showDialog(item));
+    this.#store.dispatch(DialogsActions.showDialog(item, '_shopping'));
   }
 
   searchFor(searchTerm: string) {

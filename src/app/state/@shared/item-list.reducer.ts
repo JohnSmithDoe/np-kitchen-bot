@@ -119,5 +119,6 @@ export const updateListMode = <
     ...state,
     sort: sort,
     mode: mode ?? 'alphabetical',
+    filterBy: mode === 'categories' ? undefined : state.filterBy,
   };
 };

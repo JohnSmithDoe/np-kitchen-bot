@@ -21,13 +21,13 @@ import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
 import { map } from 'rxjs';
 import { TItemListCategory } from '../../@types/types';
-import { CategoriesActions } from '../../state/categories/categories.actions';
+import { CategoriesActions } from '../../state/dialogs/categories.actions';
 import {
   selectCategories,
   selectCategoriesState,
   selectContainsSearchResult,
   selectSelectedCategories,
-} from '../../state/categories/categories.selector';
+} from '../../state/dialogs/categories.selector';
 
 @Component({
   selector: 'app-categories-dialog',

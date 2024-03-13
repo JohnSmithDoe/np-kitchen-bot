@@ -40,13 +40,13 @@ import {
   TItemListCategory,
 } from '../../@types/types';
 import { parseNumberInput } from '../../app.utils';
-import { CategoriesActions } from '../../state/categories/categories.actions';
-import { selectCategoriesState } from '../../state/categories/categories.selector';
-import { EditGlobalItemActions } from '../../state/edit-global-item/edit-global-item.actions';
+import { CategoriesActions } from '../../state/dialogs/categories.actions';
+import { selectCategoriesState } from '../../state/dialogs/categories.selector';
+import { DialogsActions } from '../../state/dialogs/dialogs.actions';
 import {
   selectEditGlobalItem,
   selectEditGlobalState,
-} from '../../state/edit-global-item/edit-global-item.selector';
+} from '../../state/dialogs/dialogs.selector';
 import { CategoriesDialogComponent } from '../categories-dialog/categories-dialog.component';
 
 @Component({
@@ -98,15 +98,15 @@ export class EditGlobalItemDialogComponent {
   }
 
   cancelChanges() {
-    this.#store.dispatch(EditGlobalItemActions.abortChanges());
+    this.#store.dispatch(DialogsActions.abortChanges());
   }
 
   closedDialog() {
-    this.#store.dispatch(EditGlobalItemActions.hideDialog());
+    this.#store.dispatch(DialogsActions.hideDialog());
   }
 
   submitChanges() {
-    this.#store.dispatch(EditGlobalItemActions.confirmChanges());
+    this.#store.dispatch(DialogsActions.confirmChanges());
   }
 
   updatePrice(ev: InputCustomEvent<FocusEvent>) {
@@ -126,7 +126,7 @@ export class EditGlobalItemDialogComponent {
     const numberInput = cleanInput.replace(/,+/g, '.');
     const priceValue = Number.parseFloat(numberInput);
     this.#store.dispatch(
-      EditGlobalItemActions.updateItem({
+      DialogsActions.updateItem({
         price: priceValue,
       })
     );
@@ -134,19 +134,19 @@ export class EditGlobalItemDialogComponent {
 
   updateName(ev: InputCustomEvent) {
     this.#store.dispatch(
-      EditGlobalItemActions.updateItem({
+      DialogsActions.updateItem({
         name: ev.detail.value ?? undefined,
       })
     );
   }
 
   removeCategory(cat: TItemListCategory) {
-    this.#store.dispatch(CategoriesActions.toggleCategory(cat));
+    this.#store.dispatch(DialogsActions.removeCategory(cat));
   }
 
   setBestBeforeTimespan(ev: SelectCustomEvent<TBestBeforeTimespan>) {
     this.#store.dispatch(
-      EditGlobalItemActions.updateItem({
+      DialogsActions.updateItem({
         bestBeforeTimespan: ev.detail.value,
         bestBeforeTimevalue: ev.detail.value === 'forever' ? undefined : 1,
       })
@@ -159,7 +159,7 @@ export class EditGlobalItemDialogComponent {
 
   setBestBeforeTimevalue(ev: InputCustomEvent) {
     this.#store.dispatch(
-      EditGlobalItemActions.updateItem({
+      DialogsActions.updateItem({
         bestBeforeTimevalue: parseNumberInput(ev),
       })
     );

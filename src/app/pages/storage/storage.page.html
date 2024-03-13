@@ -25,8 +25,8 @@
 
   <app-item-list
     #storageListComponent
-    headerColor="storage"
-    header="{{'list-header.storage' | translate}}"
+    [headerColor]="(rxState$ | async)?.filterBy ? 'category' : 'storage'"
+    [header]="(rxState$ | async)?.filterBy ?? ('list-header.storage' | translate)"
     [mode]="(rxState$ | async)?.mode ?? 'alphabetical'"
     [items]="(rxItems$ | async)"
     [categories]="(rxCategories$ | async)"

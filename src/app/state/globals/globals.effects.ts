@@ -1,5 +1,4 @@
 import { inject, Injectable } from '@angular/core';
-import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { TypedAction } from '@ngrx/store/src/models';
@@ -9,10 +8,8 @@ import { IAppState } from '../../@types/types';
 import { createGlobalItem, createGlobalItemFrom } from '../../app.factory';
 import { matchesItem } from '../../app.utils';
 import { DatabaseService } from '../../services/database.service';
-import { updateQuickAddState } from '../@shared/item-list.effects';
-import { EditGlobalItemActions } from '../edit-global-item/edit-global-item.actions';
-import { selectEditGlobalState } from '../edit-global-item/edit-global-item.selector';
-import { QuickAddActions } from '../quick-add/quick-add.actions';
+import { DialogsActions } from '../dialogs/dialogs.actions';
+import { selectEditGlobalState } from '../dialogs/dialogs.selector';
 import { GlobalsActions } from './globals.actions';
 import { selectGlobalsState } from './globals.selector';
 
@@ -51,8 +48,9 @@ export class GlobalsEffects {
   });
   confirmGlobalItemChanges$ = createEffect(() => {
     return this.#actions$.pipe(
-      ofType(EditGlobalItemActions.confirmChanges),
+      ofType(DialogsActions.confirmChanges),
       concatLatestFrom(() => this.#store.select(selectEditGlobalState)),
+      filter(([_, state]) => state.listId === '_globals'),
       map(([_, state]) => GlobalsActions.updateItem(state.item))
     );
   });
@@ -63,21 +61,7 @@ export class GlobalsEffects {
       withLatestFrom(this.#store, (action, state) => ({ action, state })),
       map(({ action, state }: { action: any; state: IAppState }) => {
         const item = createGlobalItem(state.globals.searchQuery ?? '');
-        return EditGlobalItemActions.showDialog(item);
-      })
-    );
-  });
-  updateQuickAdd$ = createEffect(() => {
-    return this.#actions$.pipe(
-      ofType(GlobalsActions.updateSearch),
-      withLatestFrom(this.#store, (action, state) => ({ action, state })),
-      map(({ action, state }: { action: any; state: IAppState }) => {
-        const newState = updateQuickAddState(
-          state,
-          marker('list-header.globals'),
-          'global'
-        );
-        return QuickAddActions.updateState(newState);
+        return DialogsActions.showDialog(item, '_globals');
       })
     );
   });

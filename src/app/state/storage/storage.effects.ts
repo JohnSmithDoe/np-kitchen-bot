@@ -1,5 +1,4 @@
 import { inject, Injectable } from '@angular/core';
-import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { TypedAction } from '@ngrx/store/src/models';
@@ -15,11 +14,8 @@ import {
 } from '../../app.factory';
 import { matchesItem } from '../../app.utils';
 import { DatabaseService } from '../../services/database.service';
-import { updateQuickAddState } from '../@shared/item-list.effects';
-import { EditGlobalItemActions } from '../edit-global-item/edit-global-item.actions';
-import { EditStorageItemActions } from '../edit-storage-item/edit-storage-item.actions';
-import { selectEditStorageState } from '../edit-storage-item/edit-storage-item.selector';
-import { QuickAddActions } from '../quick-add/quick-add.actions';
+import { DialogsActions } from '../dialogs/dialogs.actions';
+import { selectEditStorageState } from '../dialogs/dialogs.selector';
 import { ShoppingActions } from '../shopping/shopping.actions';
 import { StorageActions } from './storage.actions';
 import { selectStorageState } from './storage.selector';
@@ -61,7 +57,7 @@ export class StorageEffects {
 
   confirmStorageItemChanges$ = createEffect(() => {
     return this.#actions$.pipe(
-      ofType(EditStorageItemActions.confirmChanges),
+      ofType(DialogsActions.confirmChanges),
       concatLatestFrom(() => this.#store.select(selectEditStorageState)),
       map(([_, state]) => StorageActions.updateItem(state.item))
     );
@@ -84,7 +80,7 @@ export class StorageEffects {
       map(({ action, state }: { action: any; state: IAppState }) => {
         console.log('add item from search with edit dialog');
         const item = createStorageItem(state.storage.searchQuery ?? '');
-        return EditStorageItemActions.showDialog(item);
+        return DialogsActions.showDialog(item, '_storage');
       })
     );
   });
@@ -95,7 +91,7 @@ export class StorageEffects {
       map(({ action, state }: { action: any; state: IAppState }) => {
         console.log('add global item from search with edit dialog');
         const item = createGlobalItem(state.storage.searchQuery ?? '');
-        return EditGlobalItemActions.showDialog(item, '_storage');
+        return DialogsActions.showDialog(item, '_storage');
       })
     );
   });
@@ -144,21 +140,6 @@ export class StorageEffects {
         console.log('add shopping item to storage');
         const storageitem = createStorageItemFromShopping(item);
         return StorageActions.addItemToList(storageitem);
-      })
-    );
-  });
-
-  updateQuickAdd$ = createEffect(() => {
-    return this.#actions$.pipe(
-      ofType(StorageActions.updateSearch),
-      withLatestFrom(this.#store, (action, state) => ({ action, state })),
-      map(({ action, state }: { action: any; state: IAppState }) => {
-        const newState = updateQuickAddState(
-          state,
-          marker('list-header.storage'),
-          'storage'
-        );
-        return QuickAddActions.updateState(newState);
       })
     );
   });
