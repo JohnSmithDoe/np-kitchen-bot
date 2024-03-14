@@ -14,9 +14,13 @@
           </ion-button>
         </ion-buttons>
         <ion-buttons slot="end">
-          <ion-button (click)="submitChanges()">{{
-            (rxState$ | async)?.saveButtonText ?? '' | translate
-          }}</ion-button>
+          <ion-button
+            (click)="submitChanges()"
+            [disabled]="nameControl.hasError('duplicate')"
+            >{{
+              (rxState$ | async)?.saveButtonText ?? '' | translate
+            }}</ion-button
+          >
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
@@ -26,13 +30,12 @@
         {{ (rxState$ | async)?.dialogTitle ?? '' | translate }}
       </h3>
       <ion-list>
-        <ion-item>
+        <ion-item lines="none">
           <ion-input
             label="{{ 'edit.item.dialog.name' | translate }}"
             placeholder="{{ 'edit.item.dialog.name.placeholder' | translate }}"
             [formControl]="nameControl"
-            (ionInput)="updateName($event)"
-            [errorText]="'error'"
+            [errorText]="'edit.item.dialog.name.duplicate.error' | translate"
           ></ion-input>
         </ion-item>
 

@@ -35,7 +35,7 @@ export class CategoriesEffects {
       withLatestFrom(this.#store, (action, state) => ({ action, state })),
       map(({ action, state }: { action: any; state: IAppState }) => {
         const updateData: Partial<IBaseItem> = {
-          category: state.categories.selection,
+          category: state.dialogs.category.selection,
         };
         return DialogsActions.updateItem(updateData);
       })

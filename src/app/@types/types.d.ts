@@ -184,9 +184,6 @@ export interface IAppState {
   storage: IStorageState;
   shopping: IShoppingState;
   globals: IGlobalsState;
-  categories: ICategoriesState;
   dialogs: TDialogsState;
-  editShoppingItem: IEditShoppingItemState;
-  editGlobalItem: IEditGlobalItemState;
   quickadd: IQuickAddState;
 }

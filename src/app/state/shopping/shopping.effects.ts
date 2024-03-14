@@ -6,15 +6,12 @@ import { filter, map, withLatestFrom } from 'rxjs';
 import { fromPromise } from 'rxjs/internal/observable/innerFrom';
 import { IAppState } from '../../@types/types';
 import {
-  createGlobalItem,
   createShoppingItem,
   createShoppingItemFromGlobal,
   createShoppingItemFromStorage,
 } from '../../app.factory';
 import { matchesItem } from '../../app.utils';
 import { DatabaseService } from '../../services/database.service';
-import { DialogsActions } from '../dialogs/dialogs.actions';
-import { selectEditShoppingState } from '../dialogs/dialogs.selector';
 import { ShoppingActions } from './shopping.actions';
 import { selectShoppingState } from './shopping.selector';
 
@@ -31,6 +28,7 @@ export class ShoppingEffects {
       map(({ mode }) => ShoppingActions.updateFilter())
     );
   });
+
   clearSearch$ = createEffect(() => {
     return this.#actions$.pipe(
       ofType(ShoppingActions.addItem),
@@ -51,48 +49,9 @@ export class ShoppingEffects {
     );
   });
 
-  confirmShoppingItemChanges$ = createEffect(() => {
+  addOrUpdateIteme$ = createEffect(() => {
     return this.#actions$.pipe(
-      ofType(DialogsActions.confirmChanges),
-      concatLatestFrom(() => this.#store.select(selectEditShoppingState)),
-      filter(([_, state]) => state.listId === '_shopping'),
-      map(([_, state]) => ShoppingActions.addItemToList(state.item))
-    );
-  });
-  buyItem$ = createEffect(() => {
-    return this.#actions$.pipe(
-      ofType(ShoppingActions.buyItem),
-      map(({ item }) =>
-        ShoppingActions.updateItem({ ...item, state: 'bought' })
-      )
-    );
-  });
-
-  showCreateDialogWithSearch$ = createEffect(() => {
-    return this.#actions$.pipe(
-      ofType(ShoppingActions.showCreateDialogWithSearch),
-      withLatestFrom(this.#store, (action, state) => ({ action, state })),
-      map(({ action, state }: { action: any; state: IAppState }) => {
-        const item = createShoppingItem(state.shopping.searchQuery ?? '');
-        return DialogsActions.showDialog(item, '_shopping');
-      })
-    );
-  });
-  showCreateGlobalDialogWithSearch$ = createEffect(() => {
-    return this.#actions$.pipe(
-      ofType(ShoppingActions.showCreateGlobalDialogWithSearch),
-      withLatestFrom(this.#store, (action, state) => ({ action, state })),
-      map(({ action, state }: { action: any; state: IAppState }) => {
-        const item = createGlobalItem(state.shopping.searchQuery ?? '');
-        return DialogsActions.showDialog(item, '_shopping');
-      })
-    );
-  });
-
-  // add or update item
-  addItemToListOrUpdate$ = createEffect(() => {
-    return this.#actions$.pipe(
-      ofType(ShoppingActions.addItemToList),
+      ofType(ShoppingActions.addOrUpdateItem),
       concatLatestFrom(() => this.#store.select(selectShoppingState)),
       map(([{ item }, state]) => {
         if (matchesItem(item, state.items)) {
@@ -104,25 +63,7 @@ export class ShoppingEffects {
       })
     );
   });
-  addItemOrIncreaseQuantity$ = createEffect(() => {
-    return this.#actions$.pipe(
-      ofType(ShoppingActions.addItemOrIncreaseQuantity),
-      concatLatestFrom(() => this.#store.select(selectShoppingState)),
-      map(([{ item }, state]) => {
-        console.log('add item or inc effect', item.quantity);
-        const found = matchesItem(item, state.items);
-        if (found) {
-          console.log('found so inc quantity', found.quantity + 1);
-          return ShoppingActions.updateItem({
-            ...found,
-            quantity: found.quantity + 1,
-          });
-        }
-        console.log('not found so add');
-        return ShoppingActions.addItemToList(item);
-      })
-    );
-  });
+
   addItemFromSearch$ = createEffect(() => {
     return this.#actions$.pipe(
       ofType(ShoppingActions.addItemFromSearch),
@@ -131,16 +72,17 @@ export class ShoppingEffects {
       })),
       map(({ state }) => {
         const item = createShoppingItem(state.shopping.searchQuery ?? '');
-        return ShoppingActions.addItemToList(item);
+        return ShoppingActions.addOrUpdateItem(item);
       })
     );
   });
+
   addItemFromGlobal$ = createEffect(() => {
     return this.#actions$.pipe(
       ofType(ShoppingActions.addGlobalItem),
       map(({ item }) => {
         const shoppingItem = createShoppingItemFromGlobal(item);
-        return ShoppingActions.addItemToList(shoppingItem);
+        return ShoppingActions.addOrUpdateItem(shoppingItem);
       })
     );
   });
@@ -149,7 +91,7 @@ export class ShoppingEffects {
       ofType(ShoppingActions.addStorageItem),
       map(({ item }) => {
         const shoppingItem = createShoppingItemFromStorage(item);
-        return ShoppingActions.addItemToList(shoppingItem);
+        return ShoppingActions.addOrUpdateItem(shoppingItem);
       })
     );
   });
@@ -168,4 +110,13 @@ export class ShoppingEffects {
     },
     { dispatch: false }
   );
+
+  buyItem$ = createEffect(() => {
+    return this.#actions$.pipe(
+      ofType(ShoppingActions.buyItem),
+      map(({ item }) =>
+        ShoppingActions.updateItem({ ...item, state: 'bought' })
+      )
+    );
+  });
 }

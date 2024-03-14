@@ -1,3 +1,4 @@
+import { AbstractControl } from '@angular/forms';
 import { InputCustomEvent } from '@ionic/angular';
 import {
   IBaseItem,
@@ -81,4 +82,19 @@ export const matchesCategory = (item: IBaseItem, searchQuery: string) =>
 export function parseNumberInput(ev: InputCustomEvent) {
   const value = ev.detail.value?.length ? ev.detail.value : '0';
   return Number.parseInt(value, 10);
+}
+
+export function validateDuplicateName<T extends IBaseItem>(
+  items?: T[],
+  item?: T
+) {
+  return (control: AbstractControl) => {
+    const found = items?.filter((item) =>
+      matchesSearchExactly(item, control.value)
+    );
+    if (!found || found.length === 0) return null;
+    const hasDuplicates = found.length > 1 || found.pop()?.id !== item?.id;
+
+    return hasDuplicates ? { duplicate: true } : null;
+  };
 }

@@ -19,16 +19,13 @@ export class MessageEffects {
     () => {
       return this.#actions$.pipe(
         ofType(
-          ShoppingActions.addItemToList,
-
-          GlobalsActions.addShoppingItem,
-          GlobalsActions.addStorageItem
+          StorageActions.addItem,
+          ShoppingActions.addItem,
+          GlobalsActions.addItem
         ),
         map(({ item }) => {
           if (!item.name.length) return;
-          return fromPromise(
-            this.#uiService.showAddItemToast(item.name, item.quantity)
-          );
+          return fromPromise(this.#uiService.showAddItemToast(item.name));
         })
       );
     },

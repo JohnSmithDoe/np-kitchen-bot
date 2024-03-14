@@ -36,7 +36,6 @@ export const dialogsReducer = createReducer(
     return { ...state, item: { ...state.item, ...data } };
   }),
   on(DialogsActions.removeCategory, (state, { category }): TDialogsState => {
-    console.log('remove it..', category, state.item);
     return {
       ...state,
       item: {
@@ -171,7 +170,12 @@ export const dialogsReducer = createReducer(
   on(
     ApplicationActions.loadedSuccessfully,
     (_state, { datastore }): TDialogsState => {
-      console.log('Load Categories.... hmmm probably not', datastore);
+      const allitem = ([] as IBaseItem[]).concat(
+        ...datastore.storage.items,
+        ...datastore.shopping.items,
+        ...datastore.globals.items
+      );
+      console.log(allitem);
       return _state;
     }
   )

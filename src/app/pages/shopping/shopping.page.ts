@@ -71,6 +71,10 @@ export class ShoppingPage {
     addIcons({ add, remove });
   }
 
+  ionViewWillEnter(): void {
+    this.#store.dispatch(ShoppingActions.enterPage());
+  }
+
   async removeItem(item: IShoppingItem) {
     this.#store.dispatch(ShoppingActions.removeItem(item));
   }

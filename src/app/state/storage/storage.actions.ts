@@ -12,15 +12,21 @@ export const StorageActions = createActionGroup({
   source: 'Storage',
   events: {
     // Effects only
-    'Add Item To List': (item: IStorageItem) => ({ item }),
+    'Enter Page': emptyProps(),
+
     'Add Item From Search': emptyProps(),
     'Add Global Item': (item: IGlobalItem) => ({ item }),
     'Add Shopping Item': (item: IShoppingItem) => ({ item }),
+    'Add Or Update Item': (item: IStorageItem) => ({ item }),
 
     'Show Create Dialog With Search': emptyProps(),
     'Show Create Global Dialog With Search': emptyProps(),
 
     'Copy To Shoppinglist': (item: IStorageItem) => ({ item }),
+    'Copy To Shoppinglist Success': (name: string, quantity: number) => ({
+      name,
+      quantity,
+    }),
 
     // Operations
 

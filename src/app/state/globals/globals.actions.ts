@@ -12,6 +12,7 @@ export const GlobalsActions = createActionGroup({
   source: 'Globals',
   events: {
     // Effects only
+    'Enter Page': emptyProps(),
     'Add Or Update Item': (item: IGlobalItem) => ({ item }),
     'Add Item From Search': emptyProps(),
     'Show Create Dialog With Search': emptyProps(),

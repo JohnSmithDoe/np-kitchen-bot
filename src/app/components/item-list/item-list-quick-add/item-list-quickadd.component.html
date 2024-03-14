@@ -6,7 +6,7 @@
         | translate
           : {
               value: (rxState$ | async)?.searchQuery,
-              list: (rxState$ | async)?.listName
+              list: ((rxState$ | async)?.listName ?? '' | translate)
             }
     }}"
     [label]="(rxState$ | async)?.searchQuery"

@@ -34,12 +34,8 @@ export const selectCategories = createSelector(
 export const selectContainsSearchResult = createSelector(
   selectEditState,
   selectCategories,
-  (state, current) => {
-    console.log(state, current);
-    return (
-      state.category.searchQuery &&
-      state.category.searchQuery.length &&
-      current.includes(state.category.searchQuery)
-    );
-  }
+  (state, current) =>
+    state.category.searchQuery &&
+    state.category.searchQuery.length &&
+    current.includes(state.category.searchQuery)
 );

@@ -6,7 +6,6 @@ import { filter, map, withLatestFrom } from 'rxjs';
 import { fromPromise } from 'rxjs/internal/observable/innerFrom';
 import { IAppState } from '../../@types/types';
 import {
-  createGlobalItem,
   createShoppingItemFromStorage,
   createStorageItem,
   createStorageItemFromGlobal,
@@ -14,9 +13,8 @@ import {
 } from '../../app.factory';
 import { matchesItem } from '../../app.utils';
 import { DatabaseService } from '../../services/database.service';
-import { DialogsActions } from '../dialogs/dialogs.actions';
-import { selectEditStorageState } from '../dialogs/dialogs.selector';
 import { ShoppingActions } from '../shopping/shopping.actions';
+import { selectShoppingState } from '../shopping/shopping.selector';
 import { StorageActions } from './storage.actions';
 import { selectStorageState } from './storage.selector';
 
@@ -36,16 +34,16 @@ export class StorageEffects {
 
   clearSearch$ = createEffect(() => {
     return this.#actions$.pipe(
-      ofType(StorageActions.addItemToList),
+      ofType(StorageActions.addItem),
       map(() => StorageActions.updateSearch(''))
     );
   });
+
   updateSearch$ = createEffect(() => {
     return this.#actions$.pipe(
       ofType(StorageActions.updateItem),
       concatLatestFrom(() => this.#store.select(selectStorageState)),
       map(([{ item }, state]) => {
-        console.log('update search for real');
         let searchQueryAfter = state.searchQuery;
         if (!!item.name && !item.name.includes(state.searchQuery ?? '')) {
           searchQueryAfter = undefined;
@@ -55,49 +53,9 @@ export class StorageEffects {
     );
   });
 
-  confirmStorageItemChanges$ = createEffect(() => {
+  addOrUpdateItem$ = createEffect(() => {
     return this.#actions$.pipe(
-      ofType(DialogsActions.confirmChanges),
-      concatLatestFrom(() => this.#store.select(selectEditStorageState)),
-      map(([_, state]) => StorageActions.updateItem(state.item))
-    );
-  });
-  copyToShoppingList$ = createEffect(() => {
-    return this.#actions$.pipe(
-      ofType(StorageActions.copyToShoppinglist),
-      map(({ item, type }) => {
-        console.log(type, item);
-        const shoppingItem = createShoppingItemFromStorage(item);
-        return ShoppingActions.addItemOrIncreaseQuantity(shoppingItem);
-      })
-    );
-  });
-
-  showCreateDialogWithSearch$ = createEffect(() => {
-    return this.#actions$.pipe(
-      ofType(StorageActions.showCreateDialogWithSearch),
-      withLatestFrom(this.#store, (action, state) => ({ action, state })),
-      map(({ action, state }: { action: any; state: IAppState }) => {
-        console.log('add item from search with edit dialog');
-        const item = createStorageItem(state.storage.searchQuery ?? '');
-        return DialogsActions.showDialog(item, '_storage');
-      })
-    );
-  });
-  showCreateGlobalDialogWithSearch$ = createEffect(() => {
-    return this.#actions$.pipe(
-      ofType(StorageActions.showCreateGlobalDialogWithSearch),
-      withLatestFrom(this.#store, (action, state) => ({ action, state })),
-      map(({ action, state }: { action: any; state: IAppState }) => {
-        console.log('add global item from search with edit dialog');
-        const item = createGlobalItem(state.storage.searchQuery ?? '');
-        return DialogsActions.showDialog(item, '_storage');
-      })
-    );
-  });
-  addOrUpdateIteme$ = createEffect(() => {
-    return this.#actions$.pipe(
-      ofType(StorageActions.addItemToList),
+      ofType(StorageActions.addOrUpdateItem),
       concatLatestFrom(() => this.#store.select(selectStorageState)),
       map(([{ item }, state]) => {
         if (matchesItem(item, state.items)) {
@@ -117,19 +75,18 @@ export class StorageEffects {
         state,
       })),
       map(({ state }) => {
-        console.log('add item from search without dialog');
         const item = createStorageItem(state.storage.searchQuery ?? '');
-        return StorageActions.addItemToList(item);
+        return StorageActions.addOrUpdateItem(item);
       })
     );
   });
+
   addItemFromGlobal$ = createEffect(() => {
     return this.#actions$.pipe(
       ofType(StorageActions.addGlobalItem),
       map(({ item }) => {
-        console.log('add global item to storage');
         const storageitem = createStorageItemFromGlobal(item);
-        return StorageActions.addItemToList(storageitem);
+        return StorageActions.addOrUpdateItem(storageitem);
       })
     );
   });
@@ -137,9 +94,8 @@ export class StorageEffects {
     return this.#actions$.pipe(
       ofType(StorageActions.addShoppingItem),
       map(({ item }) => {
-        console.log('add shopping item to storage');
         const storageitem = createStorageItemFromShopping(item);
-        return StorageActions.addItemToList(storageitem);
+        return StorageActions.addOrUpdateItem(storageitem);
       })
     );
   });
@@ -158,4 +114,22 @@ export class StorageEffects {
     },
     { dispatch: false }
   );
+
+  copyToShoppingList$ = createEffect(() => {
+    return this.#actions$.pipe(
+      ofType(StorageActions.copyToShoppinglist),
+      concatLatestFrom(() => this.#store.select(selectShoppingState)),
+      map(([{ item }, state]) => {
+        const shoppingItem = createShoppingItemFromStorage(item);
+        const found = matchesItem(shoppingItem, state.items);
+        if (found) {
+          return ShoppingActions.updateItem({
+            ...found,
+            quantity: found.quantity + 1,
+          });
+        }
+        return ShoppingActions.addOrUpdateItem(shoppingItem);
+      })
+    );
+  });
 }

@@ -21,6 +21,7 @@ function updateSearch(
   state: IGlobalsState,
   searchQuery?: string
 ): IGlobalsState {
+  searchQuery = searchQuery?.trim();
   if (searchQuery === state.searchQuery) return state;
   return { ...state, searchQuery };
 }

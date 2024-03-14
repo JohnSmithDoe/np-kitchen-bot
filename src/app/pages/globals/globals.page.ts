@@ -69,6 +69,10 @@ export class GlobalsPage {
     addIcons({ add, remove });
   }
 
+  ionViewWillEnter(): void {
+    this.#store.dispatch(GlobalsActions.enterPage());
+  }
+
   async removeItem(item: IGlobalItem) {
     this.#store.dispatch(GlobalsActions.removeItem(item));
   }

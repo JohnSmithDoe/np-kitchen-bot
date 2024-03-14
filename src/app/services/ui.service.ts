@@ -28,10 +28,9 @@ export class UiService {
     await toast.present();
   }
 
-  showAddItemToast(name: string, quantity: number) {
+  showAddItemToast(name: string) {
     const msg = this.translate.instant('toast.add.item', {
       name,
-      quantity,
     });
     return this.showToast(msg);
   }

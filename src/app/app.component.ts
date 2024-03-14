@@ -74,7 +74,7 @@ export class AppComponent implements OnInit {
   }
 
   async ngOnInit() {
-    this.isSupported = (await BarcodeScanner.isSupported()).supported;
+    this.isSupported = false; //(await BarcodeScanner.isSupported()).supported;
   }
 
   async isGoogleBarcodeScannerModuleAvailable() {

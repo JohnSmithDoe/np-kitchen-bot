@@ -8,8 +8,6 @@ import { IAppState } from '../../@types/types';
 import { createGlobalItem, createGlobalItemFrom } from '../../app.factory';
 import { matchesItem } from '../../app.utils';
 import { DatabaseService } from '../../services/database.service';
-import { DialogsActions } from '../dialogs/dialogs.actions';
-import { selectEditGlobalState } from '../dialogs/dialogs.selector';
 import { GlobalsActions } from './globals.actions';
 import { selectGlobalsState } from './globals.selector';
 
@@ -26,6 +24,7 @@ export class GlobalsEffects {
       map(() => GlobalsActions.updateFilter())
     );
   });
+
   clearSearch$ = createEffect(() => {
     return this.#actions$.pipe(
       ofType(GlobalsActions.addItem),
@@ -46,27 +45,8 @@ export class GlobalsEffects {
       })
     );
   });
-  confirmGlobalItemChanges$ = createEffect(() => {
-    return this.#actions$.pipe(
-      ofType(DialogsActions.confirmChanges),
-      concatLatestFrom(() => this.#store.select(selectEditGlobalState)),
-      filter(([_, state]) => state.listId === '_globals'),
-      map(([_, state]) => GlobalsActions.updateItem(state.item))
-    );
-  });
 
-  showCreateDialogWithSearch$ = createEffect(() => {
-    return this.#actions$.pipe(
-      ofType(GlobalsActions.showCreateDialogWithSearch),
-      withLatestFrom(this.#store, (action, state) => ({ action, state })),
-      map(({ action, state }: { action: any; state: IAppState }) => {
-        const item = createGlobalItem(state.globals.searchQuery ?? '');
-        return DialogsActions.showDialog(item, '_globals');
-      })
-    );
-  });
-
-  addItemOrUpdateItem$ = createEffect(() => {
+  addOrUpdateItem$ = createEffect(() => {
     return this.#actions$.pipe(
       ofType(GlobalsActions.addOrUpdateItem),
       concatLatestFrom(() => this.#store.select(selectGlobalsState)),
@@ -88,26 +68,16 @@ export class GlobalsEffects {
         state,
       })),
       map(({ state }) => {
-        console.log('add item from search without dialog');
         const item = createGlobalItem(state.globals.searchQuery ?? '');
         return GlobalsActions.addOrUpdateItem(item);
       })
     );
   });
+
   addItemFromStorage$ = createEffect(() => {
     return this.#actions$.pipe(
       ofType(GlobalsActions.addStorageItem, GlobalsActions.addShoppingItem),
       map(({ item }) => {
-        const globalItem = createGlobalItemFrom(item);
-        return GlobalsActions.addOrUpdateItem(globalItem);
-      })
-    );
-  });
-  addItemFromShopping$ = createEffect(() => {
-    return this.#actions$.pipe(
-      ofType(GlobalsActions.addShoppingItem),
-      map(({ item }) => {
-        console.log('add shopping item to storage');
         const globalItem = createGlobalItemFrom(item);
         return GlobalsActions.addOrUpdateItem(globalItem);
       })

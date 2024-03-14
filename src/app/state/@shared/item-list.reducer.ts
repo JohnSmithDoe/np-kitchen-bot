@@ -17,6 +17,7 @@ export const addListItem = <T extends IListState<R>, R extends TAllItemTypes>(
 ): T => {
   // do not add an empty item
   const name = item.name.trim();
+  console.log('addlistItem', item);
   if (!name.length) {
     return state;
   }

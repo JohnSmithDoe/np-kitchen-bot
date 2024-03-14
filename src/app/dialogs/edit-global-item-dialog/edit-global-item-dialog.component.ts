@@ -2,11 +2,11 @@ import { AsyncPipe, CurrencyPipe, DatePipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
-  EventEmitter,
   inject,
-  Output,
+  OnDestroy,
+  OnInit,
 } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { InputCustomEvent, SelectCustomEvent } from '@ionic/angular';
 import {
   IonAvatar,
@@ -34,12 +34,9 @@ import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { closeCircle } from 'ionicons/icons';
-import {
-  IGlobalItem,
-  TBestBeforeTimespan,
-  TItemListCategory,
-} from '../../@types/types';
-import { parseNumberInput } from '../../app.utils';
+import { combineLatestWith, Subscription } from 'rxjs';
+import { TBestBeforeTimespan, TItemListCategory } from '../../@types/types';
+import { parseNumberInput, validateDuplicateName } from '../../app.utils';
 import { CategoriesActions } from '../../state/dialogs/categories.actions';
 import { selectCategoriesState } from '../../state/dialogs/categories.selector';
 import { DialogsActions } from '../../state/dialogs/dialogs.actions';
@@ -47,6 +44,7 @@ import {
   selectEditGlobalItem,
   selectEditGlobalState,
 } from '../../state/dialogs/dialogs.selector';
+import { selectGlobalsState } from '../../state/globals/globals.selector';
 import { CategoriesDialogComponent } from '../categories-dialog/categories-dialog.component';
 
 @Component({
@@ -80,21 +78,56 @@ import { CategoriesDialogComponent } from '../categories-dialog/categories-dialo
     IonNote,
     IonText,
     AsyncPipe,
+    ReactiveFormsModule,
   ],
   templateUrl: './edit-global-item-dialog.component.html',
   styleUrl: './edit-global-item-dialog.component.scss',
 })
-export class EditGlobalItemDialogComponent {
+export class EditGlobalItemDialogComponent implements OnInit, OnDestroy {
   readonly #store = inject(Store);
+
   rxState$ = this.#store.select(selectEditGlobalState);
   rxItem$ = this.#store.select(selectEditGlobalItem);
+  rxGlobalState$ = this.#store.select(selectGlobalsState);
   rxCategory$ = this.#store.select(selectCategoriesState);
-
-  @Output() saveItem = new EventEmitter<Partial<IGlobalItem>>();
-  @Output() cancel = new EventEmitter();
+  nameControl: FormControl = new FormControl('');
+  readonly #subscription: Subscription[] = [];
 
   constructor() {
     addIcons({ closeCircle });
+  }
+  // dry -> maybe add a name control input hmmmmmmmmmm with the provide ControllerInputGroup wie in dem Video... would be nice
+  async ngOnInit(): Promise<void> {
+    // Hmm this seems a bit much only to get validation on the input.... but still no other solution found till now
+    this.#subscription.push(
+      // subscribe to the input changes and update the state
+      this.nameControl.valueChanges.subscribe(
+        (value: string | null | undefined) => {
+          this.#store.dispatch(
+            DialogsActions.updateItem({
+              name: value ?? undefined,
+            })
+          );
+        }
+      ),
+      // subscribe to the state changes and update the input value so we can have validation
+      this.rxItem$
+        .pipe(combineLatestWith(this.rxGlobalState$))
+        .subscribe(([item, state]) => {
+          if (this.nameControl.value !== item?.name) {
+            this.nameControl.setValue(item?.name);
+            this.nameControl.markAsTouched();
+            this.nameControl.setValidators(
+              validateDuplicateName(state.items, item)
+            );
+            this.nameControl.updateValueAndValidity();
+          }
+        })
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.#subscription.forEach((sub) => sub.unsubscribe());
   }
 
   cancelChanges() {
@@ -108,7 +141,7 @@ export class EditGlobalItemDialogComponent {
   submitChanges() {
     this.#store.dispatch(DialogsActions.confirmChanges());
   }
-
+  // dry -> maybe pass the string to the update action... convert somewhere else
   updatePrice(ev: InputCustomEvent<FocusEvent>) {
     let inputValue = ev.target.value as string;
     // get rid of all non-numeric chars
@@ -128,14 +161,6 @@ export class EditGlobalItemDialogComponent {
     this.#store.dispatch(
       DialogsActions.updateItem({
         price: priceValue,
-      })
-    );
-  }
-
-  updateName(ev: InputCustomEvent) {
-    this.#store.dispatch(
-      DialogsActions.updateItem({
-        name: ev.detail.value ?? undefined,
       })
     );
   }

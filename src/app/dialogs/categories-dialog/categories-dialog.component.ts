@@ -55,7 +55,7 @@ import {
   ],
 })
 export class CategoriesDialogComponent {
-  #store = inject(Store);
+  readonly #store = inject(Store);
 
   rxSearchContained$ = this.#store.select(selectContainsSearchResult);
   rxState$ = this.#store.select(selectCategoriesState);

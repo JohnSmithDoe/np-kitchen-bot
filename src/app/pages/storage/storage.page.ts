@@ -72,6 +72,10 @@ export class StoragePage {
     addIcons({ add, remove });
   }
 
+  ionViewWillEnter(): void {
+    this.#store.dispatch(StorageActions.enterPage());
+  }
+
   removeItem(item: IStorageItem) {
     this.#store.dispatch(StorageActions.removeItem(item));
   }

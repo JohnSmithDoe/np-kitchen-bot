@@ -4,13 +4,9 @@ import {
   Component,
   inject,
   OnDestroy,
+  OnInit,
 } from '@angular/core';
-import {
-  FormControl,
-  FormsModule,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { InputCustomEvent } from '@ionic/angular';
 import {
   IonButton,
@@ -30,9 +26,9 @@ import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { closeCircle } from 'ionicons/icons';
-import { Subscription } from 'rxjs';
+import { combineLatestWith, Subscription } from 'rxjs';
 import { TItemListCategory } from '../../@types/types';
-import { parseNumberInput } from '../../app.utils';
+import { parseNumberInput, validateDuplicateName } from '../../app.utils';
 import { CategoriesActions } from '../../state/dialogs/categories.actions';
 import { selectCategoriesState } from '../../state/dialogs/categories.selector';
 import { DialogsActions } from '../../state/dialogs/dialogs.actions';
@@ -40,6 +36,7 @@ import {
   selectEditShoppingItem,
   selectEditShoppingState,
 } from '../../state/dialogs/dialogs.selector';
+import { selectShoppingState } from '../../state/shopping/shopping.selector';
 import { CategoriesDialogComponent } from '../categories-dialog/categories-dialog.component';
 
 @Component({
@@ -69,34 +66,68 @@ import { CategoriesDialogComponent } from '../categories-dialog/categories-dialo
   templateUrl: './edit-shopping-item-dialog.component.html',
   styleUrl: './edit-shopping-item-dialog.component.scss',
 })
-export class EditShoppingItemDialogComponent implements OnDestroy {
+export class EditShoppingItemDialogComponent implements OnInit, OnDestroy {
   readonly #store = inject(Store);
+
   rxState$ = this.#store.select(selectEditShoppingState);
   rxItem$ = this.#store.select(selectEditShoppingItem);
   rxCategory$ = this.#store.select(selectCategoriesState);
-  nameControl: FormControl = new FormControl('', Validators.maxLength(3));
-  readonly #subscription: Subscription[];
+  rxShoppingState$ = this.#store.select(selectShoppingState);
+  nameControl: FormControl = new FormControl('');
+  readonly #subscription: Subscription[] = [];
 
   constructor() {
     addIcons({ closeCircle });
-    // Hmm this seems a bit much only to get validation on the input....
-    this.#subscription = [
+  }
+  // TODO:
+  /**
+   * Still would not set the value to the control... hmm
+   *   updateName(ev: InputCustomEvent) {
+   *     this.#store.dispatch(
+   *       DialogsActions.updateItem({
+   *         name: ev.detail.value ?? undefined,
+   *       })
+   *     );
+   *   }
+   *     this.rxIsValidEditName$
+   *         .subscribe((isValid) => {
+   *
+   *         this.nameControl.setError( isValid ? null : { duplicate: true })
+   *             this.nameControl.markAsTouched();
+   *             this.nameControl.updateValueAndValidity();
+   *         })
+   *
+   */
+
+  // dry -> maybe add a name control input hmmmmmmmmmm with the provide ControllerInputGroup wie in dem Video... would be nice
+  // or even better? validate in effect and subscribe here to add the error to the input...
+  async ngOnInit(): Promise<void> {
+    // Hmm this seems a bit much only to get validation on the input.... but still no other solution found till now
+    this.#subscription.push(
       // subscribe to the input changes and update the state
-      this.nameControl.valueChanges.subscribe((value: string | null) => {
-        this.#store.dispatch(
-          DialogsActions.updateItem({
-            name: value ?? undefined,
-          })
-        );
-      }),
-      // subscribe to the state changes and update the input value so we can have validation
-      this.rxItem$.subscribe((item) => {
-        if (this.nameControl.value !== item?.name) {
-          this.nameControl.setValue(item?.name);
-          this.nameControl.markAsTouched();
+      this.nameControl.valueChanges.subscribe(
+        (value: string | null | undefined) => {
+          this.#store.dispatch(
+            DialogsActions.updateItem({
+              name: value ?? undefined,
+            })
+          );
         }
-      }),
-    ];
+      ),
+      // subscribe to the state changes and update the input value so we can have validation
+      this.rxItem$
+        .pipe(combineLatestWith(this.rxShoppingState$))
+        .subscribe(([item, state]) => {
+          if (this.nameControl.value !== item?.name) {
+            this.nameControl.setValue(item?.name);
+            this.nameControl.markAsTouched();
+            this.nameControl.setValidators(
+              validateDuplicateName(state.items, item)
+            );
+            this.nameControl.updateValueAndValidity();
+          }
+        })
+    );
   }
 
   ngOnDestroy(): void {
@@ -138,23 +169,14 @@ export class EditShoppingItemDialogComponent implements OnDestroy {
     );
   }
 
-  updateName(ev: InputCustomEvent) {
-    this.#store.dispatch(
-      DialogsActions.updateItem({
-        name: ev.detail.value ?? undefined,
-      })
-    );
-  }
-
   removeCategory(cat: TItemListCategory) {
-    this.#store.dispatch(CategoriesActions.toggleCategory(cat));
+    this.#store.dispatch(DialogsActions.removeCategory(cat));
   }
 
   updateQuantity(ev: InputCustomEvent) {
-    const quantity = parseNumberInput(ev);
     this.#store.dispatch(
       DialogsActions.updateItem({
-        quantity,
+        quantity: parseNumberInput(ev),
       })
     );
   }
