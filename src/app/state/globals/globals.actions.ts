@@ -15,15 +15,15 @@ export const GlobalsActions = createActionGroup({
     'Enter Page': emptyProps(),
     'Add Or Update Item': (item: IGlobalItem) => ({ item }),
     'Add Item From Search': emptyProps(),
-    'Show Create Dialog With Search': emptyProps(),
     'Add Storage Item': (item: IStorageItem) => ({ item }),
     'Add Shopping Item': (item: IShoppingItem) => ({ item }),
+
+    'Show Create Dialog With Search': emptyProps(),
 
     // Operations
 
     'Add Item': (item: IGlobalItem) => ({ item }),
-    'Add Item Success': (item: IGlobalItem) => ({ item }),
-    'Add Item Error': (item: IGlobalItem) => ({ item }),
+    'Add Item Failure': (item: IGlobalItem) => ({ item }),
 
     'Remove Item': (item: IGlobalItem) => ({ item }),
     'Update Item': (item: TUpdateDTO<IGlobalItem>) => ({ item }),

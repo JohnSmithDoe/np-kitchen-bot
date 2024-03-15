@@ -12,10 +12,9 @@
 * name, zusatz
 * multi term search
 * abteilung im supermarkt, lagerstandort (oder einfach kategorie)
-
+* multiple txt item lists 
 
 ## Feedback
-
 ## ToTest
 
 
@@ -73,22 +72,3 @@ Install Android Studio and open it once
 Open the android folder as a new project
 Enable SVM Mode in Bios (on AMD ryzen)
 Build signed apk from menu
-
-
-### Storage Actions
-
-* showCreateDialog
-* showCreateGlobalDialog
-* showEditDialog
-* 
-* searchFor
-* setDisplayMode
-* setSortMode('bestBefore')
-* selectCategory
-* 
-* addItemFromSearch
-* addGlobalItem
-* removeItem
-* 
-* changeQuantity
-* copyToShoppingList

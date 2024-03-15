@@ -9,7 +9,7 @@ import {
   TItemListSortType,
   TUpdateDTO,
 } from '../../@types/types';
-import { matchesItem, matchesItemIdx } from '../../app.utils';
+import { matchesItemExactly, matchesItemExactlyIdx } from '../../app.utils';
 
 export const addListItem = <T extends IListState<R>, R extends TAllItemTypes>(
   state: T,
@@ -34,7 +34,7 @@ export const addListItemOrIncreaseQuantity = <
   state: T,
   item: R
 ): T => {
-  const found = matchesItem(item, state.items);
+  const found = matchesItemExactly(item, state.items);
   if (found) {
     console.log('found so inc quantity', found.quantity + 1);
     return updateListItem<T, R>(state, {
@@ -66,7 +66,7 @@ export const updateListItem = <
 ): T => {
   if (!item) return state;
   const items: TUpdateDTO<R>[] = [...state.items];
-  const itemIdx = matchesItemIdx(item, state.items);
+  const itemIdx = matchesItemExactlyIdx(item, state.items);
   if (itemIdx >= 0) {
     const original = state.items[itemIdx];
     const updatedItem = { ...original, ...item };

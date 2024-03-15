@@ -170,12 +170,6 @@ export const dialogsReducer = createReducer(
   on(
     ApplicationActions.loadedSuccessfully,
     (_state, { datastore }): TDialogsState => {
-      const allitem = ([] as IBaseItem[]).concat(
-        ...datastore.storage.items,
-        ...datastore.shopping.items,
-        ...datastore.globals.items
-      );
-      console.log(allitem);
       return _state;
     }
   )

@@ -32,6 +32,22 @@ export class MessageEffects {
     { dispatch: false }
   );
 
+  addItemFailure$ = createEffect(
+    () => {
+      return this.#actions$.pipe(
+        ofType(
+          StorageActions.addItemFailure,
+          GlobalsActions.addItemFailure,
+          ShoppingActions.addItemFailure
+        ),
+        exhaustMap(({ item }) => {
+          return fromPromise(this.#uiService.showItemContainedToast(item.name));
+        })
+      );
+    },
+    { dispatch: false }
+  );
+
   updateItemSussess$ = createEffect(
     () => {
       return this.#actions$.pipe(

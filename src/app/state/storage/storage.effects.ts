@@ -1,17 +1,14 @@
 import { inject, Injectable } from '@angular/core';
 import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { TypedAction } from '@ngrx/store/src/models';
-import { filter, map, withLatestFrom } from 'rxjs';
+import { filter, map } from 'rxjs';
 import { fromPromise } from 'rxjs/internal/observable/innerFrom';
-import { IAppState } from '../../@types/types';
 import {
   createShoppingItemFromStorage,
-  createStorageItem,
   createStorageItemFromGlobal,
   createStorageItemFromShopping,
 } from '../../app.factory';
-import { matchesItem } from '../../app.utils';
+import { matchesItemExactly } from '../../app.utils';
 import { DatabaseService } from '../../services/database.service';
 import { ShoppingActions } from '../shopping/shopping.actions';
 import { selectShoppingState } from '../shopping/shopping.selector';
@@ -58,25 +55,12 @@ export class StorageEffects {
       ofType(StorageActions.addOrUpdateItem),
       concatLatestFrom(() => this.#store.select(selectStorageState)),
       map(([{ item }, state]) => {
-        if (matchesItem(item, state.items)) {
+        if (matchesItemExactly(item, state.items)) {
           console.log('found so update');
           return StorageActions.updateItem(item);
         }
         console.log('not found so add');
         return StorageActions.addItem(item);
-      })
-    );
-  });
-
-  addItemFromSearch$ = createEffect(() => {
-    return this.#actions$.pipe(
-      ofType(StorageActions.addItemFromSearch),
-      withLatestFrom(this.#store, (_: TypedAction<any>, state: IAppState) => ({
-        state,
-      })),
-      map(({ state }) => {
-        const item = createStorageItem(state.storage.searchQuery ?? '');
-        return StorageActions.addOrUpdateItem(item);
       })
     );
   });
@@ -121,7 +105,7 @@ export class StorageEffects {
       concatLatestFrom(() => this.#store.select(selectShoppingState)),
       map(([{ item }, state]) => {
         const shoppingItem = createShoppingItemFromStorage(item);
-        const found = matchesItem(shoppingItem, state.items);
+        const found = matchesItemExactly(shoppingItem, state.items);
         if (found) {
           return ShoppingActions.updateItem({
             ...found,

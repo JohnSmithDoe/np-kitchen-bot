@@ -3,8 +3,13 @@ import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { combineLatestWith, filter, map, withLatestFrom } from 'rxjs';
 import { fromPromise } from 'rxjs/internal/observable/innerFrom';
-import { TItemListId } from '../@types/types';
-import { createGlobalItem, createShoppingItem } from '../app.factory';
+import { IAppState, TItemListId } from '../@types/types';
+import {
+  createGlobalItem,
+  createShoppingItem,
+  createStorageItem,
+} from '../app.factory';
+import { matchesItemExactly } from '../app.utils';
 import { DatabaseService } from '../services/database.service';
 import { createQuickAddState } from './@shared/item-list.effects';
 import { ApplicationActions } from './application.actions';
@@ -92,16 +97,27 @@ export class ApplicationEffects {
         StorageActions.showCreateDialogWithSearch,
         GlobalsActions.showCreateDialogWithSearch
       ),
-      withLatestFrom(this.#store, (action, state) => ({ action, state })),
+      withLatestFrom(this.#store, (action, state: IAppState) => ({
+        action,
+        state,
+      })),
       map(({ action, state }) => {
-        const item = createShoppingItem(state.shopping.searchQuery ?? '');
         switch (action.type) {
           case '[Shopping] Show Create Dialog With Search':
-            return DialogsActions.showDialog(item, '_shopping');
+            return DialogsActions.showDialog(
+              createShoppingItem(state.shopping.searchQuery ?? ''),
+              '_shopping'
+            );
           case '[Storage] Show Create Dialog With Search':
-            return DialogsActions.showDialog(item, '_storage');
+            return DialogsActions.showDialog(
+              createStorageItem(state.storage.searchQuery ?? ''),
+              '_storage'
+            );
           case '[Globals] Show Create Dialog With Search':
-            return DialogsActions.showDialog(item, '_globals');
+            return DialogsActions.showDialog(
+              createGlobalItem(state.globals.searchQuery ?? ''),
+              '_globals'
+            );
         }
       })
     );
@@ -129,6 +145,53 @@ export class ApplicationEffects {
       concatLatestFrom(() => this.#store.select(selectEditShoppingState)),
       filter(([_, state]) => state.listId === '_shopping'),
       map(([_, state]) => ShoppingActions.addOrUpdateItem(state.item))
+    );
+  });
+
+  addItemFromSearch$ = createEffect(() => {
+    return this.#actions$.pipe(
+      ofType(
+        StorageActions.addItemFromSearch,
+        ShoppingActions.addItemFromSearch,
+        GlobalsActions.addItemFromSearch
+      ),
+      withLatestFrom(this.#store, (action, state: IAppState) => ({
+        action,
+        state,
+      })),
+      map(({ action, state }) => {
+        switch (action.type) {
+          case '[Storage] Add Item From Search':
+            const storageItem = createStorageItem(
+              state.storage.searchQuery ?? ''
+            );
+            const foundStorageItem = matchesItemExactly(
+              storageItem,
+              state.storage.items
+            );
+            return foundStorageItem
+              ? StorageActions.addItemFailure(foundStorageItem)
+              : StorageActions.addItem(storageItem);
+
+          case '[Shopping] Add Item From Search':
+            const shoppingItem = createShoppingItem(
+              state.shopping.searchQuery ?? ''
+            );
+            const foundShoppingItem = matchesItemExactly(
+              shoppingItem,
+              state.shopping.items
+            );
+            return foundShoppingItem
+              ? ShoppingActions.addItemFailure(foundShoppingItem)
+              : ShoppingActions.addItem(shoppingItem);
+          case '[Globals] Add Item From Search':
+            const item = createGlobalItem(state.globals.searchQuery ?? '');
+            const found = matchesItemExactly(item, state.globals.items);
+            return found
+              ? GlobalsActions.addItemFailure(found)
+              : GlobalsActions.addItem(item);
+        }
+      })
     );
   });
 }

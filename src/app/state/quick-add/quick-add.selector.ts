@@ -1,5 +1,6 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import { IQuickAddState } from '../../@types/types';
+import { matchingTxt } from '../../app.utils';
 import { selectSettingsState } from '../settings/settings.selector';
 
 export const selectQuickAddState =
@@ -9,7 +10,7 @@ export const selectQuickAddCanAddLocal = createSelector(
   selectQuickAddState,
   selectSettingsState,
   (state, settings): boolean =>
-    !!state.searchQuery?.length &&
+    !!matchingTxt(state.searchQuery ?? '')?.length &&
     !state.exactMatchLocal &&
     settings.showQuickAdd
 );

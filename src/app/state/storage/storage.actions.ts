@@ -13,11 +13,10 @@ export const StorageActions = createActionGroup({
   events: {
     // Effects only
     'Enter Page': emptyProps(),
-
+    'Add Or Update Item': (item: IStorageItem) => ({ item }),
     'Add Item From Search': emptyProps(),
     'Add Global Item': (item: IGlobalItem) => ({ item }),
     'Add Shopping Item': (item: IShoppingItem) => ({ item }),
-    'Add Or Update Item': (item: IStorageItem) => ({ item }),
 
     'Show Create Dialog With Search': emptyProps(),
     'Show Create Global Dialog With Search': emptyProps(),
@@ -31,6 +30,8 @@ export const StorageActions = createActionGroup({
     // Operations
 
     'Add Item': (item: IStorageItem) => ({ item }),
+    'Add Item Failure': (item: IStorageItem) => ({ item }),
+
     'Remove Item': (item: IStorageItem) => ({ item }),
     'Update Item': (item: TUpdateDTO<IStorageItem>) => ({ item }),
     'Update Search': (searchQuery?: string) => ({ searchQuery }),

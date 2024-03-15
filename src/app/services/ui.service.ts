@@ -60,4 +60,11 @@ export class UiService {
     });
     return this.showToast(msg);
   }
+
+  showItemContainedToast(name: string) {
+    const msg = this.translate.instant('toast.add.item.failure', {
+      name,
+    });
+    return this.showToast(msg, 'medium');
+  }
 }

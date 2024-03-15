@@ -2,16 +2,16 @@ import { createReducer, on } from '@ngrx/store';
 import { ISettings } from '../../@types/types';
 import { ApplicationActions } from '../application.actions';
 import { SettingsActions } from './settings.actions';
-//TODO: all false for release..
+
 export const initialSettings: ISettings = {
-  showQuickAdd: true,
-  showQuickAddGlobal: true,
-  showGlobalsInShopping: true,
-  showGlobalsInStorage: true,
-  showShoppingInGlobals: true,
-  showShoppingInStorage: true,
-  showStorageInGlobals: true,
-  showStorageInShopping: true,
+  showQuickAdd: false,
+  showQuickAddGlobal: false,
+  showGlobalsInShopping: false,
+  showGlobalsInStorage: false,
+  showShoppingInGlobals: false,
+  showShoppingInStorage: false,
+  showStorageInGlobals: false,
+  showStorageInShopping: false,
 };
 
 export const settingsReducer = createReducer(
