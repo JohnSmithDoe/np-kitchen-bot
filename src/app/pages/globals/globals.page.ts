@@ -27,8 +27,8 @@ import { EditStorageItemDialogComponent } from '../../dialogs/edit-storage-item-
 import { DialogsActions } from '../../state/dialogs/dialogs.actions';
 import { GlobalsActions } from '../../state/globals/globals.actions';
 import {
+  selectGlobalListItems,
   selectGlobalsListCategories,
-  selectGlobalsListItems,
   selectGlobalsListSearchResult,
   selectGlobalsState,
 } from '../../state/globals/globals.selector';
@@ -61,7 +61,7 @@ export class GlobalsPage {
   readonly #store = inject(Store);
 
   rxState$ = this.#store.select(selectGlobalsState);
-  rxItems$ = this.#store.select(selectGlobalsListItems);
+  rxItems$ = this.#store.select(selectGlobalListItems);
   rxCategories$ = this.#store.select(selectGlobalsListCategories);
   rxSearchResult$ = this.#store.select(selectGlobalsListSearchResult);
 

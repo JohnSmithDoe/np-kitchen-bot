@@ -1,76 +1,11 @@
-<ion-modal
-  [isOpen]="
-    (rxState$ | async)?.isEditing === true &&
-    (rxState$ | async)?.listId === '_shopping'
-  "
-  (didDismiss)="closedDialog()"
->
-  <ng-template>
-    <ion-header>
-      <ion-toolbar>
-        <ion-buttons slot="start">
-          <ion-button (click)="cancelChanges()"
-            >{{ 'edit-item.dialog.button.close' | translate }}
-          </ion-button>
-        </ion-buttons>
-        <ion-buttons slot="end">
-          <ion-button
-            (click)="submitChanges()"
-            [disabled]="
-              nameControl.hasError('duplicate') || nameControl.hasError('empty')
-            "
-            >{{
-              (rxState$ | async)?.saveButtonText ?? '' | translate
-            }}</ion-button
-          >
-        </ion-buttons>
-      </ion-toolbar>
-    </ion-header>
+<app-item-edit-modal listId="_shopping" [listItems]="rxShoppingItems$ | async">
+  <app-number-input
+    [label]="'Menge'"
+    [value]="(rxItem$ | async)?.quantity ?? 1"
+    (updateValue)="updateQuantity($event)"
+  ></app-number-input>
 
-    <ion-content #ionContent>
-      <h3 class="ion-padding-start">
-        {{ (rxState$ | async)?.dialogTitle ?? '' | translate }}
-      </h3>
-      <ion-list>
-        <ion-item lines="none">
-          <ion-input
-            label="{{ 'edit.item.dialog.name' | translate }}"
-            placeholder="{{ 'edit.item.dialog.name.placeholder' | translate }}"
-            [formControl]="nameControl"
-            [errorText]="getErrorText()"
-          ></ion-input>
-        </ion-item>
-
-        <ion-item>
-          <ion-input
-            type="number"
-            class="ion-text-end"
-            label="Menge"
-            [clearOnEdit]="true"
-            [ngModel]="(rxItem$ | async)?.quantity ?? 1"
-            (ionInput)="updateQuantity($event)"
-          ></ion-input>
-        </ion-item>
-
-        <ion-item button (click)="showCategoryDialog()">
-          <ion-label class="ion-text-wrap">
-            {{ 'edit.item.dialog.categories' | translate }}
-            @for (cat of (rxItem$ | async)?.category; track cat) {
-              <ion-chip color="category">
-                <ion-label class="ion-text-wrap">{{ cat }}</ion-label>
-                <ion-icon
-                  name="close-circle"
-                  (click)="removeCategory(cat); $event.stopPropagation()"
-                ></ion-icon>
-              </ion-chip>
-            } @empty {
-              {{ 'edit.item.dialog.categories.empty' | translate }}
-            }
-          </ion-label>
-        </ion-item>
-      </ion-list>
-    </ion-content>
-
-    <app-categories-dialog></app-categories-dialog>
-  </ng-template>
-</ion-modal>
+  <app-category-input
+    [categories]="(rxItem$ | async)?.category"
+  ></app-category-input>
+</app-item-edit-modal>

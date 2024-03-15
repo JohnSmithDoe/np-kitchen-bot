@@ -1,0 +1,43 @@
+<ion-modal
+  [isOpen]="
+    (rxState$ | async)?.isEditing === true &&
+    (rxState$ | async)?.listId === listId
+  "
+  (didDismiss)="closedDialog()"
+>
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-button (click)="cancelChanges()"
+            >{{ 'edit-item.dialog.button.close' | translate }}
+          </ion-button>
+        </ion-buttons>
+        <ion-buttons slot="end">
+          <ion-button
+            (click)="submitChanges()"
+            [disabled]="nameInput.invalid"
+            >{{
+              (rxState$ | async)?.saveButtonText ?? '' | translate
+            }}</ion-button
+          >
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content #ionContent>
+      <h3 class="ion-padding-start">
+        {{ (rxState$ | async)?.dialogTitle ?? '' | translate }}
+      </h3>
+      <ion-list>
+        <app-item-name-input
+          #nameInput
+          [item]="rxItem$ | async"
+          [listItems]="listItems"
+          (updateValue)="updateName($event)"
+        ></app-item-name-input>
+        <ng-content></ng-content>
+      </ion-list>
+    </ion-content>
+  </ng-template>
+</ion-modal>

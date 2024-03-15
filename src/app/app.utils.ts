@@ -88,7 +88,10 @@ export function parseNumberInput(ev: InputCustomEvent) {
   return Number.parseInt(value, 10);
 }
 
-export function validateNameInput<T extends IBaseItem>(items?: T[], item?: T) {
+export function validateNameInput<T extends IBaseItem>(
+  items?: T[],
+  item?: T | null
+) {
   return (control: AbstractControl) => {
     if (matchingTxt(control.value ?? '').length === 0) return { empty: true };
     const found = items?.filter((item) =>

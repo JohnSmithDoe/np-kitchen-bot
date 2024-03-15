@@ -1,6 +1,6 @@
 <app-page-header
   color="task"
-  label="{{'page-title.task' | translate}}"
+  label="{{'page-title.tasks' | translate}}"
   [disabled]="!!(rxSearchResult$ | async)?.exactMatch"
   (addItem)="showCreateDialog()"
 >

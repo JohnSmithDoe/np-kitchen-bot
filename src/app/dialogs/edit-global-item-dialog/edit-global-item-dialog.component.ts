@@ -1,13 +1,6 @@
 import { AsyncPipe, CurrencyPipe, DatePipe } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  inject,
-  OnDestroy,
-  OnInit,
-} from '@angular/core';
-import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { marker } from '@colsen1991/ngx-translate-extract-marker';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { InputCustomEvent, SelectCustomEvent } from '@ionic/angular';
 import {
   IonAvatar,
@@ -35,13 +28,11 @@ import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { closeCircle } from 'ionicons/icons';
-import { combineLatestWith, Subscription } from 'rxjs';
-import {
-  TBestBeforeTimespan,
-  TItemListCategory,
-  TMarker,
-} from '../../@types/types';
-import { parseNumberInput, validateNameInput } from '../../app.utils';
+import { TBestBeforeTimespan, TItemListCategory } from '../../@types/types';
+import { CategoryInputComponent } from '../../components/forms/category-input/category-input.component';
+import { ItemEditModalComponent } from '../../components/forms/item-edit-modal/item-edit-modal.component';
+import { ItemNameInputComponent } from '../../components/forms/item-name-input/item-name-input.component';
+import { NumberInputComponent } from '../../components/forms/number-input/number-input.component';
 import {
   CategoriesActions,
   DialogsActions,
@@ -51,8 +42,10 @@ import {
   selectEditGlobalItem,
   selectEditGlobalState,
 } from '../../state/dialogs/dialogs.selector';
-import { selectGlobalsState } from '../../state/globals/globals.selector';
-import { CategoriesDialogComponent } from '../categories-dialog/categories-dialog.component';
+import {
+  selectGlobalListItems,
+  selectGlobalsState,
+} from '../../state/globals/globals.selector';
 
 @Component({
   selector: 'app-edit-global-item-dialog',
@@ -74,7 +67,6 @@ import { CategoriesDialogComponent } from '../categories-dialog/categories-dialo
     IonAvatar,
     IonLabel,
     IonIcon,
-    CategoriesDialogComponent,
     TranslateModule,
     IonSelect,
     IonSelectOption,
@@ -86,55 +78,25 @@ import { CategoriesDialogComponent } from '../categories-dialog/categories-dialo
     IonText,
     AsyncPipe,
     ReactiveFormsModule,
+    CategoryInputComponent,
+    ItemNameInputComponent,
+    NumberInputComponent,
+    ItemEditModalComponent,
   ],
   templateUrl: './edit-global-item-dialog.component.html',
   styleUrl: './edit-global-item-dialog.component.scss',
 })
-export class EditGlobalItemDialogComponent implements OnInit, OnDestroy {
+export class EditGlobalItemDialogComponent {
   readonly #store = inject(Store);
 
   rxState$ = this.#store.select(selectEditGlobalState);
   rxItem$ = this.#store.select(selectEditGlobalItem);
-  rxGlobalState$ = this.#store.select(selectGlobalsState);
   rxCategory$ = this.#store.select(selectCategoriesState);
-  nameControl: FormControl = new FormControl('');
-  readonly #subscription: Subscription[] = [];
+  rxGlobalItems$ = this.#store.select(selectGlobalListItems);
+  rxGlobalState$ = this.#store.select(selectGlobalsState);
 
   constructor() {
     addIcons({ closeCircle });
-  }
-  // dry -> maybe add a name control input hmmmmmmmmmm with the provide ControllerInputGroup wie in dem Video... would be nice
-  async ngOnInit(): Promise<void> {
-    // Hmm this seems a bit much only to get validation on the input.... but still no other solution found till now
-    this.#subscription.push(
-      // subscribe to the input changes and update the state
-      this.nameControl.valueChanges.subscribe(
-        (value: string | null | undefined) => {
-          this.#store.dispatch(
-            DialogsActions.updateItem({
-              name: value ?? undefined,
-            })
-          );
-        }
-      ),
-      // subscribe to the state changes and update the input value so we can have validation
-      this.rxItem$
-        .pipe(combineLatestWith(this.rxGlobalState$))
-        .subscribe(([item, state]) => {
-          if (this.nameControl.value !== item?.name) {
-            this.nameControl.setValue(item?.name);
-            this.nameControl.markAsTouched();
-            this.nameControl.setValidators(
-              validateNameInput(state.items, item)
-            );
-            this.nameControl.updateValueAndValidity();
-          }
-        })
-    );
-  }
-
-  ngOnDestroy(): void {
-    this.#subscription.forEach((sub) => sub.unsubscribe());
   }
 
   cancelChanges() {
@@ -176,6 +138,14 @@ export class EditGlobalItemDialogComponent implements OnInit, OnDestroy {
     this.#store.dispatch(DialogsActions.removeCategory(cat));
   }
 
+  updateName(value: string) {
+    this.#store.dispatch(
+      DialogsActions.updateItem({
+        name: value,
+      })
+    );
+  }
+
   setBestBeforeTimespan(ev: SelectCustomEvent<TBestBeforeTimespan>) {
     this.#store.dispatch(
       DialogsActions.updateItem({
@@ -189,19 +159,11 @@ export class EditGlobalItemDialogComponent implements OnInit, OnDestroy {
     this.#store.dispatch(CategoriesActions.showDialog());
   }
 
-  setBestBeforeTimevalue(ev: InputCustomEvent) {
+  setBestBeforeTimevalue(value: number) {
     this.#store.dispatch(
       DialogsActions.updateItem({
-        bestBeforeTimevalue: parseNumberInput(ev),
+        bestBeforeTimevalue: value,
       })
     );
-  }
-
-  getErrorText(): TMarker {
-    {
-      return this.nameControl.hasError('duplicate')
-        ? marker('edit.item.dialog.name.duplicate.error')
-        : marker('edit.item.dialog.name.empty.error');
-    }
   }
 }

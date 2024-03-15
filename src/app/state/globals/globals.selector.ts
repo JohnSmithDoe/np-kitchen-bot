@@ -22,7 +22,7 @@ export const selectGlobalsListSearchResult = createSelector(
     filterBySearchQuery(state, listState)
 );
 
-export const selectGlobalsListItems = createSelector(
+export const selectGlobalListItems = createSelector(
   selectGlobalsState,
   selectGlobalsListSearchResult,
   (state: IGlobalsState, result): IGlobalItem[] | undefined =>

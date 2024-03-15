@@ -82,7 +82,7 @@ export class ItemListComponent {
   @Input() header?: string;
   @Input() headerColor?: TColor;
 
-  reorderDisabled = true;
+  @Input() reorderDisabled = true;
 
   constructor() {
     addIcons({ add, remove, cart, list });

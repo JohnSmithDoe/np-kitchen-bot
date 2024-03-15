@@ -26,7 +26,7 @@ export const updateQuickAddState = (
       break;
     case '_globals':
       searchQuery = state.globals.searchQuery;
-      listName = marker('list-header.globals.dativ');
+      listName = marker('list-header.globals');
       color = 'global';
       exactMatchLocal = !!state.globals.items.find((item) =>
         matchesSearchExactly(item, searchQuery)

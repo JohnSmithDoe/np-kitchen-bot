@@ -1,14 +1,7 @@
 import { AsyncPipe, CurrencyPipe, DatePipe } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  inject,
-  OnDestroy,
-  OnInit,
-} from '@angular/core';
-import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { marker } from '@colsen1991/ngx-translate-extract-marker';
-import { DatetimeCustomEvent, InputCustomEvent } from '@ionic/angular';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { InputCustomEvent } from '@ionic/angular';
 import {
   IonButton,
   IonButtons,
@@ -30,23 +23,21 @@ import {
   IonToolbar,
 } from '@ionic/angular/standalone';
 import { Store } from '@ngrx/store';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { closeCircle } from 'ionicons/icons';
-import { combineLatestWith, Subscription } from 'rxjs';
-import { TItemListCategory, TMarker } from '../../@types/types';
-import { parseNumberInput, validateNameInput } from '../../app.utils';
+import { parseNumberInput } from '../../app.utils';
+import { CategoryInputComponent } from '../../components/forms/category-input/category-input.component';
+import { DateInputComponent } from '../../components/forms/date-input/date-input.component';
+import { ItemEditModalComponent } from '../../components/forms/item-edit-modal/item-edit-modal.component';
+import { ItemNameInputComponent } from '../../components/forms/item-name-input/item-name-input.component';
+import { NumberInputComponent } from '../../components/forms/number-input/number-input.component';
+import { DialogsActions } from '../../state/dialogs/dialogs.actions';
 import {
-  CategoriesActions,
-  DialogsActions,
-} from '../../state/dialogs/dialogs.actions';
-import {
-  selectCategoriesState,
   selectEditStorageItem,
   selectEditStorageState,
 } from '../../state/dialogs/dialogs.selector';
-import { selectStorageState } from '../../state/storage/storage.selector';
-import { CategoriesDialogComponent } from '../categories-dialog/categories-dialog.component';
+import { selectStorageListItems } from '../../state/storage/storage.selector';
 
 @Component({
   selector: 'app-edit-storage-item-dialog',
@@ -67,7 +58,6 @@ import { CategoriesDialogComponent } from '../categories-dialog/categories-dialo
     IonChip,
     IonLabel,
     IonIcon,
-    CategoriesDialogComponent,
     TranslateModule,
     IonSelect,
     IonSelectOption,
@@ -78,69 +68,26 @@ import { CategoriesDialogComponent } from '../categories-dialog/categories-dialo
     IonText,
     AsyncPipe,
     ReactiveFormsModule,
+    CategoryInputComponent,
+    ItemNameInputComponent,
+    NumberInputComponent,
+    DateInputComponent,
+    ItemEditModalComponent,
   ],
   templateUrl: './edit-storage-item-dialog.component.html',
   styleUrl: './edit-storage-item-dialog.component.scss',
 })
-export class EditStorageItemDialogComponent implements OnInit, OnDestroy {
-  readonly translate = inject(TranslateService);
+export class EditStorageItemDialogComponent {
   readonly #store = inject(Store);
 
   rxState$ = this.#store.select(selectEditStorageState);
   rxItem$ = this.#store.select(selectEditStorageItem);
-  rxCategory$ = this.#store.select(selectCategoriesState);
-  rxStorageState$ = this.#store.select(selectStorageState);
-  nameControl: FormControl = new FormControl('');
-  readonly #subscription: Subscription[] = [];
+  rxStorageItems$ = this.#store.select(selectStorageListItems);
 
   constructor() {
     addIcons({ closeCircle });
   }
-  // dry -> maybe add a name control input hmmmmmmmmmm with the provide ControllerInputGroup wie in dem Video... would be nice
-  async ngOnInit(): Promise<void> {
-    // Hmm this seems a bit much only to get validation on the input.... but still no other solution found till now
-    this.#subscription.push(
-      // subscribe to the input changes and update the state
-      this.nameControl.valueChanges.subscribe(
-        (value: string | null | undefined) => {
-          this.#store.dispatch(
-            DialogsActions.updateItem({
-              name: value ?? undefined,
-            })
-          );
-        }
-      ),
-      // subscribe to the state changes and update the input value so we can have validation
-      this.rxItem$
-        .pipe(combineLatestWith(this.rxStorageState$))
-        .subscribe(([item, state]) => {
-          if (this.nameControl.value !== item?.name) {
-            this.nameControl.setValue(item?.name);
-            this.nameControl.markAsTouched();
-            this.nameControl.setValidators(
-              validateNameInput(state.items, item)
-            );
-            this.nameControl.updateValueAndValidity();
-          }
-        })
-    );
-  }
 
-  ngOnDestroy(): void {
-    this.#subscription.forEach((sub) => sub.unsubscribe());
-  }
-
-  cancelChanges() {
-    this.#store.dispatch(DialogsActions.abortChanges());
-  }
-
-  closedDialog() {
-    this.#store.dispatch(DialogsActions.hideDialog());
-  }
-
-  submitChanges() {
-    this.#store.dispatch(DialogsActions.confirmChanges());
-  }
   // dry -> maybe pass the string to the update action... convert somewhere else
   updatePrice(ev: InputCustomEvent<FocusEvent>) {
     let inputValue = ev.target.value as string;
@@ -165,10 +112,6 @@ export class EditStorageItemDialogComponent implements OnInit, OnDestroy {
     );
   }
 
-  removeCategory(cat: TItemListCategory) {
-    this.#store.dispatch(DialogsActions.removeCategory(cat));
-  }
-
   updateQuantity(ev: InputCustomEvent) {
     this.#store.dispatch(
       DialogsActions.updateItem({
@@ -177,30 +120,18 @@ export class EditStorageItemDialogComponent implements OnInit, OnDestroy {
     );
   }
 
-  showCategoryDialog() {
-    this.#store.dispatch(CategoriesActions.showDialog());
-  }
-
-  updateBestBefore(ev: DatetimeCustomEvent) {
-    const dateValue =
-      typeof ev.detail.value === 'string' ? ev.detail.value : undefined;
+  updateBestBefore(value: string | undefined) {
     this.#store.dispatch(
       DialogsActions.updateItem({
-        bestBefore: dateValue,
+        bestBefore: value,
       })
     );
   }
-  getErrorText(): TMarker {
-    {
-      return this.nameControl.hasError('duplicate')
-        ? marker('edit.item.dialog.name.duplicate.error')
-        : marker('edit.item.dialog.name.empty.error');
-    }
-  }
-  changeMinAmount(ev: InputCustomEvent) {
+
+  updateMinAmount(value: number) {
     this.#store.dispatch(
       DialogsActions.updateItem({
-        minAmount: parseNumberInput(ev),
+        minAmount: value,
       })
     );
   }
