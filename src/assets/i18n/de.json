@@ -15,6 +15,7 @@
 	"edit.item.dialog.mhd": "Mindesthaltbarkeitsdatum",
 	"edit.item.dialog.name": "Name",
 	"edit.item.dialog.name.duplicate.error": "Der Name existiert bereits",
+	"edit.item.dialog.name.empty.error": "Der Name darf nicht leer sein",
 	"edit.item.dialog.name.placeholder": "Gib einen Namen ein",
 	"edit.item.dialog.title.create": "Neuen Eintrag anlegen",
 	"edit.item.dialog.title.update": "Eintrag bearbeiten",

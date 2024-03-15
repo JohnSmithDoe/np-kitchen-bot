@@ -17,21 +17,13 @@ export const initialState: IStorageState = {
   mode: 'alphabetical',
 };
 
-function updateSearch(
-  state: IStorageState,
-  searchQuery?: string
-): IStorageState {
-  if (searchQuery === state.searchQuery) return state;
-  return { ...state, searchQuery };
-}
-
 // prettier-ignore
 export const storageReducer = createReducer(
   initialState,
   on(StorageActions.addItem,(state, { item }) => addListItem(state, item)),
   on(StorageActions.removeItem,(state, { item }) => removeListItem(state, item)),
   on(StorageActions.updateItem,(state, { item }) => updateListItem(state, item)),
-  on(StorageActions.updateSearch,(state, { searchQuery }): IStorageState => updateSearch(state, searchQuery)),
+  on(StorageActions.updateSearch,(state, { searchQuery }): IStorageState => searchQuery === state.searchQuery ? state : { ...state, searchQuery }),
   on(StorageActions.updateFilter,(state, { filterBy }): IStorageState => ({ ...state, filterBy, mode: 'alphabetical', })),
   on(StorageActions.updateMode, (state, { mode }) => updateListMode(state, mode)),
   on(StorageActions.updateSort, (state, { sortBy, sortDir }) => ({ ...state, sort: updateListSort(sortBy, sortDir, state.sort?.sortDir),})),

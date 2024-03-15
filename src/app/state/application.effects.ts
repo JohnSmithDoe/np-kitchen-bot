@@ -13,6 +13,7 @@ import {
   createStorageItem,
   createStorageItemFromGlobal,
   createStorageItemFromShopping,
+  createTaskItem,
 } from '../app.factory';
 import { matchesItemExactly, matchingTxt } from '../app.utils';
 import { DatabaseService } from '../services/database.service';
@@ -23,17 +24,53 @@ import {
   selectEditGlobalState,
   selectEditShoppingState,
   selectEditStorageState,
+  selectEditTaskState,
 } from './dialogs/dialogs.selector';
 import { GlobalsActions } from './globals/globals.actions';
 import { QuickAddActions } from './quick-add/quick-add.actions';
 import { ShoppingActions } from './shopping/shopping.actions';
 import { StorageActions } from './storage/storage.actions';
+import { TasksActions } from './tasks/tasks.actions';
 
 function updatedSearchQuery(item: IBaseItem, searchQuery: string | undefined) {
   if (!!item.name && !item.name.includes(searchQuery ?? '')) {
     searchQuery = undefined;
   }
   return searchQuery;
+}
+
+function addStorageItemFromSearch(state: IAppState) {
+  const storageItem = createStorageItem(state.storage.searchQuery ?? '');
+  const foundStorageItem = matchesItemExactly(storageItem, state.storage.items);
+  return foundStorageItem
+    ? StorageActions.addItemFailure(foundStorageItem)
+    : StorageActions.addItem(storageItem);
+}
+
+function addShoppingItemFromSearch(state: IAppState) {
+  const shoppingItem = createShoppingItem(state.shopping.searchQuery ?? '');
+  const foundShoppingItem = matchesItemExactly(
+    shoppingItem,
+    state.shopping.items
+  );
+  return foundShoppingItem
+    ? ShoppingActions.addItemFailure(foundShoppingItem)
+    : ShoppingActions.addItem(shoppingItem);
+}
+
+function addGlobalItemFromSearch(state: IAppState) {
+  const item = createGlobalItem(state.globals.searchQuery ?? '');
+  const found = matchesItemExactly(item, state.globals.items);
+  return found
+    ? GlobalsActions.addItemFailure(found)
+    : GlobalsActions.addItem(item);
+}
+function addTaskItemFromSearch(state: IAppState) {
+  const item = createTaskItem(state.tasks.searchQuery ?? '');
+  const found = matchesItemExactly(item, state.tasks.items);
+  return found
+    ? TasksActions.addItemFailure(found)
+    : TasksActions.addItem(item);
 }
 
 @Injectable({ providedIn: 'root' })
@@ -55,7 +92,8 @@ export class ApplicationEffects {
       ofType(
         StorageActions.addItemFromSearch,
         ShoppingActions.addItemFromSearch,
-        GlobalsActions.addItemFromSearch
+        GlobalsActions.addItemFromSearch,
+        TasksActions.addItemFromSearch
       ),
       withLatestFrom(this.#store, (action, state: IAppState) => ({
         action,
@@ -64,34 +102,13 @@ export class ApplicationEffects {
       map(({ action, state }) => {
         switch (action.type) {
           case '[Storage] Add Item From Search':
-            const storageItem = createStorageItem(
-              state.storage.searchQuery ?? ''
-            );
-            const foundStorageItem = matchesItemExactly(
-              storageItem,
-              state.storage.items
-            );
-            return foundStorageItem
-              ? StorageActions.addItemFailure(foundStorageItem)
-              : StorageActions.addItem(storageItem);
-
+            return addStorageItemFromSearch(state);
           case '[Shopping] Add Item From Search':
-            const shoppingItem = createShoppingItem(
-              state.shopping.searchQuery ?? ''
-            );
-            const foundShoppingItem = matchesItemExactly(
-              shoppingItem,
-              state.shopping.items
-            );
-            return foundShoppingItem
-              ? ShoppingActions.addItemFailure(foundShoppingItem)
-              : ShoppingActions.addItem(shoppingItem);
+            return addShoppingItemFromSearch(state);
           case '[Globals] Add Item From Search':
-            const item = createGlobalItem(state.globals.searchQuery ?? '');
-            const found = matchesItemExactly(item, state.globals.items);
-            return found
-              ? GlobalsActions.addItemFailure(found)
-              : GlobalsActions.addItem(item);
+            return addGlobalItemFromSearch(state);
+          case '[Tasks] Add Item From Search':
+            return addTaskItemFromSearch(state);
         }
       })
     );
@@ -101,7 +118,8 @@ export class ApplicationEffects {
       ofType(
         StorageActions.addOrUpdateItem,
         ShoppingActions.addOrUpdateItem,
-        GlobalsActions.addOrUpdateItem
+        GlobalsActions.addOrUpdateItem,
+        TasksActions.addOrUpdateItem
       ),
       withLatestFrom(this.#store, (action, state: IAppState) => ({
         action,
@@ -121,6 +139,10 @@ export class ApplicationEffects {
             return matchesItemExactly(action.item, state.shopping.items)
               ? ShoppingActions.updateItem(action.item)
               : ShoppingActions.addItem(action.item);
+          case '[Tasks] Add Or Update Item':
+            return matchesItemExactly(action.item, state.tasks.items)
+              ? TasksActions.updateItem(action.item)
+              : TasksActions.addItem(action.item);
         }
       })
     );
@@ -176,13 +198,16 @@ export class ApplicationEffects {
       ofType(
         StorageActions.updateMode,
         GlobalsActions.updateMode,
-        ShoppingActions.updateMode
+        ShoppingActions.updateMode,
+        TasksActions.updateMode
       ),
       filter(({ mode }) => mode !== 'categories'),
       map(({ mode, type }) => {
         switch (type) {
           case '[Storage] Update Mode':
             return StorageActions.updateFilter();
+          case '[Tasks] Update Mode':
+            return TasksActions.updateFilter();
           case '[Globals] Update Mode':
             return GlobalsActions.updateFilter();
           case '[Shopping] Update Mode':
@@ -196,7 +221,8 @@ export class ApplicationEffects {
       ofType(
         StorageActions.addItem,
         GlobalsActions.addItem,
-        ShoppingActions.addItem
+        ShoppingActions.addItem,
+        TasksActions.addItem
       ),
       map(({ type }) => {
         switch (type) {
@@ -206,6 +232,8 @@ export class ApplicationEffects {
             return GlobalsActions.updateSearch('');
           case '[Shopping] Add Item':
             return ShoppingActions.updateSearch('');
+          case '[Tasks] Add Item':
+            return TasksActions.updateSearch('');
         }
       })
     );
@@ -215,7 +243,8 @@ export class ApplicationEffects {
       ofType(
         StorageActions.updateItem,
         ShoppingActions.updateItem,
-        GlobalsActions.updateItem
+        GlobalsActions.updateItem,
+        TasksActions.updateItem
       ),
       withLatestFrom(this.#store, (action, state: IAppState) => ({
         action,
@@ -235,6 +264,10 @@ export class ApplicationEffects {
             return GlobalsActions.updateSearch(
               updatedSearchQuery(action.item, state.globals.searchQuery)
             );
+          case '[Tasks] Update Item':
+            return TasksActions.updateSearch(
+              updatedSearchQuery(action.item, state.tasks.searchQuery)
+            );
         }
       })
     );
@@ -247,7 +280,9 @@ export class ApplicationEffects {
         StorageActions.updateSearch,
         StorageActions.enterPage,
         GlobalsActions.updateSearch,
-        GlobalsActions.enterPage
+        GlobalsActions.enterPage,
+        TasksActions.updateSearch,
+        TasksActions.enterPage
       ),
       withLatestFrom(this.#store, (action, state) => ({ action, state })),
       map(({ action, state }) => {
@@ -264,6 +299,10 @@ export class ApplicationEffects {
           case '[Storage] Update Search':
           case '[Storage] Enter Page':
             listId = '_storage';
+            break;
+          case '[Tasks] Update Search':
+          case '[Tasks] Enter Page':
+            listId = '_tasks';
             break;
         }
         const newState = updateQuickAddState(state, listId);
@@ -321,6 +360,7 @@ export class ApplicationEffects {
           case '_storage':
             return StorageActions.addGlobalItem(state.item);
           case '_globals':
+          case '_tasks':
             return GlobalsActions.addItemFailure(state.item);
           case '_shopping':
             return ShoppingActions.addGlobalItem(state.item);
@@ -334,13 +374,15 @@ export class ApplicationEffects {
       ofType(
         ShoppingActions.showCreateDialogWithSearch,
         StorageActions.showCreateDialogWithSearch,
-        GlobalsActions.showCreateDialogWithSearch
+        GlobalsActions.showCreateDialogWithSearch,
+        TasksActions.showCreateDialogWithSearch
       ),
       withLatestFrom(this.#store, (action, state: IAppState) => ({
         action,
         state,
       })),
       map(({ action, state }) => {
+        console.log(action, state.tasks);
         switch (action.type) {
           case '[Shopping] Show Create Dialog With Search':
             return DialogsActions.showDialog(
@@ -351,6 +393,11 @@ export class ApplicationEffects {
             return DialogsActions.showDialog(
               createStorageItem(matchingTxt(state.storage.searchQuery ?? '')),
               '_storage'
+            );
+          case '[Tasks] Show Create Dialog With Search':
+            return DialogsActions.showDialog(
+              createTaskItem(matchingTxt(state.tasks.searchQuery ?? '')),
+              '_tasks'
             );
           case '[Globals] Show Create Dialog With Search':
             return DialogsActions.showDialog(
@@ -377,6 +424,14 @@ export class ApplicationEffects {
       map(([_, state]) => ShoppingActions.addOrUpdateItem(state.item))
     );
   });
+  confirmTaskItemChanges$ = createEffect(() => {
+    return this.#actions$.pipe(
+      ofType(DialogsActions.confirmChanges),
+      concatLatestFrom(() => this.#store.select(selectEditTaskState)),
+      filter(([_, state]) => state.listId === '_tasks'),
+      map(([_, state]) => TasksActions.addOrUpdateItem(state.item))
+    );
+  });
 
   saveOnChange$ = createEffect(
     () => {
@@ -390,7 +445,10 @@ export class ApplicationEffects {
           StorageActions.updateItem,
           GlobalsActions.addItem,
           GlobalsActions.removeItem,
-          GlobalsActions.updateItem
+          GlobalsActions.updateItem,
+          TasksActions.addItem,
+          TasksActions.removeItem,
+          TasksActions.updateItem
         ),
         withLatestFrom(this.#store, (action, state: IAppState) => ({
           action,
@@ -403,6 +461,8 @@ export class ApplicationEffects {
             return fromPromise(this.#database.save('shopping', state.shopping));
           } else if (action.type.startsWith('[Globals]')) {
             return fromPromise(this.#database.save('globals', state.globals));
+          } else if (action.type.startsWith('[Tasks]')) {
+            return fromPromise(this.#database.save('tasks', state.tasks));
           } else {
             throw Error('should not happen');
           }

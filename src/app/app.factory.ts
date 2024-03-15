@@ -4,6 +4,7 @@ import {
   IGlobalItem,
   IShoppingItem,
   IStorageItem,
+  ITaskItem,
   TTimestamp,
 } from './@types/types';
 import { uuidv4 } from './app.utils';
@@ -86,6 +87,18 @@ export function createGlobalItem(
     packaging: 'loose',
     bestBeforeTimespan: 'forever',
     bestBeforeTimevalue: 1,
+  };
+}
+
+export function createTaskItem(
+  name: string,
+  category?: string | string[],
+  prio = 1
+): ITaskItem {
+  const base = createBaseItem(name, category);
+  return {
+    ...base,
+    prio,
   };
 }
 

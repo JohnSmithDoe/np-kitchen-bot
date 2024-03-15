@@ -7,6 +7,7 @@ import {
   OnInit,
 } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { InputCustomEvent, SelectCustomEvent } from '@ionic/angular';
 import {
   IonAvatar,
@@ -35,8 +36,12 @@ import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { closeCircle } from 'ionicons/icons';
 import { combineLatestWith, Subscription } from 'rxjs';
-import { TBestBeforeTimespan, TItemListCategory } from '../../@types/types';
-import { parseNumberInput, validateDuplicateName } from '../../app.utils';
+import {
+  TBestBeforeTimespan,
+  TItemListCategory,
+  TMarker,
+} from '../../@types/types';
+import { parseNumberInput, validateNameInput } from '../../app.utils';
 import {
   CategoriesActions,
   DialogsActions,
@@ -120,7 +125,7 @@ export class EditGlobalItemDialogComponent implements OnInit, OnDestroy {
             this.nameControl.setValue(item?.name);
             this.nameControl.markAsTouched();
             this.nameControl.setValidators(
-              validateDuplicateName(state.items, item)
+              validateNameInput(state.items, item)
             );
             this.nameControl.updateValueAndValidity();
           }
@@ -190,5 +195,13 @@ export class EditGlobalItemDialogComponent implements OnInit, OnDestroy {
         bestBeforeTimevalue: parseNumberInput(ev),
       })
     );
+  }
+
+  getErrorText(): TMarker {
+    {
+      return this.nameControl.hasError('duplicate')
+        ? marker('edit.item.dialog.name.duplicate.error')
+        : marker('edit.item.dialog.name.empty.error');
+    }
   }
 }

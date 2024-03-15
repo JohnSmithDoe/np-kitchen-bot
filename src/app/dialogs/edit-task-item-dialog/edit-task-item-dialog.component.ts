@@ -1,4 +1,4 @@
-import { AsyncPipe, NgClass } from '@angular/common';
+import { AsyncPipe, DatePipe, NgClass } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -8,12 +8,13 @@ import {
 } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
-import { InputCustomEvent } from '@ionic/angular';
+import { DatetimeCustomEvent, InputCustomEvent } from '@ionic/angular';
 import {
   IonButton,
   IonButtons,
   IonChip,
   IonContent,
+  IonDatetime,
   IonHeader,
   IonIcon,
   IonInput,
@@ -36,14 +37,14 @@ import {
 } from '../../state/dialogs/dialogs.actions';
 import {
   selectCategoriesState,
-  selectEditShoppingItem,
-  selectEditShoppingState,
+  selectEditTaskItem,
+  selectEditTaskState,
 } from '../../state/dialogs/dialogs.selector';
-import { selectShoppingState } from '../../state/shopping/shopping.selector';
+import { selectTasksState } from '../../state/tasks/tasks.selector';
 import { CategoriesDialogComponent } from '../categories-dialog/categories-dialog.component';
 
 @Component({
-  selector: 'app-edit-shopping-item-dialog',
+  selector: 'app-edit-task-item-dialog',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
@@ -65,17 +66,19 @@ import { CategoriesDialogComponent } from '../categories-dialog/categories-dialo
     CategoriesDialogComponent,
     NgClass,
     ReactiveFormsModule,
+    DatePipe,
+    IonDatetime,
   ],
-  templateUrl: './edit-shopping-item-dialog.component.html',
-  styleUrl: './edit-shopping-item-dialog.component.scss',
+  templateUrl: './edit-task-item-dialog.component.html',
+  styleUrl: './edit-task-item-dialog.component.scss',
 })
-export class EditShoppingItemDialogComponent implements OnInit, OnDestroy {
+export class EditTaskItemDialogComponent implements OnInit, OnDestroy {
   readonly #store = inject(Store);
 
-  rxState$ = this.#store.select(selectEditShoppingState);
-  rxItem$ = this.#store.select(selectEditShoppingItem);
+  rxState$ = this.#store.select(selectEditTaskState);
+  rxItem$ = this.#store.select(selectEditTaskItem);
   rxCategory$ = this.#store.select(selectCategoriesState);
-  rxShoppingState$ = this.#store.select(selectShoppingState);
+  rxTasksState$ = this.#store.select(selectTasksState);
   nameControl: FormControl = new FormControl('');
   readonly #subscription: Subscription[] = [];
 
@@ -119,7 +122,7 @@ export class EditShoppingItemDialogComponent implements OnInit, OnDestroy {
       ),
       // subscribe to the state changes and update the input value so we can have validation
       this.rxItem$
-        .pipe(combineLatestWith(this.rxShoppingState$))
+        .pipe(combineLatestWith(this.rxTasksState$))
         .subscribe(([item, state]) => {
           if (this.nameControl.value !== item?.name) {
             this.nameControl.setValue(item?.name);
@@ -176,7 +179,7 @@ export class EditShoppingItemDialogComponent implements OnInit, OnDestroy {
     this.#store.dispatch(DialogsActions.removeCategory(cat));
   }
 
-  updateQuantity(ev: InputCustomEvent) {
+  updatePrio(ev: InputCustomEvent) {
     this.#store.dispatch(
       DialogsActions.updateItem({
         quantity: parseNumberInput(ev),
@@ -186,6 +189,16 @@ export class EditShoppingItemDialogComponent implements OnInit, OnDestroy {
 
   showCategoryDialog() {
     this.#store.dispatch(CategoriesActions.showDialog());
+  }
+
+  updateDueAt(ev: DatetimeCustomEvent) {
+    const dateValue =
+      typeof ev.detail.value === 'string' ? ev.detail.value : undefined;
+    this.#store.dispatch(
+      DialogsActions.updateItem({
+        dueAt: dateValue,
+      })
+    );
   }
 
   getErrorText(): TMarker {

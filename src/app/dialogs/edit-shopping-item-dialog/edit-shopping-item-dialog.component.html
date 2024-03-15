@@ -16,7 +16,9 @@
         <ion-buttons slot="end">
           <ion-button
             (click)="submitChanges()"
-            [disabled]="nameControl.hasError('duplicate')"
+            [disabled]="
+              nameControl.hasError('duplicate') || nameControl.hasError('empty')
+            "
             >{{
               (rxState$ | async)?.saveButtonText ?? '' | translate
             }}</ion-button
@@ -35,7 +37,7 @@
             label="{{ 'edit.item.dialog.name' | translate }}"
             placeholder="{{ 'edit.item.dialog.name.placeholder' | translate }}"
             [formControl]="nameControl"
-            [errorText]="'edit.item.dialog.name.duplicate.error' | translate"
+            [errorText]="getErrorText()"
           ></ion-input>
         </ion-item>
 

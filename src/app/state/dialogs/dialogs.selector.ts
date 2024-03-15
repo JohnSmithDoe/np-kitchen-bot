@@ -5,9 +5,11 @@ import {
   IEditItemState,
   IEditShoppingItemState,
   IEditStorageItemState,
+  IEditTaskItemState,
   IGlobalItem,
   IShoppingItem,
   IStorageItem,
+  ITaskItem,
 } from '../../@types/types';
 import { matchesSearchString } from '../../app.utils';
 
@@ -23,9 +25,16 @@ export const selectEditState =
 export const selectEditStorageState =
   createFeatureSelector<IEditStorageItemState>('dialogs');
 
+export const selectEditTaskState =
+  createFeatureSelector<IEditTaskItemState>('dialogs');
+
 export const selectEditStorageItem = createSelector(
   selectEditStorageState,
   (state): IStorageItem | undefined => state.item
+);
+export const selectEditTaskItem = createSelector(
+  selectEditTaskState,
+  (state): ITaskItem | undefined => state.item
 );
 
 export const selectEditGlobalItem = createSelector(

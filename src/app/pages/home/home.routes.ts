@@ -23,6 +23,11 @@ export const routes: Routes = [
           import('../globals/globals.page').then((m) => m.GlobalsPage),
       },
       {
+        path: 'tasks',
+        loadComponent: () =>
+          import('../tasks/tasks.page').then((m) => m.TasksPage),
+      },
+      {
         path: '',
         redirectTo: redirectToStartPage,
         pathMatch: 'full',

@@ -16,6 +16,7 @@ export class DatabaseService {
     await this.#storageService.create();
     const initialData: IDatastore = {
       globals: await this.#loadAs('globals'),
+      tasks: await this.#loadAs('tasks'),
       storage: await this.#loadAs('storage'),
       shopping: await this.#loadAs('shopping'),
       settings: await this.#loadAs('settings'),

@@ -1,7 +1,7 @@
 <ion-modal
   [isOpen]="
     (rxState$ | async)?.isEditing === true &&
-    (rxState$ | async)?.listId === '_storage'
+    (rxState$ | async)?.listId === '_tasks'
   "
   (didDismiss)="closedDialog()"
 >
@@ -37,7 +37,7 @@
             label="{{ 'edit.item.dialog.name' | translate }}"
             placeholder="{{ 'edit.item.dialog.name.placeholder' | translate }}"
             [formControl]="nameControl"
-            [errorText]="getErrorText()"
+            [errorText]="getErrorText() | translate"
           ></ion-input>
         </ion-item>
 
@@ -45,30 +45,18 @@
           <ion-input
             type="number"
             class="ion-text-end"
-            label="Menge"
+            label="Priorität"
             [clearOnEdit]="true"
-            [ngModel]="(rxItem$ | async)?.quantity ?? 1"
-            (ionInput)="updateQuantity($event)"
+            [ngModel]="(rxItem$ | async)?.prio"
+            (ionInput)="updatePrio($event)"
           ></ion-input>
         </ion-item>
-
         <ion-item>
           <ion-input
-            type="number"
-            class="ion-text-end"
-            label="Mindestmenge"
-            [clearOnEdit]="true"
-            [ngModel]="(rxItem$ | async)?.minAmount ?? undefined"
-            (ionInput)="changeMinAmount($event)"
-          ></ion-input>
-        </ion-item>
-
-        <ion-item>
-          <ion-input
-            label="{{ 'edit.item.dialog.mhd' | translate }}"
+            label="{{ 'edit.item.dialog.dueAt' | translate }}"
             class="trigger ion-text-end"
             [ngModel]="
-              (rxItem$ | async)?.bestBefore ?? ''
+              (rxItem$ | async)?.dueAt ?? ''
                 | date: undefined : undefined : 'de-DE'
             "
             type="date_event"
@@ -77,21 +65,20 @@
           <ion-modal
             trigger="open_cal"
             [keepContentsMounted]="true"
-            [initialBreakpoint]="0.65"
+            [initialBreakpoint]="0.68"
           >
             <ng-template>
               <ion-datetime
                 presentation="date"
                 mode="md"
-                (ionChange)="updateBestBefore($event)"
-                [value]="(rxItem$ | async)?.bestBefore"
+                (ionChange)="updateDueAt($event)"
+                [value]="(rxItem$ | async)?.dueAt"
                 [showDefaultButtons]="true"
                 [showClearButton]="true"
               ></ion-datetime>
             </ng-template>
           </ion-modal>
         </ion-item>
-
         <ion-item button (click)="showCategoryDialog()">
           <ion-label class="ion-text-wrap">
             {{ 'edit.item.dialog.categories' | translate }}

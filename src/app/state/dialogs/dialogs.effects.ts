@@ -20,8 +20,9 @@ export class DialogsEffects {
       map(({ action, state }: { action: any; state: IAppState }) => {
         const listItems: IBaseItem[] = ([] as IBaseItem[])
           .concat(state.globals.items)
-          .concat(...state.storage.items)
-          .concat(...state.shopping.items);
+          .concat(state.tasks.items)
+          .concat(state.storage.items)
+          .concat(state.shopping.items);
 
         return CategoriesActions.updateSelection(state.dialogs.item, listItems);
       })

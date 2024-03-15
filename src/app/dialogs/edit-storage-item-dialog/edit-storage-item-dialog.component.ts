@@ -7,6 +7,7 @@ import {
   OnInit,
 } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { DatetimeCustomEvent, InputCustomEvent } from '@ionic/angular';
 import {
   IonButton,
@@ -33,8 +34,8 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { closeCircle } from 'ionicons/icons';
 import { combineLatestWith, Subscription } from 'rxjs';
-import { TItemListCategory } from '../../@types/types';
-import { parseNumberInput, validateDuplicateName } from '../../app.utils';
+import { TItemListCategory, TMarker } from '../../@types/types';
+import { parseNumberInput, validateNameInput } from '../../app.utils';
 import {
   CategoriesActions,
   DialogsActions,
@@ -117,7 +118,7 @@ export class EditStorageItemDialogComponent implements OnInit, OnDestroy {
             this.nameControl.setValue(item?.name);
             this.nameControl.markAsTouched();
             this.nameControl.setValidators(
-              validateDuplicateName(state.items, item)
+              validateNameInput(state.items, item)
             );
             this.nameControl.updateValueAndValidity();
           }
@@ -189,7 +190,13 @@ export class EditStorageItemDialogComponent implements OnInit, OnDestroy {
       })
     );
   }
-
+  getErrorText(): TMarker {
+    {
+      return this.nameControl.hasError('duplicate')
+        ? marker('edit.item.dialog.name.duplicate.error')
+        : marker('edit.item.dialog.name.empty.error');
+    }
+  }
   changeMinAmount(ev: InputCustomEvent) {
     this.#store.dispatch(
       DialogsActions.updateItem({

@@ -34,6 +34,8 @@ import { ShoppingEffects } from './app/state/shopping/shopping.effects';
 import { shoppingReducer } from './app/state/shopping/shopping.reducer';
 import { StorageEffects } from './app/state/storage/storage.effects';
 import { storageReducer } from './app/state/storage/storage.reducer';
+import { TasksEffects } from './app/state/tasks/tasks.effects';
+import { tasksReducer } from './app/state/tasks/tasks.reducer';
 import { environment } from './environments/environment';
 
 if (environment.production) {
@@ -75,6 +77,7 @@ void bootstrapApplication(AppComponent, {
       globals: globalsReducer,
       dialogs: dialogsReducer,
       quickadd: quickAddReducer,
+      tasks: tasksReducer,
     }),
     provideEffects(
       ApplicationEffects,
@@ -83,7 +86,8 @@ void bootstrapApplication(AppComponent, {
       StorageEffects,
       ShoppingEffects,
       GlobalsEffects,
-      DialogsEffects
+      DialogsEffects,
+      TasksEffects
     ),
     {
       provide: LOCALE_ID,

@@ -10,6 +10,7 @@ export type TMarker = string;
 export type TColor =
   | Color
   | 'global'
+  | 'task'
   | 'category'
   | 'storage'
   | 'shopping'
@@ -68,9 +69,17 @@ export interface IShoppingItem extends IBaseItem {
   quantity: number;
   state: 'bought' | 'active';
 }
+export interface ITaskItem extends IBaseItem {
+  dueAt?: TTimestamp;
+  prio: number;
+}
 export type TUpdateDTO<T extends IBaseItem> = IBaseItem &
   Partial<T> & { id: string };
-export type TAllItemTypes = IGlobalItem | IShoppingItem | IStorageItem;
+export type TAllItemTypes =
+  | IGlobalItem
+  | IShoppingItem
+  | IStorageItem
+  | ITaskItem;
 
 export type IStorageItem = IBaseItem & {
   quantity: number;
@@ -87,7 +96,7 @@ export type TItemListSort = {
 };
 export type TItemListMode = 'alphabetical' | 'categories';
 
-export type TItemListId = '_storage' | '_globals' | '_shopping';
+export type TItemListId = '_storage' | '_globals' | '_shopping' | '_tasks';
 
 export interface IItemList<T extends TAllItemTypes> {
   id: TItemListId;
@@ -107,6 +116,10 @@ export type TGlobalsList = IItemList<IGlobalItem> & {
   id: '_globals';
   title: 'Global Items';
 };
+export type TTasksList = IItemList<ITaskItem> & {
+  id: '_tasks';
+  title: 'Tasks Items';
+};
 export type TShoppingList = IItemList<IShoppingItem> & {
   id: '_shopping';
   title: 'Shopping Items';
@@ -115,6 +128,7 @@ export type TShoppingList = IItemList<IShoppingItem> & {
 export type IStorageState = Readonly<TStorageList>;
 export type IShoppingState = Readonly<TShoppingList>;
 export type IGlobalsState = Readonly<TGlobalsList>;
+export type ITasksState = Readonly<TTasksList>;
 export type IListState<T extends TAllItemTypes> = IItemList<T>;
 
 export interface ISettings {
@@ -132,6 +146,7 @@ export interface ISettings {
 
 export interface IDatastore {
   globals: TGlobalsList;
+  tasks: TTasksList;
   storage: TStorageList;
   shopping: TShoppingList;
   settings: ISettings;
@@ -167,6 +182,7 @@ export type IEditItemState<T extends IBaseItem> = Readonly<{
 }>;
 export type TDialogsState = IEditItemState<TAllItemTypes>;
 export type IEditStorageItemState = IEditItemState<IStorageItem>;
+export type IEditTaskItemState = IEditItemState<ITaskItem>;
 export type IEditShoppingItemState = IEditItemState<IShoppingItem>;
 export type IEditGlobalItemState = IEditItemState<IGlobalItem>;
 
@@ -179,10 +195,11 @@ export type IQuickAddState = Readonly<{
 }>;
 
 export interface IAppState {
-  settings: ISettings;
   storage: IStorageState;
   shopping: IShoppingState;
   globals: IGlobalsState;
+  tasks: ITasksState;
   dialogs: TDialogsState;
+  settings: ISettings;
   quickadd: IQuickAddState;
 }
