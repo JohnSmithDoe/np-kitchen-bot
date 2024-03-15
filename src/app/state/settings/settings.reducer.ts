@@ -16,12 +16,9 @@ export const initialSettings: ISettings = {
 
 export const settingsReducer = createReducer(
   initialSettings,
-  on(SettingsActions.updateSettings, (_state, { settings }) => {
-    console.log('Update Settings', settings);
-    return settings;
-  }),
-  on(ApplicationActions.loadedSuccessfully, (_state, { datastore }) => {
-    console.log('Load Settings', datastore);
-    return datastore.settings ?? _state;
-  })
+  on(SettingsActions.updateSettings, (_state, { settings }) => settings),
+  on(
+    ApplicationActions.loadedSuccessfully,
+    (_state, { datastore }) => datastore.settings ?? _state
+  )
 );

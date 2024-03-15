@@ -28,8 +28,7 @@ export class DatabaseService {
   }
 
   async save<T extends keyof IDatastore>(key: T, value: IDatastore[T]) {
-    console.log('44:save-', key, value);
-
+    // console.log('44:save-', key, value);
     return await this.#storageService.set('npkh-' + key, value);
   }
 

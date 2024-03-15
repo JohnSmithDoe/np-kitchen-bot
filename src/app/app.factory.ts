@@ -93,12 +93,12 @@ export function createGlobalItem(
 export function createTaskItem(
   name: string,
   category?: string | string[],
-  prio = 1
+  prio?: number
 ): ITaskItem {
   const base = createBaseItem(name, category);
   return {
     ...base,
-    prio,
+    prio: prio,
   };
 }
 

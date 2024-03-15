@@ -1,4 +1,4 @@
-import { NgTemplateOutlet } from '@angular/common';
+import { DatePipe, NgTemplateOutlet } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -23,6 +23,7 @@ import {
   IonText,
 } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
+import * as dayjs from 'dayjs';
 import { ITaskItem, TColor, TIonDragEvent } from '../../../@types/types';
 import { checkItemOptionsOnDrag } from '../../../app.utils';
 import { CategoryNoteDirective } from '../../../directives/category-note.directive';
@@ -52,13 +53,14 @@ import { ItemListComponent } from '../../item-list/item-list.component';
     IonItemSliding,
     IonText,
     CategoryNoteDirective,
+    DatePipe,
   ],
 })
 export class TaskItemComponent {
   @Input({ required: true }) item!: ITaskItem;
+  @Input({ required: true }) itemList!: ItemListComponent;
 
   @Input() color?: TColor;
-  @Input({ required: true }) itemList!: ItemListComponent;
 
   @Output() selectItem = new EventEmitter<void>();
   @Output() deleteItem = new EventEmitter<void>();
@@ -74,5 +76,17 @@ export class TaskItemComponent {
   async emitDeleteItem() {
     await this.itemList.closeSlidingItems();
     this.deleteItem.emit();
+  }
+
+  getColor(): TColor {
+    let result: TColor = 'success';
+    if (this.item.dueAt) {
+      if (dayjs(this.item.dueAt).isBefore()) {
+        result = 'danger';
+      } else if (dayjs(this.item.dueAt).isBefore(dayjs().add(3, 'days'))) {
+        result = 'warning';
+      }
+    }
+    return result;
   }
 }

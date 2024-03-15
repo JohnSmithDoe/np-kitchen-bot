@@ -17,7 +17,7 @@ export class DialogsEffects {
     return this.#actions$.pipe(
       ofType(CategoriesActions.showDialog),
       withLatestFrom(this.#store, (action, state) => ({ action, state })),
-      map(({ action, state }: { action: any; state: IAppState }) => {
+      map(({ state }: { state: IAppState }) => {
         const listItems: IBaseItem[] = ([] as IBaseItem[])
           .concat(state.globals.items)
           .concat(state.tasks.items)
@@ -33,7 +33,7 @@ export class DialogsEffects {
     return this.#actions$.pipe(
       ofType(CategoriesActions.confirmChanges),
       withLatestFrom(this.#store, (action, state) => ({ action, state })),
-      map(({ action, state }: { action: any; state: IAppState }) => {
+      map(({ state }: { state: IAppState }) => {
         const updateData: Partial<IBaseItem> = {
           category: state.dialogs.category.selection,
         };

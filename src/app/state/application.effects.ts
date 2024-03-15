@@ -382,7 +382,6 @@ export class ApplicationEffects {
         state,
       })),
       map(({ action, state }) => {
-        console.log(action, state.tasks);
         switch (action.type) {
           case '[Shopping] Show Create Dialog With Search':
             return DialogsActions.showDialog(

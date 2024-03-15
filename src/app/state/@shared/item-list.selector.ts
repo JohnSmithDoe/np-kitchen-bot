@@ -10,6 +10,7 @@ import {
 } from '../../@types/types';
 import {
   isStorageItem,
+  isTaskItem,
   matchesCategory,
   matchesNameExactly,
   matchesSearch,
@@ -62,23 +63,22 @@ export const filterBySearchQuery = <
   );
   //prettier-ignore
   switch (listState.id) {
-    case "_storage":
-      if(state.settings.showGlobalsInStorage)
+    case '_storage':
+      if (state.settings.showGlobalsInStorage)
         result.globalItems = additionalSearch(state.globals.items, result, searchQuery);
-      if(state.settings.showShoppingInStorage)
+      if (state.settings.showShoppingInStorage)
         result.shoppingItems = additionalSearch(state.shopping.items, result, searchQuery, result.globalItems);
       break;
-    case "_globals":
-      if(state.settings.showStorageInGlobals)
+    case '_globals':
+      if (state.settings.showStorageInGlobals)
         result.storageItems = additionalSearch(state.storage.items, result, searchQuery);
-      if(state.settings.showShoppingInGlobals)
+      if (state.settings.showShoppingInGlobals)
         result.shoppingItems = additionalSearch(state.shopping.items, result, searchQuery, result.storageItems);
       break;
-    case "_shopping":
-      console.log('additional shopping');
-      if(state.settings.showGlobalsInShopping)
+    case '_shopping':
+      if (state.settings.showGlobalsInShopping)
         result.globalItems = additionalSearch(state.globals.items, result, searchQuery);
-      if(state.settings.showStorageInShopping)
+      if (state.settings.showStorageInShopping)
         result.storageItems = additionalSearch(state.storage.items, result, searchQuery, result.globalItems);
       break;
   }
@@ -90,6 +90,8 @@ export const filterBySearchQuery = <
 };
 
 function sortItemListFn<T extends TAllItemTypes>(sort?: TItemListSort) {
+  const MAXPRIO = Number.MAX_SAFE_INTEGER;
+  const MINPRIO = Number.MIN_SAFE_INTEGER;
   const MAXDATE = '5000-1-1';
   const MINDATE = '1970-1-1';
   return (a: T, b: T): number => {
@@ -107,6 +109,28 @@ function sortItemListFn<T extends TAllItemTypes>(sort?: TItemListSort) {
                 dayjs(b.bestBefore ?? MAXDATE).unix()
               : dayjs(b.bestBefore ?? MINDATE).unix() -
                 dayjs(a.bestBefore ?? MINDATE).unix();
+        } else {
+          return 0;
+        }
+      case 'prio':
+        if (isTaskItem(a) && isTaskItem(b)) {
+          return !a.prio && !b.prio
+            ? sortItemListFn<T>({ ...sort, sortBy: 'name' })(a, b)
+            : sort.sortDir === 'asc'
+              ? (a.prio ?? MAXPRIO) - (b.prio ?? MAXPRIO)
+              : (b.prio ?? MINPRIO) - (a.prio ?? MINPRIO);
+        } else {
+          return 0;
+        }
+      case 'dueAt':
+        if (isTaskItem(a) && isTaskItem(b)) {
+          return !a.dueAt && !b.dueAt
+            ? sortItemListFn<T>({ ...sort, sortBy: 'name' })(a, b)
+            : sort.sortDir === 'asc'
+              ? dayjs(a.dueAt ?? MAXDATE).unix() -
+                dayjs(b.dueAt ?? MAXDATE).unix()
+              : dayjs(b.dueAt ?? MINDATE).unix() -
+                dayjs(a.dueAt ?? MINDATE).unix();
         } else {
           return 0;
         }

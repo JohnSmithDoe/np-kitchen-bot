@@ -4,7 +4,6 @@ import { Store } from '@ngrx/store';
 import { map } from 'rxjs';
 import { createShoppingItemFromStorage } from '../../app.factory';
 import { matchesItemExactly } from '../../app.utils';
-import { DatabaseService } from '../../services/database.service';
 import { ShoppingActions } from '../shopping/shopping.actions';
 import { selectShoppingState } from '../shopping/shopping.selector';
 import { StorageActions } from './storage.actions';
@@ -13,7 +12,6 @@ import { StorageActions } from './storage.actions';
 export class StorageEffects {
   #actions$ = inject(Actions);
   #store = inject(Store);
-  #database = inject(DatabaseService);
 
   copyToShoppingList$ = createEffect(() => {
     return this.#actions$.pipe(

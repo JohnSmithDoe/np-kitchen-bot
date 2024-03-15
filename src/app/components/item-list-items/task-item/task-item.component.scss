@@ -1,4 +1,16 @@
-//ion-list-header {
-//  font-size: 0.75em;
-//  min-height: 1.5rem;
-//}
+:host {
+  ion-item {
+    --padding-start: 0;
+  }
+}
+
+.status-bar {
+  display: flex;
+  width: 0.5rem;
+  height: 100%;
+  margin-right: 1rem;
+  ion-text {
+    flex: 1;
+    background: currentColor;
+  }
+}

@@ -1,19 +1,17 @@
 import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { Store } from '@ngrx/store';
 import { EMPTY, exhaustMap, map, tap } from 'rxjs';
 import { fromPromise } from 'rxjs/internal/observable/innerFrom';
-import { IAppState } from '../@types/types';
 import { UiService } from '../services/ui.service';
 import { GlobalsActions } from './globals/globals.actions';
 import { ShoppingActions } from './shopping/shopping.actions';
 import { StorageActions } from './storage/storage.actions';
+import { TasksActions } from './tasks/tasks.actions';
 
 @Injectable({ providedIn: 'root' })
 export class MessageEffects {
   #actions$ = inject(Actions);
   #uiService = inject(UiService);
-  #store = inject(Store<IAppState>);
 
   addItemSussess$ = createEffect(
     () => {
@@ -21,7 +19,8 @@ export class MessageEffects {
         ofType(
           StorageActions.addItem,
           ShoppingActions.addItem,
-          GlobalsActions.addItem
+          GlobalsActions.addItem,
+          TasksActions.addItem
         ),
         map(({ item }) => {
           if (!item.name.length) return;
@@ -38,7 +37,8 @@ export class MessageEffects {
         ofType(
           StorageActions.addItemFailure,
           GlobalsActions.addItemFailure,
-          ShoppingActions.addItemFailure
+          ShoppingActions.addItemFailure,
+          TasksActions.addItemFailure
         ),
         exhaustMap(({ item }) => {
           return fromPromise(this.#uiService.showItemContainedToast(item.name));
@@ -54,7 +54,8 @@ export class MessageEffects {
         ofType(
           StorageActions.updateItem,
           ShoppingActions.updateItem,
-          GlobalsActions.updateItem
+          GlobalsActions.updateItem,
+          TasksActions.updateItem
         ),
         exhaustMap(({ item }) => {
           if (!item) return EMPTY;
@@ -71,7 +72,8 @@ export class MessageEffects {
         ofType(
           StorageActions.removeItem,
           ShoppingActions.removeItem,
-          GlobalsActions.removeItem
+          GlobalsActions.removeItem,
+          TasksActions.removeItem
         ),
         tap(({ item }) => {
           return this.#uiService.showRemoveItemToast(item.name);

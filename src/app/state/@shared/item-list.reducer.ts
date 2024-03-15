@@ -17,7 +17,6 @@ export const addListItem = <T extends IListState<R>, R extends TAllItemTypes>(
 ): T => {
   // do not add an empty item
   const name = item.name.trim();
-  console.log('addlistItem', item);
   if (!name.length) {
     return state;
   }
@@ -36,13 +35,11 @@ export const addListItemOrIncreaseQuantity = <
 ): T => {
   const found = matchesItemExactly(item, state.items);
   if (found) {
-    console.log('found so inc quantity', found.quantity + 1);
     return updateListItem<T, R>(state, {
       ...found,
       quantity: found.quantity + 1,
     });
   }
-  console.log('not found so add');
   return addListItem<T, R>(state, item);
 };
 

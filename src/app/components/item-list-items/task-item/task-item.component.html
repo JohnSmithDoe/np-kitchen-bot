@@ -1,12 +1,24 @@
 <ng-template #itemTemplate>
   <ion-item button (click)="selectItem.emit()" lines="full">
+    <div class="status-bar">
+      <ion-text [color]="getColor()"></ion-text>
+    </div>
     <ion-reorder slot="start"></ion-reorder>
-    <!--  <ion-avatar slot="start">-->
-    <!--    <img alt="Image of the category" src="assets/avatar.svg" />-->
-    <!--  </ion-avatar>-->
     <ion-label class="ion-text-wrap">
       <h2>{{ item.name }}</h2>
       <ion-note [appCategoryNote]="item"></ion-note>
+      @if (item.dueAt) {
+        <ion-note>
+          Fällig am:
+          {{ item.dueAt | date: undefined : undefined : 'de-DE' }} </ion-note
+        ><br />
+      }
+      @if (item.prio) {
+        <ion-note>
+          Priorität:
+          {{ item.prio }} </ion-note
+        ><br />
+      }
     </ion-label>
   </ion-item>
 </ng-template>

@@ -5,6 +5,7 @@ import {
   IGlobalItem,
   IShoppingItem,
   IStorageItem,
+  ITaskItem,
   TAllItemTypes,
   TIonDragEvent,
 } from './@types/types';
@@ -14,6 +15,8 @@ export const isGlobalItem = (value: TAllItemTypes): value is IGlobalItem =>
   value.hasOwnProperty('unit');
 export const isStorageItem = (value?: TAllItemTypes): value is IStorageItem =>
   !!value?.hasOwnProperty('bestBefore');
+export const isTaskItem = (value?: TAllItemTypes): value is ITaskItem =>
+  !!value?.hasOwnProperty('prio');
 export const isShoppingItem = (value?: TAllItemTypes): value is IShoppingItem =>
   !!value?.hasOwnProperty('state');
 

@@ -1,10 +1,5 @@
 import { createActionGroup, emptyProps } from '@ngrx/store';
-import {
-  ITaskItem,
-  TItemListMode,
-  TItemListSortType,
-  TUpdateDTO,
-} from '../../@types/types';
+import { ITaskItem, TItemListMode, TUpdateDTO } from '../../@types/types';
 
 export const TasksActions = createActionGroup({
   source: 'Tasks',
@@ -27,7 +22,7 @@ export const TasksActions = createActionGroup({
     'Update Filter': (filterBy?: string) => ({ filterBy }),
     'Update Mode': (mode?: TItemListMode) => ({ mode }),
     'Update Sort': (
-      sortBy?: TItemListSortType,
+      sortBy?: 'name' | 'prio' | 'dueAt' | string,
       sortDir?: 'asc' | 'desc' | 'keep' | 'toggle'
     ) => ({ sortBy, sortDir }),
   },

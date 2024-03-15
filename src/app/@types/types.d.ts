@@ -71,7 +71,7 @@ export interface IShoppingItem extends IBaseItem {
 }
 export interface ITaskItem extends IBaseItem {
   dueAt?: TTimestamp;
-  prio: number;
+  prio?: number;
 }
 export type TUpdateDTO<T extends IBaseItem> = IBaseItem &
   Partial<T> & { id: string };
@@ -87,7 +87,7 @@ export type IStorageItem = IBaseItem & {
   bestBefore?: TTimestamp;
 };
 
-type TItemListSortType = 'name' | 'bestBefore';
+type TItemListSortType = 'name' | string;
 type TItemListSortDir = 'asc' | 'desc';
 
 export type TItemListSort = {

@@ -13,8 +13,8 @@
     (selectDisplayMode)="setDisplayMode($event)"
     (selectSortMode)="setSortMode($event)"
   >
-    <ion-button (click)="setSortMode('bestBefore')">Prio</ion-button>
-    <ion-button (click)="setSortMode('bestBefore')">Termin</ion-button>
+    <ion-button (click)="setSortMode('prio')">Prio</ion-button>
+    <ion-button (click)="setSortMode('dueAt')">Termin</ion-button>
   </app-item-list-toolbar>
 </app-page-header>
 

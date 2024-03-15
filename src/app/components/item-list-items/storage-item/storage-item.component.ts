@@ -57,9 +57,9 @@ import { ItemListComponent } from '../../item-list/item-list.component';
   ],
 })
 export class StorageItemComponent implements OnInit {
-  @Input() item!: IStorageItem;
-  @Input() color?: TColor;
+  @Input({ required: true }) item!: IStorageItem;
   @Input({ required: true }) itemList!: ItemListComponent;
+  @Input() color?: TColor;
 
   @Output() increment = new EventEmitter<void>();
   @Output() decrement = new EventEmitter<void>();
