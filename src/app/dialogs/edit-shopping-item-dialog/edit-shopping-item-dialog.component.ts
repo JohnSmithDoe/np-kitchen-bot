@@ -29,10 +29,12 @@ import { closeCircle } from 'ionicons/icons';
 import { combineLatestWith, Subscription } from 'rxjs';
 import { TItemListCategory } from '../../@types/types';
 import { parseNumberInput, validateDuplicateName } from '../../app.utils';
-import { CategoriesActions } from '../../state/dialogs/categories.actions';
-import { selectCategoriesState } from '../../state/dialogs/categories.selector';
-import { DialogsActions } from '../../state/dialogs/dialogs.actions';
 import {
+  CategoriesActions,
+  DialogsActions,
+} from '../../state/dialogs/dialogs.actions';
+import {
+  selectCategoriesState,
   selectEditShoppingItem,
   selectEditShoppingState,
 } from '../../state/dialogs/dialogs.selector';

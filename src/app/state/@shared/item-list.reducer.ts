@@ -73,7 +73,7 @@ export const updateListItem = <
     items.splice(itemIdx, 1, updatedItem);
   } else {
     console.error(item);
-    throw new Error('Dont update an item that is not in the list');
+    // throw new Error('Dont update an item that is not in the list');
   }
   return { ...state, items };
 };

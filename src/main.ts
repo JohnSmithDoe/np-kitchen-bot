@@ -21,7 +21,7 @@ import { AppComponent } from './app/app.component';
 import { routes } from './app/app.routes';
 import { ApplicationActions } from './app/state/application.actions';
 import { ApplicationEffects } from './app/state/application.effects';
-import { CategoriesEffects } from './app/state/dialogs/categories.effects';
+import { DialogsEffects } from './app/state/dialogs/dialogs.effects';
 
 import { dialogsReducer } from './app/state/dialogs/dialogs.reducer';
 import { GlobalsEffects } from './app/state/globals/globals.effects';
@@ -83,7 +83,7 @@ void bootstrapApplication(AppComponent, {
       StorageEffects,
       ShoppingEffects,
       GlobalsEffects,
-      CategoriesEffects
+      DialogsEffects
     ),
     {
       provide: LOCALE_ID,

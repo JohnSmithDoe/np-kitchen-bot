@@ -9,8 +9,7 @@ import {
 } from '../../@types/types';
 import { createStorageItem } from '../../app.factory';
 import { ApplicationActions } from '../application.actions';
-import { CategoriesActions } from './categories.actions';
-import { DialogsActions } from './dialogs.actions';
+import { CategoriesActions, DialogsActions } from './dialogs.actions';
 
 export const initialSettings: TDialogsState = {
   isEditing: false,
@@ -20,18 +19,23 @@ export const initialSettings: TDialogsState = {
     categories: [],
     selection: [],
   },
+  addToAdditionalList: undefined,
 };
 
 export const dialogsReducer = createReducer(
   initialSettings,
-  on(DialogsActions.showDialog, (state, { item, listId }): TDialogsState => {
-    return showEditDialog(
-      state,
-      { ...item },
-      item ? 'update' : 'create',
-      listId
-    );
-  }),
+  on(
+    DialogsActions.showDialog,
+    (state, { item, listId, additional }): TDialogsState => {
+      return showEditDialog(
+        state,
+        { ...item },
+        item ? 'update' : 'create',
+        listId,
+        additional
+      );
+    }
+  ),
   on(DialogsActions.updateItem, (state, { data }): TDialogsState => {
     return { ...state, item: { ...state.item, ...data } };
   }),
@@ -179,7 +183,8 @@ const showEditDialog = <R extends IBaseItem>(
   state: IEditItemState<R>,
   item: R,
   editMode: TEditItemMode,
-  listId: TItemListId
+  listId: TItemListId,
+  additional?: TItemListId
 ): IEditItemState<R> => {
   const saveButtonText = item
     ? marker('edit.item.dialog.button.update')
@@ -197,5 +202,6 @@ const showEditDialog = <R extends IBaseItem>(
     saveButtonText,
     dialogTitle,
     listId,
+    addToAdditionalList: additional,
   };
 };

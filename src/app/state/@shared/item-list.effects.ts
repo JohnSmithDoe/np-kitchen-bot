@@ -7,7 +7,7 @@ import {
 } from '../../@types/types';
 import { matchesSearchExactly } from '../../app.utils';
 
-export const createQuickAddState = (
+export const updateQuickAddState = (
   state: IAppState,
   listId: TItemListId
 ): IQuickAddState => {

@@ -3,11 +3,10 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { map, withLatestFrom } from 'rxjs';
 import { IAppState, IBaseItem } from '../../@types/types';
-import { CategoriesActions } from './categories.actions';
-import { DialogsActions } from './dialogs.actions';
+import { CategoriesActions, DialogsActions } from './dialogs.actions';
 
 @Injectable({ providedIn: 'root' })
-export class CategoriesEffects {
+export class DialogsEffects {
   #actions$ = inject(Actions);
   #store = inject(Store);
   //TODO: could patch in addItem, removeItem, updateItem and update the categories

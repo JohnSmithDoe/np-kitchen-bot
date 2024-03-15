@@ -163,13 +163,12 @@ export type IEditItemState<T extends IBaseItem> = Readonly<{
   dialogTitle?: string;
   saveButtonText?: string;
   category: ICategoriesState;
+  addToAdditionalList?: TItemListId;
 }>;
 export type TDialogsState = IEditItemState<TAllItemTypes>;
 export type IEditStorageItemState = IEditItemState<IStorageItem>;
 export type IEditShoppingItemState = IEditItemState<IShoppingItem>;
-export type IEditGlobalItemState = IEditItemState<IGlobalItem> & {
-  addTo?: TItemListId;
-};
+export type IEditGlobalItemState = IEditItemState<IGlobalItem>;
 
 export type IQuickAddState = Readonly<{
   listName?: string;
