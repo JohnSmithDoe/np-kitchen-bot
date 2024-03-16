@@ -1,10 +1,16 @@
 import { AsyncPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { IonContent, IonModal } from '@ionic/angular/standalone';
+import {
+  IonButton,
+  IonButtons,
+  IonContent,
+  IonIcon,
+  IonModal,
+} from '@ionic/angular/standalone';
 import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
-import { add, remove } from 'ionicons/icons';
+import { add, bagAdd, clipboard, remove } from 'ionicons/icons';
 import {
   IGlobalItem,
   IShoppingItem,
@@ -24,6 +30,7 @@ import { ItemListComponent } from '../../components/item-list/item-list.componen
 import { PageHeaderComponent } from '../../components/page-header/page-header.component';
 import { EditGlobalItemDialogComponent } from '../../dialogs/edit-global-item-dialog/edit-global-item-dialog.component';
 import { EditShoppingItemDialogComponent } from '../../dialogs/edit-shopping-item-dialog/edit-shopping-item-dialog.component';
+import { ShoppingActionSheetComponent } from '../../dialogs/shopping-action-sheet/shopping-action-sheet.component';
 import { CategoriesPipe } from '../../pipes/categories.pipe';
 import { DialogsActions } from '../../state/dialogs/dialogs.actions';
 import { ShoppingActions } from '../../state/shopping/shopping.actions';
@@ -57,6 +64,10 @@ import {
     CategoriesPipe,
     AsyncPipe,
     ItemListSearchResultComponent,
+    IonButton,
+    IonButtons,
+    IonIcon,
+    ShoppingActionSheetComponent,
   ],
 })
 export class ShoppingPage {
@@ -66,9 +77,8 @@ export class ShoppingPage {
   rxItems$ = this.#store.select(selectShoppingItems);
   rxCategories$ = this.#store.select(selectShoppingCategories);
   rxSearchResult$ = this.#store.select(selectShoppingSearchResult);
-
   constructor() {
-    addIcons({ add, remove });
+    addIcons({ add, remove, clipboard, bagAdd });
   }
 
   ionViewWillEnter(): void {

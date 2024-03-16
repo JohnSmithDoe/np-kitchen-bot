@@ -30,7 +30,13 @@
     [categories]="(rxCategories$ | async)"
     [itemTemplate]="shoppingItem"
     (selectCategory)="selectCategory($event)"
-  ></app-item-list>
+  >
+    <ion-buttons slot="end">
+      <ion-button [hidden]="!(rxItems$ | async)?.length" id="open-action-sheet">
+        <ion-icon name="bag-add" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </app-item-list>
   <ng-template #shoppingItem let-item>
     <app-shopping-item
       [item]="item"
@@ -59,3 +65,4 @@
 
 <app-edit-shopping-item-dialog></app-edit-shopping-item-dialog>
 <app-edit-global-item-dialog></app-edit-global-item-dialog>
+<app-shopping-action-sheet></app-shopping-action-sheet>

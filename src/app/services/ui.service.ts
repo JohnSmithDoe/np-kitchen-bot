@@ -67,4 +67,11 @@ export class UiService {
     });
     return this.showToast(msg, 'medium');
   }
+
+  showMoveShoppingToStorage(count: number) {
+    const msg = this.translate.instant('toast.add.shopping.to.storage', {
+      count,
+    });
+    return this.showToast(msg, 'success');
+  }
 }

@@ -9,10 +9,7 @@ import { CategoriesActions, DialogsActions } from './dialogs.actions';
 export class DialogsEffects {
   #actions$ = inject(Actions);
   #store = inject(Store);
-  //TODO: could patch in addItem, removeItem, updateItem and update the categories
-  // on load we could get them in sync with the items... :D
 
-  // get the categories for the dialog... hmm see above
   showCategories$ = createEffect(() => {
     return this.#actions$.pipe(
       ofType(CategoriesActions.showDialog),
@@ -29,7 +26,7 @@ export class DialogsEffects {
       })
     );
   });
-  // get the selected categories hmm
+
   confirmCategories$ = createEffect(() => {
     return this.#actions$.pipe(
       ofType(CategoriesActions.confirmChanges),

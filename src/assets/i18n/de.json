@@ -48,5 +48,6 @@
 	"toast.moved.item.shopping": "{{name}} wurde der Einkaufsliste hinzugefügt ({{quantity}})",
 	"toast.remove.item": "{{name}} wurde entfernt",
 	"toast.update.item": "{{name}} wurde aktualisiert",
+	"toast.add.shopping.to.storage": "Einkaufsliste wurde übertragen ({{count}})",
 	"toast.update.item.with.quantity": "{{name}} wurde aktualisiert ({{quantity}})"
 }

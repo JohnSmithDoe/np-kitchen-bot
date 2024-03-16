@@ -17,7 +17,8 @@ export const ShoppingActions = createActionGroup({
     'Add Item From Search': emptyProps(),
     'Add Global Item': (item: IGlobalItem) => ({ item }),
     'Add Storage Item': (item: IStorageItem) => ({ item }),
-
+    'Move To Storage': emptyProps(),
+    'Share Shoppinglist': emptyProps(),
     'Add Item Or Increase Quantity': (item: IShoppingItem) => ({ item }),
     'Add Item Or Increase Quantity Success': (item: IShoppingItem) => ({
       item,
@@ -34,6 +35,7 @@ export const ShoppingActions = createActionGroup({
     'Add Item Failure': (item: IShoppingItem) => ({ item }),
 
     'Remove Item': (item: IShoppingItem) => ({ item }),
+    'Remove Items': (items: IShoppingItem[]) => ({ items }),
     'Update Item': (item: TUpdateDTO<IShoppingItem>) => ({ item }),
     'Update Search': (searchQuery?: string) => ({ searchQuery }),
     'Update Filter': (filterBy?: string) => ({ filterBy }),

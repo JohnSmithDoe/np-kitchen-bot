@@ -1,6 +1,9 @@
 <ion-list #ionList>
   @if (header) {
-    <ion-list-header [color]="headerColor"> {{ header }}</ion-list-header>
+    <ion-toolbar [color]="headerColor">
+      <ion-title>{{ header }}</ion-title>
+      <ng-content></ng-content>
+    </ion-toolbar>
   }
   @if (mode === 'alphabetical') {
     <ng-container *ngTemplateOutlet="listMode"></ng-container>

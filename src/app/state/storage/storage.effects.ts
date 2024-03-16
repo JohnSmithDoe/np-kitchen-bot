@@ -13,6 +13,15 @@ export class StorageEffects {
   #actions$ = inject(Actions);
   #store = inject(Store);
 
+  copyFromShoppingList$ = createEffect(() => {
+    return this.#actions$.pipe(
+      ofType(StorageActions.addShoppingList),
+      map(({ items }) => {
+        return ShoppingActions.removeItems(items);
+      })
+    );
+  });
+
   copyToShoppingList$ = createEffect(() => {
     return this.#actions$.pipe(
       ofType(StorageActions.copyToShoppinglist),

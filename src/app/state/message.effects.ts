@@ -66,6 +66,20 @@ export class MessageEffects {
     { dispatch: false }
   );
 
+  moveShoppingListToStorage$ = createEffect(
+    () => {
+      return this.#actions$.pipe(
+        ofType(StorageActions.addShoppingList),
+        exhaustMap(({ items }) => {
+          return fromPromise(
+            this.#uiService.showMoveShoppingToStorage(items.length)
+          );
+        })
+      );
+    },
+    { dispatch: false }
+  );
+
   removeItemSussess$ = createEffect(
     () => {
       return this.#actions$.pipe(

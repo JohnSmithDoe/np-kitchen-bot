@@ -30,6 +30,7 @@ export const StorageActions = createActionGroup({
     // Operations
 
     'Add Item': (item: IStorageItem) => ({ item }),
+    'Add Shopping List': (items: IShoppingItem[]) => ({ items }),
     'Add Item Failure': (item: IStorageItem) => ({ item }),
 
     'Remove Item': (item: IStorageItem) => ({ item }),

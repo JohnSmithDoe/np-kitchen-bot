@@ -40,3 +40,8 @@ export const selectShoppingCategories = createSelector(
     ].sort(sortCategoriesFn(state.sort));
   }
 );
+export const selectShoppingListHasBoughtItems = createSelector(
+  selectShoppingState,
+  (state: IShoppingState): boolean =>
+    !!state.items.find((item) => item.state === 'bought')
+);

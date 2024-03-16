@@ -27,6 +27,7 @@ import {
   IonReorderGroup,
   IonSearchbar,
   IonText,
+  IonTitle,
   IonToolbar,
 } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
@@ -66,6 +67,7 @@ import { TextItemComponent } from '../item-list-items/text-item/text-item.compon
     IonNote,
     GlobalItemComponent,
     TextItemComponent,
+    IonTitle,
   ],
 })
 export class ItemListComponent {

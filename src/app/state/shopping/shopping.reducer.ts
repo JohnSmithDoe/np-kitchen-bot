@@ -3,6 +3,7 @@ import { IShoppingState } from '../../@types/types';
 import {
   addListItem,
   removeListItem,
+  removeListItems,
   updateListItem,
   updateListMode,
   updateListSort,
@@ -31,6 +32,7 @@ export const shoppingReducer = createReducer(
   on(ShoppingActions.addItem,(state, { item }) => addListItem(state, item)),
   // on(ShoppingActions.addItemOrIncreaseQuantity,(state, { item }) => addListItemOrIncreaseQuantity(state, item)),
   on(ShoppingActions.removeItem,(state, { item }) => removeListItem(state, item)),
+  on(ShoppingActions.removeItems,(state, { items }) => removeListItems(state, items)),
   on(ShoppingActions.updateItem,(state, { item }) => updateListItem(state, item)),
   on(ShoppingActions.updateSearch,(state, { searchQuery }): IShoppingState => updateSearch(state, searchQuery)),
   on(ShoppingActions.updateFilter,(state, { filterBy }): IShoppingState => ({ ...state, filterBy, mode: 'alphabetical', })),

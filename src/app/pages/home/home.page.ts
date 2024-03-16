@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
-  IonActionSheet,
   IonButton,
   IonContent,
   IonHeader,
@@ -32,7 +31,6 @@ import { ellipse, square, triangle } from 'ionicons/icons';
     IonTabBar,
     IonTabButton,
     IonTabs,
-    IonActionSheet,
     IonButton,
     TranslateModule,
   ],
