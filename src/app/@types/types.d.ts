@@ -190,8 +190,8 @@ export type IQuickAddState = Readonly<{
   listName?: string;
   color?: TColor;
   searchQuery?: string;
-  exactMatchLocal?: boolean;
-  exactMatchGlobal?: boolean;
+  canAddLocal?: boolean;
+  canAddGlobal?: boolean;
 }>;
 
 export interface IAppState {

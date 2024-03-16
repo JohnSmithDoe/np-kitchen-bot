@@ -5,7 +5,7 @@ import {
   TColor,
   TItemListId,
 } from '../../@types/types';
-import { matchesSearchExactly } from '../../app.utils';
+import { matchesSearchExactly, matchingTxtIsNotEmpty } from '../../app.utils';
 
 export const updateQuickAddState = (
   state: IAppState,
@@ -41,12 +41,16 @@ export const updateQuickAddState = (
       );
       break;
   }
+  const doShow = matchingTxtIsNotEmpty(searchQuery);
   return {
     searchQuery,
-    exactMatchLocal,
-    exactMatchGlobal: !!state.globals.items.find((item) =>
-      matchesSearchExactly(item, searchQuery)
-    ),
+    canAddLocal: doShow && !exactMatchLocal,
+    canAddGlobal:
+      doShow &&
+      listId !== '_globals' && // dont show in globals
+      !state.globals.items.find((item) =>
+        matchesSearchExactly(item, searchQuery)
+      ),
     listName,
     color,
   };

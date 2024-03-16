@@ -3,8 +3,8 @@ import { IQuickAddState } from '../../@types/types';
 import { QuickAddActions } from './quick-add.actions';
 
 export const initialSettings: IQuickAddState = {
-  exactMatchGlobal: false,
-  exactMatchLocal: false,
+  canAddLocal: false,
+  canAddGlobal: false,
   searchQuery: undefined,
 };
 export const quickAddReducer = createReducer(

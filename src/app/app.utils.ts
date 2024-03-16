@@ -51,9 +51,14 @@ export const checkItemOptionsOnDrag = (
       ? 'start'
       : false;
 
-export const matchingTxt = (item: IBaseItem | string) => {
-  return (typeof item === 'string' ? item : item.name).trim().toLowerCase();
-};
+export const matchingTxt = (item: IBaseItem | string) =>
+  (typeof item === 'string' ? item : item.name).trim().toLowerCase();
+
+export const matchingTxtIsNotEmpty = (item?: IBaseItem | string) =>
+  !!matchingTxt(item ?? '').length;
+
+export const matchingTxtIsEmpty = (item?: IBaseItem | string) =>
+  !matchingTxt(item ?? '').length;
 
 export const matchesNameExactly = (item: IBaseItem, other: IBaseItem) =>
   matchingTxt(item) === matchingTxt(other);

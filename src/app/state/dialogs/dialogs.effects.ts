@@ -18,12 +18,13 @@ export class DialogsEffects {
       ofType(CategoriesActions.showDialog),
       withLatestFrom(this.#store, (action, state) => ({ action, state })),
       map(({ state }: { state: IAppState }) => {
-        const listItems: IBaseItem[] = ([] as IBaseItem[])
-          .concat(state.globals.items)
-          .concat(state.tasks.items)
-          .concat(state.storage.items)
-          .concat(state.shopping.items);
-
+        const listItems: IBaseItem[] =
+          state.dialogs.listId === '_tasks'
+            ? state.tasks.items
+            : ([] as IBaseItem[])
+                .concat(state.globals.items)
+                .concat(state.storage.items)
+                .concat(state.shopping.items);
         return CategoriesActions.updateSelection(state.dialogs.item, listItems);
       })
     );
