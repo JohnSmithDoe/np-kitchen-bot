@@ -73,7 +73,7 @@ import { TextItemComponent } from '../item-list-items/text-item/text-item.compon
 export class ItemListComponent {
   @ViewChild('ionList', { static: true }) ionList?: IonList;
 
-  @Input() itemTemplate!: TemplateRef<any>;
+  @Input({ required: true }) itemTemplate!: TemplateRef<any>;
   @Input({ required: true }) items?: ReadonlyArray<IBaseItem> | null;
   @Input() categories?: ReadonlyArray<TItemListCategory> | null;
   @Input() mode: 'alphabetical' | 'categories' = 'alphabetical';

@@ -6,7 +6,7 @@ import {
   updateListItem,
   updateListMode,
   updateListSort,
-} from '../@shared/item-list.reducer';
+} from '../@shared/item-list.utils';
 import { ApplicationActions } from '../application.actions';
 import { GlobalsActions } from './globals.actions';
 
@@ -15,6 +15,7 @@ export const initialState: IGlobalsState = {
   id: '_globals',
   items: [],
   mode: 'alphabetical',
+  categories: [],
 };
 
 function updateSearch(

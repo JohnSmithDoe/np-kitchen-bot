@@ -6,18 +6,13 @@ import {
   TItemListId,
 } from '../../@types/types';
 
+//prettier-ignore
 export const DialogsActions = createActionGroup({
   source: 'Dialogs',
   events: {
-    'Show Dialog': (
-      item: TAllItemTypes,
-      listId: TItemListId,
-      additional?: TItemListId
-    ) => ({
-      item,
-      listId,
-      additional,
-    }),
+    'Show Edit Dialog': (item: TAllItemTypes, listId: TItemListId,  additional?: TItemListId) => ({ item, listId, additional }),
+    'Show Create Dialog With Search': (listId: TItemListId) => ({ listId }),
+    'Show Create And Add Global Dialog': (listId: TItemListId) => ({ listId }),
     'Update Item': (data: Partial<TAllItemTypes>) => ({ data }),
     'Remove Category': (category: TItemListCategory) => ({ category }),
     'Hide Dialog': emptyProps(),

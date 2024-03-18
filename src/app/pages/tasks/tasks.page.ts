@@ -19,7 +19,7 @@ import { ItemListSearchResultComponent } from '../../components/item-list/item-l
 import { ItemListSearchbarComponent } from '../../components/item-list/item-list-searchbar/item-list-searchbar.component';
 import { ItemListToolbarComponent } from '../../components/item-list/item-list-toolbar/item-list-toolbar.component';
 import { ItemListComponent } from '../../components/item-list/item-list.component';
-import { PageHeaderComponent } from '../../components/page-header/page-header.component';
+import { PageHeaderComponent } from '../../components/pages/page-header/page-header.component';
 import { EditGlobalItemDialogComponent } from '../../dialogs/edit-global-item-dialog/edit-global-item-dialog.component';
 import { EditTaskItemDialogComponent } from '../../dialogs/edit-task-item-dialog/edit-task-item-dialog.component';
 import { CategoriesPipe } from '../../pipes/categories.pipe';
@@ -83,11 +83,11 @@ export class TasksPage {
   }
 
   showCreateDialog() {
-    this.#store.dispatch(TasksActions.showCreateDialogWithSearch());
+    this.#store.dispatch(DialogsActions.showCreateDialogWithSearch('_tasks'));
   }
 
   showEditDialog(item: ITaskItem) {
-    this.#store.dispatch(DialogsActions.showDialog(item, '_tasks'));
+    this.#store.dispatch(DialogsActions.showEditDialog(item, '_tasks'));
   }
 
   searchFor(searchTerm: string) {

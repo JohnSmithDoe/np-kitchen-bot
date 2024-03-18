@@ -6,7 +6,7 @@ import {
   updateListItem,
   updateListMode,
   updateListSort,
-} from '../@shared/item-list.reducer';
+} from '../@shared/item-list.utils';
 import { ApplicationActions } from '../application.actions';
 import { TasksActions } from './tasks.actions';
 
@@ -15,6 +15,7 @@ export const initialState: ITasksState = {
   id: '_tasks',
   items: [],
   mode: 'alphabetical',
+  categories: [],
 };
 
 function updateSearch(state: ITasksState, searchQuery?: string): ITasksState {

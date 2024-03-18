@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
+import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { combineLatestWith, filter, map, withLatestFrom } from 'rxjs';
 import { fromPromise } from 'rxjs/internal/observable/innerFrom';
@@ -15,17 +15,11 @@ import {
   createStorageItemFromShopping,
   createTaskItem,
 } from '../app.factory';
-import { matchesItemExactly, matchingTxt } from '../app.utils';
+import { matchesItemExactly } from '../app.utils';
 import { DatabaseService } from '../services/database.service';
-import { updateQuickAddState } from './@shared/item-list.effects';
+
+import { updateQuickAddState } from './@shared/item-list.utils';
 import { ApplicationActions } from './application.actions';
-import { DialogsActions } from './dialogs/dialogs.actions';
-import {
-  selectEditGlobalState,
-  selectEditShoppingState,
-  selectEditStorageState,
-  selectEditTaskState,
-} from './dialogs/dialogs.selector';
 import { GlobalsActions } from './globals/globals.actions';
 import { QuickAddActions } from './quick-add/quick-add.actions';
 import { ShoppingActions } from './shopping/shopping.actions';
@@ -308,127 +302,6 @@ export class ApplicationEffects {
         const newState = updateQuickAddState(state, listId);
         return QuickAddActions.updateState(newState);
       })
-    );
-  });
-
-  showCreateGlobalDialogWithSearch$ = createEffect(() => {
-    return this.#actions$.pipe(
-      ofType(
-        StorageActions.showCreateGlobalDialogWithSearch,
-        ShoppingActions.showCreateGlobalDialogWithSearch
-      ),
-      withLatestFrom(this.#store, (action, state: IAppState) => ({
-        action,
-        state,
-      })),
-      map(({ action, state }) => {
-        switch (action.type) {
-          case '[Shopping] Show Create Global Dialog With Search':
-            return DialogsActions.showDialog(
-              createGlobalItem(matchingTxt(state.shopping.searchQuery ?? '')),
-              '_globals',
-              '_shopping'
-            );
-          case '[Storage] Show Create Global Dialog With Search':
-            return DialogsActions.showDialog(
-              createGlobalItem(matchingTxt(state.storage.searchQuery ?? '')),
-              '_globals',
-              '_storage'
-            );
-        }
-      })
-    );
-  });
-  confirmGlobalItemChanges$ = createEffect(() => {
-    return this.#actions$.pipe(
-      ofType(DialogsActions.confirmChanges),
-      concatLatestFrom(() => this.#store.select(selectEditGlobalState)),
-      filter(([_, state]) => state.listId === '_globals'),
-      map(([_, state]) => GlobalsActions.addOrUpdateItem(state.item))
-    );
-  });
-  confirmGlobalItemChangesAndAddToList$ = createEffect(() => {
-    return this.#actions$.pipe(
-      ofType(DialogsActions.confirmChanges),
-      concatLatestFrom(() => this.#store.select(selectEditGlobalState)),
-      filter(
-        ([_, state]) =>
-          state.listId === '_globals' && !!state.addToAdditionalList
-      ),
-      map(([_, state]) => {
-        switch (state.addToAdditionalList!) {
-          case '_storage':
-            return StorageActions.addGlobalItem(state.item);
-          case '_globals':
-          case '_tasks':
-            return GlobalsActions.addItemFailure(state.item);
-          case '_shopping':
-            return ShoppingActions.addGlobalItem(state.item);
-        }
-      })
-    );
-  });
-
-  showCreateDialogWithSearch$ = createEffect(() => {
-    return this.#actions$.pipe(
-      ofType(
-        ShoppingActions.showCreateDialogWithSearch,
-        StorageActions.showCreateDialogWithSearch,
-        GlobalsActions.showCreateDialogWithSearch,
-        TasksActions.showCreateDialogWithSearch
-      ),
-      withLatestFrom(this.#store, (action, state: IAppState) => ({
-        action,
-        state,
-      })),
-      map(({ action, state }) => {
-        switch (action.type) {
-          case '[Shopping] Show Create Dialog With Search':
-            return DialogsActions.showDialog(
-              createShoppingItem(matchingTxt(state.shopping.searchQuery ?? '')),
-              '_shopping'
-            );
-          case '[Storage] Show Create Dialog With Search':
-            return DialogsActions.showDialog(
-              createStorageItem(matchingTxt(state.storage.searchQuery ?? '')),
-              '_storage'
-            );
-          case '[Tasks] Show Create Dialog With Search':
-            return DialogsActions.showDialog(
-              createTaskItem(matchingTxt(state.tasks.searchQuery ?? '')),
-              '_tasks'
-            );
-          case '[Globals] Show Create Dialog With Search':
-            return DialogsActions.showDialog(
-              createGlobalItem(matchingTxt(state.globals.searchQuery ?? '')),
-              '_globals'
-            );
-        }
-      })
-    );
-  });
-  confirmStorageItemChanges$ = createEffect(() => {
-    return this.#actions$.pipe(
-      ofType(DialogsActions.confirmChanges),
-      concatLatestFrom(() => this.#store.select(selectEditStorageState)),
-      filter(([_, state]) => state.listId === '_storage'),
-      map(([_, state]) => StorageActions.addOrUpdateItem(state.item))
-    );
-  });
-  confirmShoppingItemChanges$ = createEffect(() => {
-    return this.#actions$.pipe(
-      ofType(DialogsActions.confirmChanges),
-      concatLatestFrom(() => this.#store.select(selectEditShoppingState)),
-      filter(([_, state]) => state.listId === '_shopping'),
-      map(([_, state]) => ShoppingActions.addOrUpdateItem(state.item))
-    );
-  });
-  confirmTaskItemChanges$ = createEffect(() => {
-    return this.#actions$.pipe(
-      ofType(DialogsActions.confirmChanges),
-      concatLatestFrom(() => this.#store.select(selectEditTaskState)),
-      filter(([_, state]) => state.listId === '_tasks'),
-      map(([_, state]) => TasksActions.addOrUpdateItem(state.item))
     );
   });
 

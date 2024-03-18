@@ -12,7 +12,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { add, remove } from 'ionicons/icons';
 import { BooleanKeys, ISettings } from '../../@types/types';
-import { PageHeaderComponent } from '../../components/page-header/page-header.component';
+import { PageHeaderComponent } from '../../components/pages/page-header/page-header.component';
 import { SettingsActions } from '../../state/settings/settings.actions';
 import { selectSettingsState } from '../../state/settings/settings.selector';
 

@@ -37,6 +37,7 @@
     "@ionic/angular": "^7.7.3",
     "@ionic/storage-angular": "^4.0.0",
     "@ngrx/effects": "^17.1.1",
+    "@ngrx/router-store": "^17.1.1",
     "@ngrx/store": "^17.1.1",
     "@ngx-translate/core": "^15.0.0",
     "@ngx-translate/http-loader": "^8.0.0",

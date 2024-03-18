@@ -7,7 +7,7 @@ import {
   updateListItem,
   updateListMode,
   updateListSort,
-} from '../@shared/item-list.reducer';
+} from '../@shared/item-list.utils';
 import { ApplicationActions } from '../application.actions';
 import { ShoppingActions } from './shopping.actions';
 
@@ -16,6 +16,7 @@ export const initialState: IShoppingState = {
   id: '_shopping',
   items: [],
   mode: 'alphabetical',
+  categories: [],
 };
 
 function updateSearch(

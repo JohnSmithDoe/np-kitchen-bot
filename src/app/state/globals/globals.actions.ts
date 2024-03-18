@@ -16,9 +16,8 @@ export const GlobalsActions = createActionGroup({
     'Add Or Update Item': (item: IGlobalItem) => ({ item }),
     'Add Item From Search': emptyProps(),
     'Add Storage Item': (item: IStorageItem) => ({ item }),
+    'Add Global Item': (item: IGlobalItem) => ({ item }),
     'Add Shopping Item': (item: IShoppingItem) => ({ item }),
-
-    'Show Create Dialog With Search': emptyProps(),
 
     // Operations
 

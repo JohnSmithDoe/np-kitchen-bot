@@ -7,7 +7,7 @@ import {
   updateListItem,
   updateListMode,
   updateListSort,
-} from '../@shared/item-list.reducer';
+} from '../@shared/item-list.utils';
 import { ApplicationActions } from '../application.actions';
 import { StorageActions } from './storage.actions';
 
@@ -16,6 +16,7 @@ export const initialState: IStorageState = {
   id: '_storage',
   items: [],
   mode: 'alphabetical',
+  categories: [],
 };
 
 // prettier-ignore

@@ -25,7 +25,7 @@ export const initialSettings: TDialogsState = {
 export const dialogsReducer = createReducer(
   initialSettings,
   on(
-    DialogsActions.showDialog,
+    DialogsActions.showEditDialog,
     (state, { item, listId, additional }): TDialogsState => {
       return showEditDialog(
         state,

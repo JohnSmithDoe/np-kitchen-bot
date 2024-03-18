@@ -24,9 +24,6 @@ export const ShoppingActions = createActionGroup({
       item,
     }),
 
-    'Show Create Dialog With Search': emptyProps(),
-    'Show Create Global Dialog With Search': emptyProps(),
-
     'Buy Item': (item: IShoppingItem) => ({ item }),
 
     // Operations

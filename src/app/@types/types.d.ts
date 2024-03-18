@@ -102,6 +102,7 @@ export interface IItemList<T extends TAllItemTypes> {
   id: TItemListId;
   title: string;
   items: T[];
+  categories: TItemListCategory[];
   mode: TItemListMode;
   searchQuery?: string;
   filterBy?: string;

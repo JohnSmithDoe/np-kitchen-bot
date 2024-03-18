@@ -13,12 +13,14 @@ import {
 } from '@ionic/angular/standalone';
 import { IonicStorageModule } from '@ionic/storage-angular';
 import { provideEffects } from '@ngrx/effects';
+import { provideRouterStore, routerReducer } from '@ngrx/router-store';
 import { provideStore, Store } from '@ngrx/store';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { AppComponent } from './app/app.component';
 
 import { routes } from './app/app.routes';
+import { ItemListEffects } from './app/state/@shared/item-list.effects';
 import { ApplicationActions } from './app/state/application.actions';
 import { ApplicationEffects } from './app/state/application.effects';
 import { DialogsEffects } from './app/state/dialogs/dialogs.effects';
@@ -71,6 +73,7 @@ void bootstrapApplication(AppComponent, {
       })
     ),
     provideStore({
+      router: routerReducer,
       settings: settingsReducer,
       storage: storageReducer,
       shopping: shoppingReducer,
@@ -82,6 +85,7 @@ void bootstrapApplication(AppComponent, {
     provideEffects(
       ApplicationEffects,
       MessageEffects,
+      ItemListEffects,
       SettingsEffects,
       StorageEffects,
       ShoppingEffects,
@@ -100,5 +104,6 @@ void bootstrapApplication(AppComponent, {
       multi: true,
       deps: [Store],
     },
+    provideRouterStore(),
   ],
 });

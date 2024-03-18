@@ -21,7 +21,7 @@ import { ItemListSearchResultComponent } from '../../components/item-list/item-l
 import { ItemListSearchbarComponent } from '../../components/item-list/item-list-searchbar/item-list-searchbar.component';
 import { ItemListToolbarComponent } from '../../components/item-list/item-list-toolbar/item-list-toolbar.component';
 import { ItemListComponent } from '../../components/item-list/item-list.component';
-import { PageHeaderComponent } from '../../components/page-header/page-header.component';
+import { PageHeaderComponent } from '../../components/pages/page-header/page-header.component';
 import { EditGlobalItemDialogComponent } from '../../dialogs/edit-global-item-dialog/edit-global-item-dialog.component';
 import { EditStorageItemDialogComponent } from '../../dialogs/edit-storage-item-dialog/edit-storage-item-dialog.component';
 import { DialogsActions } from '../../state/dialogs/dialogs.actions';
@@ -82,11 +82,11 @@ export class GlobalsPage {
   }
 
   showCreateDialog() {
-    this.#store.dispatch(GlobalsActions.showCreateDialogWithSearch());
+    this.#store.dispatch(DialogsActions.showCreateDialogWithSearch('_globals'));
   }
 
   showEditDialog(item: IGlobalItem) {
-    this.#store.dispatch(DialogsActions.showDialog(item, '_globals'));
+    this.#store.dispatch(DialogsActions.showEditDialog(item, '_globals'));
   }
 
   searchFor(searchTerm: string) {

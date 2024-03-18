@@ -9,8 +9,6 @@ export const TasksActions = createActionGroup({
     'Add Or Update Item': (item: ITaskItem) => ({ item }),
     'Add Item From Search': emptyProps(),
 
-    'Show Create Dialog With Search': emptyProps(),
-
     // Operations
 
     'Add Item': (item: ITaskItem) => ({ item }),

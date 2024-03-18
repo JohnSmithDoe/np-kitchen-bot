@@ -18,6 +18,7 @@ import {
   IonItemOptions,
   IonItemSliding,
   IonLabel,
+  IonList,
   IonListHeader,
   IonNote,
   IonReorder,
@@ -61,7 +62,8 @@ import { ItemListComponent } from '../../item-list/item-list.component';
 export class ShoppingItemComponent implements OnInit {
   @Input() item!: IShoppingItem;
   @Input() color?: TColor;
-  @Input({ required: true }) itemList!: ItemListComponent;
+  @Input() itemList?: ItemListComponent;
+  @Input({ required: true }) ionList!: IonList;
 
   @Output() increment = new EventEmitter<void>();
   @Output() decrement = new EventEmitter<void>();
@@ -97,12 +99,16 @@ export class ShoppingItemComponent implements OnInit {
   }
 
   async emitDeleteItem() {
-    await this.itemList.closeSlidingItems();
+    if (this.itemList) await this.itemList.closeSlidingItems();
+    else await this.ionList.closeSlidingItems();
+
     this.deleteItem.emit();
   }
 
   async emitCartItem() {
-    await this.itemList.closeSlidingItems();
+    if (this.itemList) await this.itemList.closeSlidingItems();
+    else await this.ionList.closeSlidingItems();
+
     this.cartItem.emit();
   }
 }

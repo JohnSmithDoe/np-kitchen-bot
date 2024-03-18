@@ -18,7 +18,7 @@ import {
 import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { add } from 'ionicons/icons';
-import { TColor } from '../../@types/types';
+import { TColor } from '../../../@types/types';
 
 @Component({
   selector: 'app-page-header',

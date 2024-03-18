@@ -10,7 +10,7 @@ import {
   filterAndSortItemList,
   filterBySearchQuery,
   sortCategoriesFn,
-} from '../@shared/item-list.selector';
+} from '../@shared/item-list.utils';
 
 export const selectShoppingState =
   createFeatureSelector<IShoppingState>('shopping');

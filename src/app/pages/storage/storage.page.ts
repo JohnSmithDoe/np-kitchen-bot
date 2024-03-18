@@ -21,7 +21,7 @@ import { ItemListSearchResultComponent } from '../../components/item-list/item-l
 import { ItemListSearchbarComponent } from '../../components/item-list/item-list-searchbar/item-list-searchbar.component';
 import { ItemListToolbarComponent } from '../../components/item-list/item-list-toolbar/item-list-toolbar.component';
 import { ItemListComponent } from '../../components/item-list/item-list.component';
-import { PageHeaderComponent } from '../../components/page-header/page-header.component';
+import { PageHeaderComponent } from '../../components/pages/page-header/page-header.component';
 import { EditGlobalItemDialogComponent } from '../../dialogs/edit-global-item-dialog/edit-global-item-dialog.component';
 import { EditStorageItemDialogComponent } from '../../dialogs/edit-storage-item-dialog/edit-storage-item-dialog.component';
 import { CategoriesPipe } from '../../pipes/categories.pipe';
@@ -85,11 +85,11 @@ export class StoragePage {
   }
 
   showCreateDialog() {
-    this.#store.dispatch(StorageActions.showCreateDialogWithSearch());
+    this.#store.dispatch(DialogsActions.showCreateDialogWithSearch('_storage'));
   }
 
   showEditDialog(item: IStorageItem) {
-    this.#store.dispatch(DialogsActions.showDialog(item, '_storage'));
+    this.#store.dispatch(DialogsActions.showEditDialog(item, '_storage'));
   }
 
   searchFor(searchTerm: string) {
@@ -109,7 +109,9 @@ export class StoragePage {
   }
 
   showCreateGlobalDialog() {
-    this.#store.dispatch(StorageActions.showCreateGlobalDialogWithSearch());
+    this.#store.dispatch(
+      DialogsActions.showCreateAndAddGlobalDialog('_storage')
+    );
   }
 
   changeQuantity(item: IStorageItem, diff: number) {

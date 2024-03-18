@@ -11,14 +11,7 @@ import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { add, bagAdd, clipboard, remove } from 'ionicons/icons';
-import {
-  IGlobalItem,
-  IShoppingItem,
-  IStorageItem,
-  TItemListCategory,
-  TItemListMode,
-  TItemListSortType,
-} from '../../@types/types';
+import { IShoppingItem } from '../../@types/types';
 import { ShoppingItemComponent } from '../../components/item-list-items/shopping-item/shopping-item.component';
 import { TextItemComponent } from '../../components/item-list-items/text-item/text-item.component';
 import { ItemListEmptyComponent } from '../../components/item-list/item-list-empty/item-list-empty.component';
@@ -27,7 +20,8 @@ import { ItemListSearchResultComponent } from '../../components/item-list/item-l
 import { ItemListSearchbarComponent } from '../../components/item-list/item-list-searchbar/item-list-searchbar.component';
 import { ItemListToolbarComponent } from '../../components/item-list/item-list-toolbar/item-list-toolbar.component';
 import { ItemListComponent } from '../../components/item-list/item-list.component';
-import { PageHeaderComponent } from '../../components/page-header/page-header.component';
+import { ListPageComponent } from '../../components/pages/list-page/list-page.component';
+import { PageHeaderComponent } from '../../components/pages/page-header/page-header.component';
 import { EditGlobalItemDialogComponent } from '../../dialogs/edit-global-item-dialog/edit-global-item-dialog.component';
 import { EditShoppingItemDialogComponent } from '../../dialogs/edit-shopping-item-dialog/edit-shopping-item-dialog.component';
 import { ShoppingActionSheetComponent } from '../../dialogs/shopping-action-sheet/shopping-action-sheet.component';
@@ -68,15 +62,18 @@ import {
     IonButtons,
     IonIcon,
     ShoppingActionSheetComponent,
+    ListPageComponent,
   ],
 })
 export class ShoppingPage {
-  readonly #store = inject(Store);
+  readonly ShoppingActions = ShoppingActions;
 
+  readonly #store = inject(Store);
   rxState$ = this.#store.select(selectShoppingState);
   rxItems$ = this.#store.select(selectShoppingItems);
   rxCategories$ = this.#store.select(selectShoppingCategories);
   rxSearchResult$ = this.#store.select(selectShoppingSearchResult);
+
   constructor() {
     addIcons({ add, remove, clipboard, bagAdd });
   }
@@ -85,39 +82,12 @@ export class ShoppingPage {
     this.#store.dispatch(ShoppingActions.enterPage());
   }
 
-  async removeItem(item: IShoppingItem) {
+  removeItem(item: IShoppingItem) {
     this.#store.dispatch(ShoppingActions.removeItem(item));
   }
 
-  async addItemFromSearch() {
-    this.#store.dispatch(ShoppingActions.addItemFromSearch());
-  }
-
-  showCreateDialog() {
-    this.#store.dispatch(ShoppingActions.showCreateDialogWithSearch());
-  }
-
-  showCreateGlobalDialog() {
-    this.#store.dispatch(ShoppingActions.showCreateGlobalDialogWithSearch());
-  }
-
   showEditDialog(item: IShoppingItem) {
-    this.#store.dispatch(DialogsActions.showDialog(item, '_shopping'));
-  }
-
-  searchFor(searchTerm: string) {
-    this.#store.dispatch(ShoppingActions.updateSearch(searchTerm));
-  }
-
-  setDisplayMode(mode: TItemListMode) {
-    this.#store.dispatch(ShoppingActions.updateMode(mode));
-  }
-  setSortMode(type: TItemListSortType) {
-    this.#store.dispatch(ShoppingActions.updateSort(type, 'toggle'));
-  }
-
-  selectCategory(category: TItemListCategory) {
-    this.#store.dispatch(ShoppingActions.updateFilter(category));
+    this.#store.dispatch(DialogsActions.showEditDialog(item, '_shopping'));
   }
 
   changeQuantity(item: IShoppingItem, diff: number) {
@@ -129,15 +99,7 @@ export class ShoppingPage {
     );
   }
 
-  addGlobalItem(item: IGlobalItem) {
-    this.#store.dispatch(ShoppingActions.addGlobalItem(item));
-  }
-
-  addStorageItem(item: IStorageItem) {
-    this.#store.dispatch(ShoppingActions.addStorageItem(item));
-  }
-
-  async buyItem(item: IShoppingItem) {
+  buyItem(item: IShoppingItem) {
     this.#store.dispatch(ShoppingActions.buyItem(item));
   }
 }
