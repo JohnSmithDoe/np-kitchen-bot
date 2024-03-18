@@ -22,7 +22,7 @@
         >"{{'item-list.quickadd.add.global'|translate}}" anzeigen
       </ion-toggle>
     </ion-item>
-    <ion-list-header color="storage">Suchergebnisse Lagerliste</ion-list-header>
+    <ion-list-header color="storage">Suchergebnisse Vorräte</ion-list-header>
     <ion-item>
       <ion-toggle
         [checked]="(settings$ |async)?.showGlobalsInStorage"
@@ -53,7 +53,7 @@
       <ion-toggle
         [checked]="(settings$ |async)?.showStorageInShopping"
         (ionChange)="toggleFlag('showStorageInShopping')"
-        >Lagerliste anzeigen</ion-toggle
+        >Vorräte anzeigen</ion-toggle
       >
     </ion-item>
     <ion-list-header color="global"
@@ -63,7 +63,7 @@
       <ion-toggle
         [checked]="(settings$ |async)?.showStorageInGlobals"
         (ionChange)="toggleFlag('showStorageInGlobals')"
-        >Lagerliste anzeigen</ion-toggle
+        >Vorräte anzeigen</ion-toggle
       >
     </ion-item>
     <ion-item>

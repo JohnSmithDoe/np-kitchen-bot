@@ -24,6 +24,7 @@ import { EditGlobalItemDialogComponent } from '../../dialogs/edit-global-item-di
 import { EditShoppingItemDialogComponent } from '../../dialogs/edit-shopping-item-dialog/edit-shopping-item-dialog.component';
 import { ShoppingActionSheetComponent } from '../../dialogs/shopping-action-sheet/shopping-action-sheet.component';
 import { CategoriesPipe } from '../../pipes/categories.pipe';
+import { selectListItems } from '../../state/@shared/item-list.selector';
 import { DialogsActions } from '../../state/dialogs/dialogs.actions';
 import { ShoppingActions } from '../../state/shopping/shopping.actions';
 
@@ -59,6 +60,7 @@ import { ShoppingActions } from '../../state/shopping/shopping.actions';
 })
 export class ShoppingPage implements IonViewWillEnter {
   readonly #store = inject(Store);
+  readonly rxItems$ = this.#store.select(selectListItems);
 
   ionViewWillEnter(): void {
     this.#store.dispatch(ShoppingActions.enterPage());
@@ -83,5 +85,9 @@ export class ShoppingPage implements IonViewWillEnter {
 
   buyItem(item: IShoppingItem) {
     this.#store.dispatch(ShoppingActions.buyItem(item));
+  }
+
+  openActionSheet() {
+    this.#store.dispatch(ShoppingActions.showActionSheet());
   }
 }

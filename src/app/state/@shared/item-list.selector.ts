@@ -1,6 +1,11 @@
 import { getRouterSelectors, RouterReducerState } from '@ngrx/router-store';
 import { createFeatureSelector, createSelector } from '@ngrx/store';
-import { IAppState, ISearchResult, IShoppingItem } from '../../@types/types';
+import {
+  IAppState,
+  ISearchResult,
+  IShoppingItem,
+  TItemListCategory,
+} from '../../@types/types';
 
 import {
   filterAndSortItemList,
@@ -20,9 +25,12 @@ export const selectListState = createSelector(
   }
 );
 
-export const selectListCategories = createSelector(selectListState, (state) => {
-  return state.categories.sort(sortCategoriesFn(state.sort));
-});
+export const selectListCategories = createSelector(
+  selectListState,
+  (state): TItemListCategory[] => {
+    return state.categories?.sort(sortCategoriesFn(state.sort)) ?? [];
+  }
+);
 
 export const selectListSearchResult = createSelector(
   selectListState,

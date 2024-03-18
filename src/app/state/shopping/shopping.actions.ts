@@ -25,6 +25,8 @@ export const ShoppingActions = createActionGroup({
     }),
 
     'Buy Item': (item: IShoppingItem) => ({ item }),
+    'Show Action Sheet': emptyProps(),
+    'Hide Action Sheet': emptyProps(),
 
     // Operations
 

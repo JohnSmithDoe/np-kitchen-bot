@@ -1,6 +1,6 @@
 <app-page-header
-  color="shopping"
-  label="{{ 'page-title.shopping' | translate }}"
+  [color]="color"
+  [label]="pageHeader"
   [disabled]="!!(rxSearchResult$ | async)?.exactMatch"
   (addItem)="showCreateDialog()"
 >
@@ -12,7 +12,9 @@
   <app-item-list-toolbar
     (selectDisplayMode)="setDisplayMode($event)"
     (selectSortMode)="setSortMode($event)"
-  ></app-item-list-toolbar>
+  >
+    <ng-content select="[toolbarActions]"> </ng-content>
+  </app-item-list-toolbar>
 </app-page-header>
 
 <ion-content>
@@ -22,22 +24,15 @@
   ></app-item-list-quickadd>
 
   <app-item-list
-    [headerColor]="(rxState$ | async)?.filterBy ? 'category' : 'shopping'"
-    [header]="
-      (rxState$ | async)?.filterBy ?? ('list-header.shopping' | translate)
-    "
+    [headerColor]="(rxState$ | async)?.filterBy ? 'category' : color"
+    [header]="(rxState$ | async)?.filterBy ?? listHeader"
     [mode]="(rxState$ | async)?.mode ?? 'alphabetical'"
     [items]="rxItems$ | async"
-    [categories]="rxCategories$ | async"
+    [categories]="(rxCategories$ | async) ?? []"
     [itemTemplate]="itemTemplate"
     (selectCategory)="selectCategory($event)"
   >
-    <!--    rxCategories$ | async-->
-    <ion-buttons slot="end">
-      <ion-button [hidden]="!(rxItems$ | async)?.length" id="open-action-sheet">
-        <ion-icon name="bag-add" slot="icon-only"></ion-icon>
-      </ion-button>
-    </ion-buttons>
+    <ng-content select="[listActions]"> </ng-content>
   </app-item-list>
 
   <app-item-list-empty

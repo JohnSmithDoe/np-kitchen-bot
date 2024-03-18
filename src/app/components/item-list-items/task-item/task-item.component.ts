@@ -17,6 +17,7 @@ import {
   IonItemOptions,
   IonItemSliding,
   IonLabel,
+  IonList,
   IonListHeader,
   IonNote,
   IonReorder,
@@ -27,7 +28,6 @@ import * as dayjs from 'dayjs';
 import { ITaskItem, TColor, TIonDragEvent } from '../../../@types/types';
 import { checkItemOptionsOnDrag } from '../../../app.utils';
 import { CategoryNoteDirective } from '../../../directives/category-note.directive';
-import { ItemListComponent } from '../../item-list/item-list.component';
 
 @Component({
   selector: 'app-task-item',
@@ -58,7 +58,7 @@ import { ItemListComponent } from '../../item-list/item-list.component';
 })
 export class TaskItemComponent {
   @Input({ required: true }) item!: ITaskItem;
-  @Input({ required: true }) itemList!: ItemListComponent;
+  @Input({ required: true }) ionList!: IonList;
 
   @Input() color?: TColor;
 
@@ -74,7 +74,7 @@ export class TaskItemComponent {
   }
 
   async emitDeleteItem() {
-    await this.itemList.closeSlidingItems();
+    await this.ionList.closeSlidingItems();
     this.deleteItem.emit();
   }
 

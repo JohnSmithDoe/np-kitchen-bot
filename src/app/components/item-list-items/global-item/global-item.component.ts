@@ -18,6 +18,7 @@ import {
   IonItemOptions,
   IonItemSliding,
   IonLabel,
+  IonList,
   IonListHeader,
   IonNote,
   IonReorder,
@@ -27,7 +28,6 @@ import { TranslateModule } from '@ngx-translate/core';
 import { IGlobalItem, TColor, TIonDragEvent } from '../../../@types/types';
 import { checkItemOptionsOnDrag } from '../../../app.utils';
 import { CategoryNoteDirective } from '../../../directives/category-note.directive';
-import { ItemListComponent } from '../../item-list/item-list.component';
 
 @Component({
   selector: 'app-global-item',
@@ -59,7 +59,7 @@ export class GlobalItemComponent implements OnInit {
   @Input() item!: IGlobalItem;
 
   @Input() color?: TColor;
-  @Input({ required: true }) itemList!: ItemListComponent;
+  @Input({ required: true }) ionList!: IonList;
 
   @Output() selectItem = new EventEmitter<void>();
   @Output() deleteItem = new EventEmitter<void>();
@@ -77,7 +77,7 @@ export class GlobalItemComponent implements OnInit {
   }
 
   async emitDeleteItem() {
-    await this.itemList.closeSlidingItems();
+    await this.ionList.closeSlidingItems();
     this.deleteItem.emit();
   }
 }

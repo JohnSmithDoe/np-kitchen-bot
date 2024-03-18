@@ -1,56 +1,20 @@
-<app-page-header
+<app-list-page
+  class="ion-page"
+  listId="_globals"
   color="global"
-  label="{{'page-title.global' | translate}}"
-  [disabled]="!!(rxSearchResult$ | async)?.exactMatch"
-  (addItem)="showCreateDialog()"
+  pageHeader="{{ 'page-title.globals' | translate }}"
+  listHeader="{{ 'list-header.globals' | translate }}"
+  [itemTemplate]="globalItem"
 >
-  <app-item-list-searchbar
-    [query]="(rxState$ | async)?.searchQuery"
-    (queryChange)="searchFor($event)"
-    (hitEnter)="addItemFromSearch()"
-  ></app-item-list-searchbar>
-  <app-item-list-toolbar
-    (selectDisplayMode)="setDisplayMode($event)"
-    (selectSortMode)="setSortMode($event)"
-  ></app-item-list-toolbar>
-</app-page-header>
+</app-list-page>
 
-<ion-content>
-  <app-item-list-quickadd
-    (quickAddItem)="addItemFromSearch()"
-  ></app-item-list-quickadd>
-
-  <app-item-list
-    #globalListComponent
-    [headerColor]="(rxState$ | async)?.filterBy ? 'category' : 'global'"
-    [header]="(rxState$ | async)?.filterBy ?? ('list-header.global' | translate)"
-    [mode]="(rxState$ | async)?.mode ?? 'alphabetical'"
-    [items]="(rxItems$ | async)"
-    [categories]="(rxCategories$ | async)"
-    [itemTemplate]="globalItem"
-    (selectCategory)="selectCategory($event)"
-  ></app-item-list>
-  <ng-template #globalItem let-item>
-    <app-global-item
-      [item]="item"
-      [itemList]="globalListComponent"
-      (selectItem)="showEditDialog(item)"
-      (deleteItem)="removeItem(item)"
-    ></app-global-item>
-  </ng-template>
-
-  <app-item-list-empty
-    [isEmptyList]="!((rxItems$ | async)?.length)"
-    [isSearching]="(rxSearchResult$ |async)?.hasSearchTerm"
-    [searchTerm]="(rxSearchResult$ |async)?.searchTerm"
-    (emptyItem)="showCreateDialog()"
-  ></app-item-list-empty>
-
-  <app-item-list-search-result
-    [results]="(rxSearchResult$| async)"
-    (selectStorageItem)="addStorageItem($event)"
-    (selectShoppingItem)="addShoppingItem($event)"
-  ></app-item-list-search-result>
-</ion-content>
+<ng-template #globalItem let-item let-ionList="ionList">
+  <app-global-item
+    [item]="item"
+    [ionList]="ionList"
+    (selectItem)="showEditDialog(item)"
+    (deleteItem)="removeItem(item)"
+  ></app-global-item>
+</ng-template>
 
 <app-edit-global-item-dialog></app-edit-global-item-dialog>

@@ -17,6 +17,7 @@ export const initialState: IShoppingState = {
   items: [],
   mode: 'alphabetical',
   categories: [],
+  showActionSheet: false,
 };
 
 function updateSearch(
@@ -39,7 +40,9 @@ export const shoppingReducer = createReducer(
   on(ShoppingActions.updateFilter,(state, { filterBy }): IShoppingState => ({ ...state, filterBy, mode: 'alphabetical', })),
   on(ShoppingActions.updateMode, (state, { mode }) => updateListMode(state, mode)),
   on(ShoppingActions.updateSort, (state, { sortBy, sortDir }) => ({ ...state, sort: updateListSort(sortBy, sortDir, state.sort?.sortDir),})),
+  on(ShoppingActions.showActionSheet, (state):IShoppingState =>  ({...state, showActionSheet: true})),
+  on(ShoppingActions.hideActionSheet, (state):IShoppingState =>  ({...state, showActionSheet: false})),
   on(ApplicationActions.loadedSuccessfully,(_state, { datastore }): IShoppingState => {
-    return {...(datastore.shopping ?? _state), searchQuery:undefined,mode:'alphabetical',filterBy: undefined};
-  })
+    return {...(datastore.shopping ?? _state), searchQuery:undefined,mode:'alphabetical',filterBy: undefined, showActionSheet: false};
+  }),
 );

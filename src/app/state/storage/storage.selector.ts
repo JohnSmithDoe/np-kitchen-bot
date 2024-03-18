@@ -4,12 +4,10 @@ import {
   ISearchResult,
   IStorageItem,
   IStorageState,
-  TItemListCategory,
 } from '../../@types/types';
 import {
   filterAndSortItemList,
   filterBySearchQuery,
-  sortCategoriesFn,
 } from '../@shared/item-list.utils';
 
 export const selectStorageState =
@@ -27,13 +25,4 @@ export const selectStorageListItems = createSelector(
   selectStorageListSearchResult,
   (state: IStorageState, result): IStorageItem[] | undefined =>
     filterAndSortItemList(state, result)
-);
-
-export const selectStorageListCategories = createSelector(
-  selectStorageState,
-  (state: IStorageState): TItemListCategory[] | undefined => {
-    return [
-      ...new Set(state.items.flatMap((item) => item.category ?? [])),
-    ].sort(sortCategoriesFn(state.sort));
-  }
 );

@@ -4,12 +4,10 @@ import {
   ISearchResult,
   ITaskItem,
   ITasksState,
-  TItemListCategory,
 } from '../../@types/types';
 import {
   filterAndSortItemList,
   filterBySearchQuery,
-  sortCategoriesFn,
 } from '../@shared/item-list.utils';
 
 export const selectTasksState = createFeatureSelector<ITasksState>('tasks');
@@ -26,13 +24,4 @@ export const selectTasksListItems = createSelector(
   selectTasksListSearchResult,
   (state: ITasksState, result): ITaskItem[] | undefined =>
     filterAndSortItemList(state, result)
-);
-
-export const selectTasksListCategories = createSelector(
-  selectTasksState,
-  (state: ITasksState): TItemListCategory[] | undefined => {
-    return [
-      ...new Set(state.items.flatMap((item) => item.category ?? [])),
-    ].sort(sortCategoriesFn(state.sort));
-  }
 );

@@ -8,8 +8,6 @@ import { add, remove } from 'ionicons/icons';
 import {
   IonViewWillEnter,
   ITaskItem,
-  TItemListCategory,
-  TItemListMode,
   TItemListSortType,
 } from '../../@types/types';
 import { TaskItemComponent } from '../../components/item-list-items/task-item/task-item.component';
@@ -20,18 +18,13 @@ import { ItemListSearchResultComponent } from '../../components/item-list/item-l
 import { ItemListSearchbarComponent } from '../../components/item-list/item-list-searchbar/item-list-searchbar.component';
 import { ItemListToolbarComponent } from '../../components/item-list/item-list-toolbar/item-list-toolbar.component';
 import { ItemListComponent } from '../../components/item-list/item-list.component';
+import { ListPageComponent } from '../../components/pages/list-page/list-page.component';
 import { PageHeaderComponent } from '../../components/pages/page-header/page-header.component';
 import { EditGlobalItemDialogComponent } from '../../dialogs/edit-global-item-dialog/edit-global-item-dialog.component';
 import { EditTaskItemDialogComponent } from '../../dialogs/edit-task-item-dialog/edit-task-item-dialog.component';
 import { CategoriesPipe } from '../../pipes/categories.pipe';
 import { DialogsActions } from '../../state/dialogs/dialogs.actions';
 import { TasksActions } from '../../state/tasks/tasks.actions';
-import {
-  selectTasksListCategories,
-  selectTasksListItems,
-  selectTasksListSearchResult,
-  selectTasksState,
-} from '../../state/tasks/tasks.selector';
 
 @Component({
   selector: 'app-page-task',
@@ -57,15 +50,11 @@ import {
     IonButton,
     AsyncPipe,
     ItemListSearchResultComponent,
+    ListPageComponent,
   ],
 })
 export class TasksPage implements IonViewWillEnter {
   readonly #store = inject(Store);
-
-  rxState$ = this.#store.select(selectTasksState);
-  rxItems$ = this.#store.select(selectTasksListItems);
-  rxCategories$ = this.#store.select(selectTasksListCategories);
-  rxSearchResult$ = this.#store.select(selectTasksListSearchResult);
 
   constructor() {
     addIcons({ add, remove });
@@ -79,31 +68,11 @@ export class TasksPage implements IonViewWillEnter {
     this.#store.dispatch(TasksActions.removeItem(item));
   }
 
-  addItemFromSearch() {
-    this.#store.dispatch(TasksActions.addItemFromSearch());
-  }
-
-  showCreateDialog() {
-    this.#store.dispatch(DialogsActions.showCreateDialogWithSearch('_tasks'));
-  }
-
   showEditDialog(item: ITaskItem) {
     this.#store.dispatch(DialogsActions.showEditDialog(item, '_tasks'));
   }
 
-  searchFor(searchTerm: string) {
-    this.#store.dispatch(TasksActions.updateSearch(searchTerm));
-  }
-
-  setDisplayMode(mode: TItemListMode) {
-    this.#store.dispatch(TasksActions.updateMode(mode));
-  }
-
   setSortMode(type: TItemListSortType) {
     this.#store.dispatch(TasksActions.updateSort(type, 'toggle'));
-  }
-
-  selectCategory(category: TItemListCategory) {
-    this.#store.dispatch(TasksActions.updateFilter(category));
   }
 }

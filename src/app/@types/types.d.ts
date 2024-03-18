@@ -100,7 +100,7 @@ export interface IItemList<T extends TAllItemTypes> {
   id: TItemListId;
   title: string;
   items: T[];
-  categories: TItemListCategory[];
+  categories?: TItemListCategory[];
   mode: TItemListMode;
   searchQuery?: string;
   filterBy?: string;
@@ -125,7 +125,9 @@ export type TShoppingList = IItemList<IShoppingItem> & {
 };
 
 export type IStorageState = Readonly<TStorageList>;
-export type IShoppingState = Readonly<TShoppingList>;
+export type IShoppingState = Readonly<TShoppingList> & {
+  showActionSheet: boolean;
+};
 export type IGlobalsState = Readonly<TGlobalsList>;
 export type ITasksState = Readonly<TTasksList>;
 export type IListState<T extends TAllItemTypes> = IItemList<T>;

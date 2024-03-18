@@ -16,6 +16,7 @@ import {
   IShoppingItem,
   IStorageItem,
   TAllItemTypes,
+  TColor,
   TItemListCategory,
   TItemListId,
   TItemListMode,
@@ -63,6 +64,9 @@ export class ListPageComponent<T extends TAllItemTypes> {
 
   @Input({ required: true }) listId!: TItemListId;
   @Input({ required: true }) itemTemplate!: TemplateRef<any>;
+  @Input({ required: true }) color!: TColor;
+  @Input({ required: true }) listHeader!: string;
+  @Input({ required: true }) pageHeader!: string;
 
   rxState$ = this.#store.select(selectListState);
   rxItems$ = this.#store.select(selectListItems);

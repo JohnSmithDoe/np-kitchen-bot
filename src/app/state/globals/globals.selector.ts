@@ -4,12 +4,10 @@ import {
   IGlobalItem,
   IGlobalsState,
   ISearchResult,
-  TItemListCategory,
 } from '../../@types/types';
 import {
   filterAndSortItemList,
   filterBySearchQuery,
-  sortCategoriesFn,
 } from '../@shared/item-list.utils';
 
 export const selectGlobalsState =
@@ -27,13 +25,4 @@ export const selectGlobalListItems = createSelector(
   selectGlobalsListSearchResult,
   (state: IGlobalsState, result): IGlobalItem[] | undefined =>
     filterAndSortItemList(state, result)
-);
-
-export const selectGlobalsListCategories = createSelector(
-  selectGlobalsState,
-  (state: IGlobalsState): TItemListCategory[] | undefined => {
-    return [
-      ...new Set(state.items.flatMap((item) => item.category ?? [])),
-    ].sort(sortCategoriesFn(state.sort));
-  }
 );

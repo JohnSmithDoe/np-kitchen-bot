@@ -1,3 +1,4 @@
+import { AsyncPipe } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { ActionSheetButton } from '@ionic/angular';
 import { IonActionSheet } from '@ionic/angular/standalone';
@@ -5,10 +6,13 @@ import { Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
 import { IAppState } from '../../@types/types';
 import { ShoppingActions } from '../../state/shopping/shopping.actions';
-import { selectShoppingListHasBoughtItems } from '../../state/shopping/shopping.selector';
+import {
+  selectShoppingListHasBoughtItems,
+  selectShoppingState,
+} from '../../state/shopping/shopping.selector';
 
 const moveToShoppingListButton: ActionSheetButton = {
-  text: 'In die Lagerliste übertragen',
+  text: 'In die Vorräte übernehmen',
   role: 'destructive',
   data: {
     action: 'move',
@@ -35,11 +39,12 @@ const cancelButton: ActionSheetButton = {
   standalone: true,
   templateUrl: './shopping-action-sheet.component.html',
   styleUrls: ['./shopping-action-sheet.component.scss'],
-  imports: [IonActionSheet],
+  imports: [IonActionSheet, AsyncPipe],
 })
 export class ShoppingActionSheetComponent implements OnInit {
   readonly #store = inject(Store<IAppState>);
   readonly translate = inject(TranslateService);
+  readonly rxState$ = this.#store.select(selectShoppingState);
 
   public actionSheetButtons: ActionSheetButton[] = [];
 
@@ -49,6 +54,7 @@ export class ShoppingActionSheetComponent implements OnInit {
     } else if (ev.detail.data?.action === 'move') {
       this.#store.dispatch(ShoppingActions.moveToStorage());
     }
+    this.#store.dispatch(ShoppingActions.hideActionSheet());
   }
 
   ngOnInit(): void {

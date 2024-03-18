@@ -1,8 +1,19 @@
 <app-list-page
   class="ion-page"
   listId="_shopping"
+  color="shopping"
+  pageHeader="{{ 'page-title.shopping' | translate }}"
+  listHeader="{{ 'list-header.shopping' | translate }}"
   [itemTemplate]="shoppingItem"
 >
+  <ion-buttons slot="end" listActions>
+    <ion-button
+      [hidden]="!(rxItems$ | async)?.length"
+      (click)="openActionSheet()"
+    >
+      <ion-icon name="bag-add" slot="icon-only"></ion-icon>
+    </ion-button>
+  </ion-buttons>
 </app-list-page>
 
 <ng-template #shoppingItem let-item let-ionList="ionList">

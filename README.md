@@ -7,7 +7,7 @@
 ## Todos:
 * Kalender mit wiederkehrenden Aufgaben
 * Rezept hinzufügen, vorschlagen
-### Lagerhaltung
+### Vorräte
 * Ansicht nach
   * Rezept
   * Standort/Geschäft
@@ -26,16 +26,16 @@
 * min amount and warning -> background as well...
 * name, zusatz
 * multi term search
-* abteilung im supermarkt, lagerstandort (oder einfach kategorie)
+* abteilung im supermarkt, standort (oder einfach kategorie)
 * multiple todo lists... 
 
 ## Feature-Set
 
 ### Use Cases
 * Zur Einkaufsliste hinzufügen, wenn man etwas leer macht
-* Zum Lager hinzufügen, wenn man etwas einkauft
+* Zum Vorrat hinzufügen, wenn man etwas einkauft
 
-### Lagerhaltung
+### Vorräte
 * Ansicht nach
   * Kategorie
   * Alphabetisch
@@ -47,9 +47,9 @@
   * Auswahl
 
 ### Shopping
-* Vom Lager übertragen,
+* Vom Vorrat übertragen,
 * Abhaken
-* Zum Lager hinzufügen und entfernen
+* Zum Vorrat hinzufügen und entfernen
   https://ionicframework.com/docs/angular/your-first-app/saving-photos
 
 ### Future Tasks

@@ -18,6 +18,7 @@ import {
   IonItemOptions,
   IonItemSliding,
   IonLabel,
+  IonList,
   IonListHeader,
   IonNote,
   IonReorder,
@@ -27,7 +28,6 @@ import { TranslateModule } from '@ngx-translate/core';
 import { IStorageItem, TColor, TIonDragEvent } from '../../../@types/types';
 import { checkItemOptionsOnDrag } from '../../../app.utils';
 import { CategoryNoteDirective } from '../../../directives/category-note.directive';
-import { ItemListComponent } from '../../item-list/item-list.component';
 
 @Component({
   selector: 'app-storage-item',
@@ -58,7 +58,7 @@ import { ItemListComponent } from '../../item-list/item-list.component';
 })
 export class StorageItemComponent implements OnInit {
   @Input({ required: true }) item!: IStorageItem;
-  @Input({ required: true }) itemList!: ItemListComponent;
+  @Input({ required: true }) ionList!: IonList;
   @Input() color?: TColor;
 
   @Output() increment = new EventEmitter<void>();
@@ -95,12 +95,12 @@ export class StorageItemComponent implements OnInit {
   }
 
   async emitDeleteItem() {
-    await this.itemList.closeSlidingItems();
+    await this.ionList.closeSlidingItems();
     this.deleteItem.emit();
   }
 
   async emitCartItem() {
-    await this.itemList.closeSlidingItems();
+    await this.ionList.closeSlidingItems();
     this.cartItem.emit();
   }
 
