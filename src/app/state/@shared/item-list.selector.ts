@@ -6,6 +6,7 @@ import {
   IShoppingItem,
   TItemListCategory,
 } from '../../@types/types';
+import { matchingTxt } from '../../app.utils';
 
 import {
   filterAndSortItemList,
@@ -28,7 +29,11 @@ export const selectListState = createSelector(
 export const selectListCategories = createSelector(
   selectListState,
   (state): TItemListCategory[] => {
-    return [...state.categories].sort(sortCategoriesFn(state.sort)) ?? [];
+    return [...state.categories]
+      .sort(sortCategoriesFn(state.sort))
+      .filter((cat) =>
+        matchingTxt(cat).includes(matchingTxt(state.searchQuery ?? ''))
+      );
   }
 );
 

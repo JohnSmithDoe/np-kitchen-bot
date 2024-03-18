@@ -60,11 +60,13 @@ export const updateQuickAddState = (
   let exactMatchLocal = false;
   let listName: string | undefined;
   let color: TColor | undefined;
+  let isCategoryMode: boolean | undefined;
   switch (listId) {
     case '_storage':
       searchQuery = state.storage.searchQuery;
       listName = marker('list-header.storage');
       color = 'storage';
+      isCategoryMode = state.storage.mode === 'categories';
       exactMatchLocal = !!state.storage.items.find((item) =>
         matchesSearchExactly(item, searchQuery)
       );
@@ -73,6 +75,7 @@ export const updateQuickAddState = (
       searchQuery = state.globals.searchQuery;
       listName = marker('list-header.globals');
       color = 'global';
+      isCategoryMode = state.globals.mode === 'categories';
       exactMatchLocal = !!state.globals.items.find((item) =>
         matchesSearchExactly(item, searchQuery)
       );
@@ -81,6 +84,7 @@ export const updateQuickAddState = (
       searchQuery = state.shopping.searchQuery;
       listName = marker('list-header.shopping');
       color = 'shopping';
+      isCategoryMode = state.shopping.mode === 'categories';
       exactMatchLocal = !!state.shopping.items.find((item) =>
         matchesSearchExactly(item, searchQuery)
       );
@@ -89,8 +93,9 @@ export const updateQuickAddState = (
   const doShow = matchingTxtIsNotEmpty(searchQuery);
   return {
     searchQuery,
-    canAddLocal: doShow && !exactMatchLocal,
+    canAddLocal: !isCategoryMode && doShow && !exactMatchLocal,
     canAddGlobal:
+      !isCategoryMode &&
       doShow &&
       listId !== '_globals' && // dont show in globals
       !state.globals.items.find((item) =>

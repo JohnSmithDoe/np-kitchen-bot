@@ -214,19 +214,35 @@ export class ApplicationEffects {
     return this.#actions$.pipe(
       ofType(
         StorageActions.addItem,
+        StorageActions.updateFilter,
+        StorageActions.updateMode,
         GlobalsActions.addItem,
+        GlobalsActions.updateFilter,
+        GlobalsActions.updateMode,
         ShoppingActions.addItem,
-        TasksActions.addItem
+        ShoppingActions.updateFilter,
+        ShoppingActions.updateMode,
+        TasksActions.addItem,
+        TasksActions.updateFilter,
+        TasksActions.updateMode
       ),
       map(({ type }) => {
         switch (type) {
           case '[Storage] Add Item':
+          case '[Storage] Update Filter':
+          case '[Storage] Update Mode':
             return StorageActions.updateSearch('');
           case '[Globals] Add Item':
+          case '[Globals] Update Filter':
+          case '[Globals] Update Mode':
             return GlobalsActions.updateSearch('');
           case '[Shopping] Add Item':
+          case '[Shopping] Update Filter':
+          case '[Shopping] Update Mode':
             return ShoppingActions.updateSearch('');
           case '[Tasks] Add Item':
+          case '[Tasks] Update Filter':
+          case '[Tasks] Update Mode':
             return TasksActions.updateSearch('');
         }
       })
@@ -271,11 +287,15 @@ export class ApplicationEffects {
       ofType(
         ShoppingActions.updateSearch,
         ShoppingActions.enterPage,
+        ShoppingActions.updateMode,
         StorageActions.updateSearch,
+        StorageActions.updateMode,
         StorageActions.enterPage,
         GlobalsActions.updateSearch,
+        GlobalsActions.updateMode,
         GlobalsActions.enterPage,
         TasksActions.updateSearch,
+        TasksActions.updateMode,
         TasksActions.enterPage
       ),
       withLatestFrom(this.#store, (action, state) => ({ action, state })),
@@ -283,18 +303,22 @@ export class ApplicationEffects {
         let listId: TItemListId;
         switch (action.type) {
           case '[Globals] Update Search':
+          case '[Globals] Update Mode':
           case '[Globals] Enter Page':
             listId = '_globals';
             break;
           case '[Shopping] Update Search':
+          case '[Shopping] Update Mode':
           case '[Shopping] Enter Page':
             listId = '_shopping';
             break;
           case '[Storage] Update Search':
+          case '[Storage] Update Mode':
           case '[Storage] Enter Page':
             listId = '_storage';
             break;
           case '[Tasks] Update Search':
+          case '[Tasks] Update Mode':
           case '[Tasks] Enter Page':
             listId = '_tasks';
             break;
