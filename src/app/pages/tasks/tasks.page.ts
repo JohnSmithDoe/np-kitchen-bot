@@ -6,6 +6,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { add, remove } from 'ionicons/icons';
 import {
+  IonViewWillEnter,
   ITaskItem,
   TItemListCategory,
   TItemListMode,
@@ -58,7 +59,7 @@ import {
     ItemListSearchResultComponent,
   ],
 })
-export class TasksPage {
+export class TasksPage implements IonViewWillEnter {
   readonly #store = inject(Store);
 
   rxState$ = this.#store.select(selectTasksState);

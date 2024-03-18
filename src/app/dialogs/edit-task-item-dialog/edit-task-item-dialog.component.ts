@@ -25,14 +25,8 @@ import { DateInputComponent } from '../../components/forms/date-input/date-input
 import { ItemEditModalComponent } from '../../components/forms/item-edit-modal/item-edit-modal.component';
 import { NumberInputComponent } from '../../components/forms/number-input/number-input.component';
 import { DialogsActions } from '../../state/dialogs/dialogs.actions';
-import {
-  selectEditTaskItem,
-  selectEditTaskState,
-} from '../../state/dialogs/dialogs.selector';
-import {
-  selectTasksListItems,
-  selectTasksState,
-} from '../../state/tasks/tasks.selector';
+import { selectEditTaskItem } from '../../state/dialogs/dialogs.selector';
+import { selectTasksListItems } from '../../state/tasks/tasks.selector';
 
 @Component({
   selector: 'app-edit-task-item-dialog',
@@ -69,9 +63,7 @@ import {
 export class EditTaskItemDialogComponent {
   readonly #store = inject(Store);
 
-  rxState$ = this.#store.select(selectEditTaskState);
   rxItem$ = this.#store.select(selectEditTaskItem);
-  rxTasksState$ = this.#store.select(selectTasksState);
   rxTasksItems = this.#store.select(selectTasksListItems);
 
   constructor() {

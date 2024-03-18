@@ -4,12 +4,10 @@ import {
   ISearchResult,
   IShoppingItem,
   IShoppingState,
-  TItemListCategory,
 } from '../../@types/types';
 import {
   filterAndSortItemList,
   filterBySearchQuery,
-  sortCategoriesFn,
 } from '../@shared/item-list.utils';
 
 export const selectShoppingState =
@@ -32,14 +30,6 @@ export const selectShoppingItems = createSelector(
     filterAndSortItemList(state, result)
 );
 
-export const selectShoppingCategories = createSelector(
-  selectShoppingState,
-  (state: IShoppingState): TItemListCategory[] | undefined => {
-    return [
-      ...new Set(state.items.flatMap((item) => item.category ?? [])),
-    ].sort(sortCategoriesFn(state.sort));
-  }
-);
 export const selectShoppingListHasBoughtItems = createSelector(
   selectShoppingState,
   (state: IShoppingState): boolean =>

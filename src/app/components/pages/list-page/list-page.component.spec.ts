@@ -4,13 +4,13 @@ import { IonicModule } from '@ionic/angular';
 import { ListPageComponent } from './list-page.component';
 
 describe('ListPageComponent', () => {
-  let component: ListPageComponent;
-  let fixture: ComponentFixture<ListPageComponent>;
+  let component: ListPageComponent<any>;
+  let fixture: ComponentFixture<ListPageComponent<any>>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ListPageComponent ],
-      imports: [IonicModule.forRoot()]
+      declarations: [ListPageComponent],
+      imports: [IonicModule.forRoot()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ListPageComponent);

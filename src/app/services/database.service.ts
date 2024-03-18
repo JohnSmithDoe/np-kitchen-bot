@@ -3,8 +3,6 @@ import { Storage } from '@ionic/storage-angular';
 import { Store } from '@ngrx/store';
 import { IDatastore, IItemList } from '../@types/types';
 
-export const CSTORAGE_KEY = 'np-kitchen-helper';
-
 @Injectable({
   providedIn: 'root',
 })

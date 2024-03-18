@@ -9,9 +9,7 @@ import {
 } from '@ionic/angular/standalone';
 import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
-import { addIcons } from 'ionicons';
-import { add, bagAdd, clipboard, remove } from 'ionicons/icons';
-import { IShoppingItem } from '../../@types/types';
+import { IonViewWillEnter, IShoppingItem } from '../../@types/types';
 import { ShoppingItemComponent } from '../../components/item-list-items/shopping-item/shopping-item.component';
 import { TextItemComponent } from '../../components/item-list-items/text-item/text-item.component';
 import { ItemListEmptyComponent } from '../../components/item-list/item-list-empty/item-list-empty.component';
@@ -28,12 +26,6 @@ import { ShoppingActionSheetComponent } from '../../dialogs/shopping-action-shee
 import { CategoriesPipe } from '../../pipes/categories.pipe';
 import { DialogsActions } from '../../state/dialogs/dialogs.actions';
 import { ShoppingActions } from '../../state/shopping/shopping.actions';
-import {
-  selectShoppingCategories,
-  selectShoppingItems,
-  selectShoppingSearchResult,
-  selectShoppingState,
-} from '../../state/shopping/shopping.selector';
 
 @Component({
   selector: 'app-page-shopping',
@@ -65,18 +57,8 @@ import {
     ListPageComponent,
   ],
 })
-export class ShoppingPage {
-  readonly ShoppingActions = ShoppingActions;
-
+export class ShoppingPage implements IonViewWillEnter {
   readonly #store = inject(Store);
-  rxState$ = this.#store.select(selectShoppingState);
-  rxItems$ = this.#store.select(selectShoppingItems);
-  rxCategories$ = this.#store.select(selectShoppingCategories);
-  rxSearchResult$ = this.#store.select(selectShoppingSearchResult);
-
-  constructor() {
-    addIcons({ add, remove, clipboard, bagAdd });
-  }
 
   ionViewWillEnter(): void {
     this.#store.dispatch(ShoppingActions.enterPage());

@@ -171,12 +171,9 @@ export const dialogsReducer = createReducer(
     };
   }),
 
-  on(
-    ApplicationActions.loadedSuccessfully,
-    (_state, { datastore }): TDialogsState => {
-      return _state;
-    }
-  )
+  on(ApplicationActions.loadedSuccessfully, (_state): TDialogsState => {
+    return _state;
+  })
 );
 
 const showEditDialog = <R extends IBaseItem>(

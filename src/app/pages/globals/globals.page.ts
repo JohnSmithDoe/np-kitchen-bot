@@ -7,6 +7,7 @@ import { addIcons } from 'ionicons';
 import { add, remove } from 'ionicons/icons';
 import {
   IGlobalItem,
+  IonViewWillEnter,
   IShoppingItem,
   IStorageItem,
   TItemListCategory,
@@ -57,7 +58,7 @@ import {
     ItemListSearchResultComponent,
   ],
 })
-export class GlobalsPage {
+export class GlobalsPage implements IonViewWillEnter {
   readonly #store = inject(Store);
 
   rxState$ = this.#store.select(selectGlobalsState);

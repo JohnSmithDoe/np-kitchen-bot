@@ -19,9 +19,7 @@ export type TColor =
   | 'low-stock';
 
 export type TTimestamp = string;
-// Todo
-export interface IItemLocation {}
-// eslint-disable-next-line functional/type-declaration-immutability
+// export interface IItemLocation {}
 export type TItemListCategory = string;
 
 // Orangensaft
@@ -203,4 +201,8 @@ export interface IAppState {
   dialogs: TDialogsState;
   settings: ISettings;
   quickadd: IQuickAddState;
+}
+
+export interface IonViewWillEnter {
+  ionViewWillEnter(): void;
 }

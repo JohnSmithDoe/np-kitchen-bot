@@ -53,6 +53,7 @@ export class UiService {
     });
     return this.showToast(msg, 'warning');
   }
+
   showCopyToShoppingListToast(name: string, quantity: number) {
     const msg = this.translate.instant('toast.moved.item.shopping', {
       name,
