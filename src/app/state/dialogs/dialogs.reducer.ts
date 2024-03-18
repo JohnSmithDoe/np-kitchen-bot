@@ -58,9 +58,8 @@ export const dialogsReducer = createReducer(
     return { ...state, isEditing: false };
   }),
 
-  on(CategoriesActions.addCategory, (state): TDialogsState => {
-    const category = state.category.searchQuery?.trim();
-    if (category && !state.category.categories.includes(category)) {
+  on(CategoriesActions.addCategory, (state, { category }): TDialogsState => {
+    if (!!category.length && !state.category.categories.includes(category)) {
       return {
         ...state,
         category: {
@@ -91,19 +90,15 @@ export const dialogsReducer = createReducer(
 
   on(
     CategoriesActions.updateSelection,
-    (state, { item, items }): TDialogsState => {
-      const categories = [
-        ...new Set(
-          [...(items ?? []), item]
-            .flatMap((aitem) => aitem?.category ?? [])
-            .filter((cat) => !!cat.length)
-        ),
-      ];
+    (state, { item, categories }): TDialogsState => {
+      const allCategories = [
+        ...new Set([...categories, ...(item?.category ?? [])]),
+      ].filter((cat) => !!cat.length);
       return {
         ...state,
         category: {
           ...state.category,
-          categories,
+          categories: allCategories,
           selection: item?.category ?? [],
           isSelecting: true,
         },

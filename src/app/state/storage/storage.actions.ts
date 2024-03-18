@@ -3,6 +3,7 @@ import {
   IGlobalItem,
   IShoppingItem,
   IStorageItem,
+  TItemListCategory,
   TItemListMode,
   TItemListSortType,
   TUpdateDTO,
@@ -29,6 +30,8 @@ export const StorageActions = createActionGroup({
     'Add Item': (item: IStorageItem) => ({ item }),
     'Add Shopping List': (items: IShoppingItem[]) => ({ items }),
     'Add Item Failure': (item: IStorageItem) => ({ item }),
+    'Add Category': (category: TItemListCategory) => ({ category }),
+    'Remove Category': (category: TItemListCategory) => ({ category }),
 
     'Remove Item': (item: IStorageItem) => ({ item }),
     'Update Item': (item: TUpdateDTO<IStorageItem>) => ({ item }),

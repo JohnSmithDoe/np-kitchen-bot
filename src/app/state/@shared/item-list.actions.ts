@@ -3,6 +3,7 @@ import {
   IGlobalItem,
   IShoppingItem,
   IStorageItem,
+  TItemListCategory,
   TItemListId,
   TItemListMode,
   TItemListSortType,
@@ -18,6 +19,7 @@ export const ItemListActions = createActionGroup({
     'Add Shopping Item': (listId:TItemListId, item: IShoppingItem) => ({ item, listId }),
     'Configuration Error': emptyProps(),
     // Operations
+    'Add Category': (listId:TItemListId, category: TItemListCategory) => ({ listId, category }),
     'Update Search': (listId:TItemListId, searchQuery?: string) => ({ searchQuery, listId }),
     'Update Filter': (listId:TItemListId, filterBy?: string) => ({ filterBy, listId }),
     'Update Mode': (listId:TItemListId, mode?: TItemListMode) => ({ mode, listId }),

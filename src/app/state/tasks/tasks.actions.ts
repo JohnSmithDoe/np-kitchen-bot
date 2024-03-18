@@ -1,5 +1,10 @@
 import { createActionGroup, emptyProps } from '@ngrx/store';
-import { ITaskItem, TItemListMode, TUpdateDTO } from '../../@types/types';
+import {
+  ITaskItem,
+  TItemListCategory,
+  TItemListMode,
+  TUpdateDTO,
+} from '../../@types/types';
 
 export const TasksActions = createActionGroup({
   source: 'Tasks',
@@ -13,6 +18,8 @@ export const TasksActions = createActionGroup({
 
     'Add Item': (item: ITaskItem) => ({ item }),
     'Add Item Failure': (item: ITaskItem) => ({ item }),
+    'Add Category': (category: TItemListCategory) => ({ category }),
+    'Remove Category': (category: TItemListCategory) => ({ category }),
 
     'Remove Item': (item: ITaskItem) => ({ item }),
     'Update Item': (item: TUpdateDTO<ITaskItem>) => ({ item }),

@@ -3,6 +3,8 @@ import { ISettings } from '../../@types/types';
 import { ApplicationActions } from '../application.actions';
 import { SettingsActions } from './settings.actions';
 
+export const VERSION: string = '1';
+
 export const initialSettings: ISettings = {
   showQuickAdd: false,
   showQuickAddGlobal: false,
@@ -12,6 +14,7 @@ export const initialSettings: ISettings = {
   showShoppingInStorage: false,
   showStorageInGlobals: false,
   showStorageInShopping: false,
+  version: VERSION,
 };
 
 export const settingsReducer = createReducer(

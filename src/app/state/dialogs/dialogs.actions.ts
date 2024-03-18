@@ -24,13 +24,17 @@ export const DialogsActions = createActionGroup({
 export const CategoriesActions = createActionGroup({
   source: 'Categories',
   events: {
-    'Add Category': emptyProps(),
+    'Add Category From Dialog Search': emptyProps(),
+    'Add Category': (category: TItemListCategory) => ({ category }),
     'Toggle Category': (category: TItemListCategory) => ({ category }),
     'Remove Category': (category: TItemListCategory) => ({ category }),
     'Update Search Query': (query?: string) => ({ query }),
-    'Update Selection': (item?: IBaseItem, items?: IBaseItem[]) => ({
+    'Update Selection': (
+      item: IBaseItem | undefined,
+      categories: TItemListCategory[]
+    ) => ({
       item,
-      items,
+      categories,
     }),
     'Show Dialog': emptyProps(),
     'Confirm Changes': emptyProps(),

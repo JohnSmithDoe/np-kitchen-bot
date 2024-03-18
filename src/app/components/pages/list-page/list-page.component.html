@@ -13,7 +13,7 @@
     (selectDisplayMode)="setDisplayMode($event)"
     (selectSortMode)="setSortMode($event)"
   >
-    <ng-content select="[toolbarActions]"> </ng-content>
+    <ng-content select="[toolbarActions]"></ng-content>
   </app-item-list-toolbar>
 </app-page-header>
 
@@ -24,15 +24,26 @@
   ></app-item-list-quickadd>
 
   <app-item-list
-    [headerColor]="(rxState$ | async)?.filterBy ? 'category' : color"
-    [header]="(rxState$ | async)?.filterBy ?? listHeader"
+    [headerColor]="
+      (rxFilter$ | async)?.isCategoryModeOrHasFilter === true
+        ? 'category'
+        : color
+    "
+    [header]="
+      (rxFilter$ | async)?.isCategoryModeOrHasFilter === true
+        ? (rxFilter$ | async)?.hasFilter === true
+          ? ('list-header.category.filter'
+            | translate: { category: (rxState$ | async)?.filterBy })
+          : ('list-header.category' | translate)
+        : listHeader
+    "
     [mode]="(rxState$ | async)?.mode ?? 'alphabetical'"
     [items]="rxItems$ | async"
     [categories]="(rxCategories$ | async) ?? []"
     [itemTemplate]="itemTemplate"
     (selectCategory)="selectCategory($event)"
   >
-    <ng-content select="[listActions]"> </ng-content>
+    <ng-content select="[listActions]"></ng-content>
   </app-item-list>
 
   <app-item-list-empty

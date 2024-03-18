@@ -100,7 +100,7 @@ export interface IItemList<T extends TAllItemTypes> {
   id: TItemListId;
   title: string;
   items: T[];
-  categories?: TItemListCategory[];
+  categories: TItemListCategory[];
   mode: TItemListMode;
   searchQuery?: string;
   filterBy?: string;
@@ -143,6 +143,8 @@ export interface ISettings {
 
   showStorageInGlobals: boolean;
   showShoppingInGlobals: boolean;
+
+  version: string;
 }
 
 export interface IDatastore {

@@ -9,7 +9,7 @@ import { StorageActions } from '../storage/storage.actions';
 import { TasksActions } from '../tasks/tasks.actions';
 import { ItemListActions } from './item-list.actions';
 
-const getActionsFromListId = (listId: TItemListId) => {
+export const getActionsFromListId = (listId: TItemListId) => {
   //prettier-ignore
   switch (listId) {
     case '_storage':
@@ -27,7 +27,6 @@ const getActionsFromListId = (listId: TItemListId) => {
 export class ItemListEffects {
   #store = inject(Store<IAppState>);
   #actions$ = inject(Actions);
-
   // 'Add Item From Search': (listId:TItemListId) => ({ listId }),
   addItemFromSearch = createEffect(() => {
     return this.#actions$.pipe(
@@ -35,6 +34,17 @@ export class ItemListEffects {
       map(({ listId }) => getActionsFromListId(listId).addItemFromSearch())
     );
   });
+
+  //  'Add Category': (listId:TItemListId, category: TItemListCategory) => ({ listId, category }),
+  addCategory = createEffect(() => {
+    return this.#actions$.pipe(
+      ofType(ItemListActions.addCategory),
+      map(({ listId, category }) =>
+        getActionsFromListId(listId).addCategory(category)
+      )
+    );
+  });
+
   // 'Update Filter': (listId:TItemListId, filterBy?: string) => ({ filterBy, listId }),
   updateFilter = createEffect(() => {
     return this.#actions$.pipe(

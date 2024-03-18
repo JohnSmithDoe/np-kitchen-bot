@@ -78,7 +78,7 @@ export class CategoriesDialogComponent {
   }
 
   addNewCategory() {
-    this.#store.dispatch(CategoriesActions.addCategory());
+    this.#store.dispatch(CategoriesActions.addCategoryFromDialogSearch());
   }
 
   cancelChanges() {

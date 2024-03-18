@@ -12,7 +12,6 @@ import {
   BarcodeFormat,
   BarcodeScanner,
 } from '@capacitor-mlkit/barcode-scanning';
-import { Share } from '@capacitor/share';
 import {
   AlertController,
   IonApp,
@@ -33,8 +32,7 @@ import {
 } from '@ionic/angular/standalone';
 import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
-import { firstValueFrom } from 'rxjs';
-import { selectShoppingItems } from './state/shopping/shopping.selector';
+import { ShoppingActions } from './state/shopping/shopping.actions';
 
 @Component({
   selector: 'app-root',
@@ -125,16 +123,8 @@ export class AppComponent implements OnInit {
     }
   }
 
-  async shareShoppingList() {
-    const list = await firstValueFrom(this.#store.select(selectShoppingItems));
-    const text =
-      list?.map((item) => item.quantity + ' x ' + item.name).join('\n') ??
-      'Nix drin';
-    await Share.share({
-      title: 'Einkaufsliste',
-      text,
-      dialogTitle: 'Share with buddies',
-    });
+  shareShoppingList() {
+    this.#store.dispatch(ShoppingActions.shareShoppinglist());
   }
 
   async #requestPermissions(): Promise<boolean> {

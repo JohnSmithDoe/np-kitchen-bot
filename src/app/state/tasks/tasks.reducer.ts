@@ -1,7 +1,9 @@
 import { createReducer, on } from '@ngrx/store';
 import { ITasksState } from '../../@types/types';
 import {
+  addListCategory,
   addListItem,
+  removeListCategory,
   removeListItem,
   updateListItem,
   updateListMode,
@@ -34,6 +36,9 @@ export const tasksReducer = createReducer(
   on(TasksActions.updateFilter,(state, { filterBy }): ITasksState => ({ ...state, filterBy, mode: 'alphabetical', })),
   on(TasksActions.updateMode, (state, { mode }) => updateListMode(state, mode)),
   on(TasksActions.updateSort, (state, { sortBy, sortDir }) => ({ ...state, sort: updateListSort(sortBy, sortDir, state.sort?.sortDir),})),
+  on(TasksActions.addCategory, (state, { category }) => ({ ...state, categories: addListCategory(state.categories, category),})),
+  on(TasksActions.removeCategory, (state, { category }) => ({ ...state, categories: removeListCategory(state.categories, category),})),
+
   on(ApplicationActions.loadedSuccessfully,(_state, { datastore }): ITasksState => {
     return {...(datastore.tasks ?? _state), searchQuery:undefined,mode:'alphabetical',filterBy: undefined};
   })

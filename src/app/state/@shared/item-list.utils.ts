@@ -48,8 +48,10 @@ export const stateByListId = (
       return state.tasks;
   }
 };
+
 export const searchQueryByListId = (state: IAppState, listId: TItemListId) =>
   stateByListId(state, listId).searchQuery;
+
 export const updateQuickAddState = (
   state: IAppState,
   listId: TItemListId
@@ -98,6 +100,7 @@ export const updateQuickAddState = (
     color,
   };
 };
+
 export const addListItem = <T extends IListState<R>, R extends TAllItemTypes>(
   state: T,
   item: R
@@ -112,6 +115,7 @@ export const addListItem = <T extends IListState<R>, R extends TAllItemTypes>(
     items: [item, ...state.items],
   };
 };
+
 export const addShoppinglistToStorage = (
   state: IStorageState,
   items: IShoppingItem[]
@@ -126,6 +130,7 @@ export const addShoppinglistToStorage = (
   }
   return newState;
 };
+
 export const addListItemOrIncreaseQuantity = <
   T extends IListState<R>,
   R extends IStorageItem | IShoppingItem,
@@ -143,6 +148,7 @@ export const addListItemOrIncreaseQuantity = <
   }
   return addListItem<T, R>(state, item);
 };
+
 export const removeListItem = <
   T extends IListState<R>,
   R extends TAllItemTypes,
@@ -153,6 +159,7 @@ export const removeListItem = <
   ...state,
   items: state.items.filter((listItem) => listItem.id !== item.id),
 });
+
 export const removeListItems = <
   T extends IListState<R>,
   R extends TAllItemTypes,
@@ -166,6 +173,7 @@ export const removeListItems = <
     items: state.items.filter((listItem) => !toRemove.includes(listItem.id)),
   };
 };
+
 export const updateListItem = <
   T extends IListState<R>,
   R extends TAllItemTypes,
@@ -186,6 +194,7 @@ export const updateListItem = <
   }
   return { ...state, items };
 };
+
 export const updateListSort = (
   sortBy?: TItemListSortType,
   newDir?: TItemListSortDir | 'keep' | 'toggle',
@@ -211,6 +220,7 @@ export const updateListSort = (
   }
   return result;
 };
+
 export const updateListMode = <
   T extends IListState<R>,
   R extends TAllItemTypes,
@@ -253,6 +263,7 @@ const additionalSearch = <R extends TAllItemTypes, T extends TAllItemTypes>(
   );
   return [...additionalItemsByName, ...additionalItemsByCat];
 };
+
 export const filterBySearchQuery = <
   T extends IListState<R>,
   R extends TAllItemTypes,
@@ -301,7 +312,9 @@ export const filterBySearchQuery = <
   return result;
 };
 
-function sortItemListFn<T extends TAllItemTypes>(sort?: TItemListSort) {
+export const sortItemListFn = <T extends TAllItemTypes>(
+  sort?: TItemListSort
+) => {
   const MAXPRIO = Number.MAX_SAFE_INTEGER;
   const MINPRIO = Number.MIN_SAFE_INTEGER;
   const MAXDATE = '5000-1-1';
@@ -351,7 +364,7 @@ function sortItemListFn<T extends TAllItemTypes>(sort?: TItemListSort) {
         return 0;
     }
   };
-}
+};
 
 export const filterAndSortItemList = <
   T extends IListState<R>,
@@ -366,8 +379,29 @@ export const filterAndSortItemList = <
     )
     .sort(sortItemListFn<R>(state.sort));
 };
+
 export const sortCategoriesFn = (sort?: TItemListSort) => {
   return (a: TItemListCategory, b: TItemListCategory) => {
     return sort?.sortDir === 'desc' ? b.localeCompare(a) : a.localeCompare(b);
   };
+};
+
+export const categoriesFromList = (items: IBaseItem[]): TItemListCategory[] => {
+  return [...new Set(items.flatMap((item) => item.category ?? []))];
+};
+
+export const addListCategory = (
+  categories: TItemListCategory[],
+  category?: TItemListCategory
+): TItemListCategory[] => {
+  return !category?.length || categories.includes(category)
+    ? categories
+    : [category, ...categories];
+};
+
+export const removeListCategory = (
+  categories: TItemListCategory[],
+  category?: TItemListCategory
+): TItemListCategory[] => {
+  return categories.filter((cat) => cat !== category);
 };

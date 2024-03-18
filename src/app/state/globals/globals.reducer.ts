@@ -1,7 +1,9 @@
 import { createReducer, on } from '@ngrx/store';
 import { IGlobalsState } from '../../@types/types';
 import {
+  addListCategory,
   addListItem,
+  removeListCategory,
   removeListItem,
   updateListItem,
   updateListMode,
@@ -37,6 +39,9 @@ export const globalsReducer = createReducer(
   on(GlobalsActions.updateFilter,(state, { filterBy }): IGlobalsState => ({ ...state, filterBy, mode: 'alphabetical', })),
   on(GlobalsActions.updateMode, (state, { mode }) => updateListMode(state, mode)),
   on(GlobalsActions.updateSort, (state, { sortBy, sortDir }) => ({ ...state, sort: updateListSort(sortBy, sortDir, state.sort?.sortDir),})),
+  on(GlobalsActions.addCategory, (state, { category }) => ({ ...state, categories: addListCategory(state.categories, category),})),
+  on(GlobalsActions.removeCategory, (state, { category }) => ({ ...state, categories: removeListCategory(state.categories, category),})),
+
   on(ApplicationActions.loadedSuccessfully,(_state, { datastore }): IGlobalsState => {
     return {...(datastore.globals ?? _state), searchQuery:undefined,mode:'alphabetical',filterBy: undefined};
   })

@@ -310,18 +310,29 @@ export class ApplicationEffects {
       return this.#actions$.pipe(
         ofType(
           ShoppingActions.addItem,
+          ShoppingActions.addCategory,
           ShoppingActions.removeItem,
+          ShoppingActions.removeCategory,
           ShoppingActions.updateItem,
           ShoppingActions.removeItems,
+
           StorageActions.addItem,
+          StorageActions.addCategory,
           StorageActions.removeItem,
+          StorageActions.removeCategory,
           StorageActions.updateItem,
           StorageActions.addShoppingList,
+
           GlobalsActions.addItem,
+          GlobalsActions.addCategory,
           GlobalsActions.removeItem,
+          GlobalsActions.removeCategory,
           GlobalsActions.updateItem,
+
           TasksActions.addItem,
+          TasksActions.addCategory,
           TasksActions.removeItem,
+          TasksActions.removeCategory,
           TasksActions.updateItem
         ),
         withLatestFrom(this.#store, (action, state: IAppState) => ({

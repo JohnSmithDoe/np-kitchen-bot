@@ -10,8 +10,9 @@ import {
   createTaskItem,
 } from '../../app.factory';
 import { matchingTxt } from '../../app.utils';
+import { getActionsFromListId } from '../@shared/item-list.effects';
 
-import { searchQueryByListId } from '../@shared/item-list.utils';
+import { searchQueryByListId, stateByListId } from '../@shared/item-list.utils';
 import { GlobalsActions } from '../globals/globals.actions';
 import { ShoppingActions } from '../shopping/shopping.actions';
 import { StorageActions } from '../storage/storage.actions';
@@ -34,14 +35,14 @@ export class DialogsEffects {
       ofType(CategoriesActions.showDialog),
       withLatestFrom(this.#store, (action, state) => ({ action, state })),
       map(({ state }: { state: IAppState }) => {
-        const listItems: IBaseItem[] =
-          state.dialogs.listId === '_tasks'
-            ? state.tasks.items
-            : ([] as IBaseItem[])
-                .concat(state.globals.items)
-                .concat(state.storage.items)
-                .concat(state.shopping.items);
-        return CategoriesActions.updateSelection(state.dialogs.item, listItems);
+        const categories = stateByListId(
+          state,
+          state.dialogs.listId
+        ).categories;
+        return CategoriesActions.updateSelection(
+          state.dialogs.item,
+          categories
+        );
       })
     );
   });
@@ -55,6 +56,28 @@ export class DialogsEffects {
           category: state.dialogs.category.selection,
         };
         return DialogsActions.updateItem(updateData);
+      })
+    );
+  });
+  addCategoryFromDialogSearch$ = createEffect(() => {
+    return this.#actions$.pipe(
+      ofType(CategoriesActions.addCategoryFromDialogSearch),
+      withLatestFrom(this.#store, (action, state) => ({ action, state })),
+      map(({ state }: { state: IAppState }) => {
+        const category = state.dialogs.category.searchQuery?.trim();
+        return CategoriesActions.addCategory(category ?? '');
+      })
+    );
+  });
+
+  addCategoryToLlist$ = createEffect(() => {
+    return this.#actions$.pipe(
+      ofType(CategoriesActions.addCategory),
+      withLatestFrom(this.#store, (action, state) => ({ action, state })),
+      map(({ state, action }) => {
+        return getActionsFromListId(state.dialogs.listId).addCategory(
+          action.category
+        );
       })
     );
   });

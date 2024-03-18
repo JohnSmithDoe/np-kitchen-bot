@@ -28,7 +28,23 @@ export const selectListState = createSelector(
 export const selectListCategories = createSelector(
   selectListState,
   (state): TItemListCategory[] => {
-    return state.categories?.sort(sortCategoriesFn(state.sort)) ?? [];
+    return [...state.categories].sort(sortCategoriesFn(state.sort)) ?? [];
+  }
+);
+
+export const selectListStateFilter = createSelector(
+  selectListState,
+  (
+    state
+  ): {
+    isCategoryModeOrHasFilter: boolean;
+    hasFilter: boolean;
+  } => {
+    return {
+      isCategoryModeOrHasFilter:
+        !!state.filterBy || state.mode === 'categories',
+      hasFilter: !!state.filterBy,
+    };
   }
 );
 

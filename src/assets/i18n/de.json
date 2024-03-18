@@ -32,6 +32,8 @@
 	"list-header.global": "Dauerhafte Einträge",
 	"list-header.global.search": "Aus den dauerhaften Einträgen",
 	"list-header.globals": "Dauerhafte Einträge",
+  "list-header.category": "Kategorien",
+  "list-header.category.filter": "Kategorie: {{category}}",
 	"list-header.shopping": "Einkaufsliste",
 	"list-header.shopping.search": "Aus der Einkaufsliste",
 	"list-header.storage": "Vorräte",
