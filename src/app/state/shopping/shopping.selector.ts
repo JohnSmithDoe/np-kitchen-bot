@@ -5,10 +5,7 @@ import {
   IShoppingItem,
   IShoppingState,
 } from '../../@types/types';
-import {
-  filterAndSortItemList,
-  filterBySearchQuery,
-} from '../@shared/item-list.utils';
+import { filterBySearchQuery } from '../@shared/item-list.utils';
 
 export const selectShoppingState =
   createFeatureSelector<IShoppingState>('shopping');
@@ -21,13 +18,6 @@ export const selectShoppingSearchResult = createSelector(
     state
   ): ISearchResult<IShoppingItem> | undefined =>
     filterBySearchQuery(state, listState)
-);
-
-export const selectShoppingItems = createSelector(
-  selectShoppingState,
-  selectShoppingSearchResult,
-  (state: IShoppingState, result): IShoppingItem[] | undefined =>
-    filterAndSortItemList(state, result)
 );
 
 export const selectShoppingListHasBoughtItems = createSelector(

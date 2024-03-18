@@ -80,16 +80,18 @@ export const matchesItemExactlyIdx = (item: IBaseItem, others: IBaseItem[]) => {
 export const matchesSearchString = (value: string, searchQuery?: string) =>
   matchingTxt(value).includes(matchingTxt(searchQuery ?? ''));
 
-export const matchesSearch = (item: IBaseItem, searchQuery: string) =>
+export const matchesSearch = (item: IBaseItem | string, searchQuery: string) =>
   matchingTxt(item).includes(matchingTxt(searchQuery));
 
-export const matchesSearchExactly = (item: IBaseItem, searchQuery?: string) =>
-  matchingTxt(item) === matchingTxt(searchQuery ?? '');
+export const matchesSearchExactly = (
+  item: IBaseItem | string,
+  searchQuery?: string
+) => matchingTxt(item) === matchingTxt(searchQuery ?? '');
 
 export const matchesCategory = (item: IBaseItem, searchQuery: string) =>
-  (item.category?.findIndex(
-    (cat) => matchingTxt(cat).indexOf(searchQuery) >= 0
-  ) ?? -1) >= 0;
+  !!item.category?.find((cat) => matchesSearchString(cat, searchQuery));
+export const matchesCategoryExactly = (item: IBaseItem, searchQuery: string) =>
+  !!item.category?.find((cat) => matchesSearchExactly(cat, searchQuery));
 
 export function parseNumberInput(ev: InputCustomEvent) {
   const value = ev.detail.value?.length ? ev.detail.value : '0';

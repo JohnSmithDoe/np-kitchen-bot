@@ -12,7 +12,11 @@ import {
 import { matchingTxt } from '../../app.utils';
 import { getActionsFromListId } from '../@shared/item-list.effects';
 
-import { searchQueryByListId, stateByListId } from '../@shared/item-list.utils';
+import {
+  filterByByListId,
+  searchQueryByListId,
+  stateByListId,
+} from '../@shared/item-list.utils';
 import { GlobalsActions } from '../globals/globals.actions';
 import { ShoppingActions } from '../shopping/shopping.actions';
 import { StorageActions } from '../storage/storage.actions';
@@ -92,8 +96,9 @@ export class DialogsEffects {
       })),
       map(({ action, state }) => {
         const searchQuery = searchQueryByListId(state, action.listId);
+        const filterBy = filterByByListId(state, action.listId);
         return DialogsActions.showEditDialog(
-          createGlobalItem(matchingTxt(searchQuery ?? '')),
+          createGlobalItem(matchingTxt(searchQuery ?? ''), filterBy),
           '_globals',
           action.listId
         );
@@ -140,22 +145,34 @@ export class DialogsEffects {
         switch (<TItemListId>action.listId) {
           case '_storage':
             return DialogsActions.showEditDialog(
-              createStorageItem(matchingTxt(state.storage.searchQuery ?? '')),
+              createStorageItem(
+                matchingTxt(state.storage.searchQuery ?? ''),
+                state.storage.filterBy
+              ),
               '_storage'
             );
           case '_globals':
             return DialogsActions.showEditDialog(
-              createGlobalItem(matchingTxt(state.globals.searchQuery ?? '')),
+              createGlobalItem(
+                matchingTxt(state.globals.searchQuery ?? ''),
+                state.globals.filterBy
+              ),
               '_globals'
             );
           case '_shopping':
             return DialogsActions.showEditDialog(
-              createShoppingItem(matchingTxt(state.shopping.searchQuery ?? '')),
+              createShoppingItem(
+                matchingTxt(state.shopping.searchQuery ?? ''),
+                state.shopping.filterBy
+              ),
               '_shopping'
             );
           case '_tasks':
             return DialogsActions.showEditDialog(
-              createTaskItem(matchingTxt(state.tasks.searchQuery ?? '')),
+              createTaskItem(
+                matchingTxt(state.tasks.searchQuery ?? ''),
+                state.tasks.filterBy
+              ),
               '_tasks'
             );
         }

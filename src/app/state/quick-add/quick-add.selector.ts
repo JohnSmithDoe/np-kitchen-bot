@@ -16,3 +16,9 @@ export const selectQuickAddCanAddGlobal = createSelector(
   (state, settings): boolean =>
     !!state.canAddGlobal && settings.showQuickAddGlobal
 );
+export const selectQuickAddCanAddCategory = createSelector(
+  selectQuickAddState,
+  selectSettingsState,
+  (state, settings): boolean =>
+    state.canAddCategory && settings.showQuickAddCategory
+);

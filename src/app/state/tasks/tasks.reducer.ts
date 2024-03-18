@@ -36,8 +36,8 @@ export const tasksReducer = createReducer(
   on(TasksActions.updateFilter,(state, { filterBy }): ITasksState => ({ ...state, filterBy, mode: 'alphabetical'})),
   on(TasksActions.updateMode, (state, { mode }) => updateListMode(state, mode)),
   on(TasksActions.updateSort, (state, { sortBy, sortDir }) => ({ ...state, sort: updateListSort(sortBy, sortDir, state.sort?.sortDir),})),
-  on(TasksActions.addCategory, (state, { category }) => ({ ...state, categories: addListCategory(state.categories, category),})),
-  on(TasksActions.removeCategory, (state, { category }) => ({ ...state, categories: removeListCategory(state.categories, category),})),
+  on(TasksActions.addCategory, (state, { category }) =>  addListCategory(state, category)),
+  on(TasksActions.removeCategory, (state, { category }) => removeListCategory(state, category)),
 
   on(ApplicationActions.loadedSuccessfully,(_state, { datastore }): ITasksState => {
     return {...(datastore.tasks ?? _state), searchQuery:undefined,mode:'alphabetical',filterBy: undefined};

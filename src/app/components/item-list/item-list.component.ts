@@ -1,5 +1,6 @@
 import { NgTemplateOutlet } from '@angular/common';
 import {
+  booleanAttribute,
   ChangeDetectionStrategy,
   Component,
   EventEmitter,
@@ -34,6 +35,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { add, cart, list, remove } from 'ionicons/icons';
 import { IBaseItem, TColor, TItemListCategory } from '../../@types/types';
+import { CategoryItemComponent } from '../item-list-items/category-item/category-item.component';
 import { GlobalItemComponent } from '../item-list-items/global-item/global-item.component';
 import { TextItemComponent } from '../item-list-items/text-item/text-item.component';
 
@@ -68,6 +70,7 @@ import { TextItemComponent } from '../item-list-items/text-item/text-item.compon
     GlobalItemComponent,
     TextItemComponent,
     IonTitle,
+    CategoryItemComponent,
   ],
 })
 export class ItemListComponent {
@@ -75,13 +78,19 @@ export class ItemListComponent {
 
   @Input({ required: true }) itemTemplate!: TemplateRef<any>;
   @Input({ required: true }) items?: ReadonlyArray<IBaseItem> | null;
-  @Input() categories?: ReadonlyArray<TItemListCategory> | null;
+  @Input() categories?: ReadonlyArray<{
+    category: TItemListCategory;
+    count: number;
+  }> | null;
   @Input() mode: 'alphabetical' | 'categories' = 'alphabetical';
 
   @Output() selectCategory = new EventEmitter<TItemListCategory>();
+  @Output() deleteCategory = new EventEmitter<TItemListCategory>();
+
   @Output() reorder = new EventEmitter<ItemReorderEventDetail>();
 
   @Input() header?: string;
+  @Input({ transform: booleanAttribute }) listHeader: boolean = false;
   @Input() headerColor?: TColor;
 
   @Input() reorderDisabled = true;

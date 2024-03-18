@@ -24,9 +24,9 @@ import { EditGlobalItemDialogComponent } from '../../dialogs/edit-global-item-di
 import { EditShoppingItemDialogComponent } from '../../dialogs/edit-shopping-item-dialog/edit-shopping-item-dialog.component';
 import { ShoppingActionSheetComponent } from '../../dialogs/shopping-action-sheet/shopping-action-sheet.component';
 import { CategoriesPipe } from '../../pipes/categories.pipe';
-import { selectListItems } from '../../state/@shared/item-list.selector';
 import { DialogsActions } from '../../state/dialogs/dialogs.actions';
 import { ShoppingActions } from '../../state/shopping/shopping.actions';
+import { selectShoppingState } from '../../state/shopping/shopping.selector';
 
 @Component({
   selector: 'app-page-shopping',
@@ -60,7 +60,7 @@ import { ShoppingActions } from '../../state/shopping/shopping.actions';
 })
 export class ShoppingPage implements IonViewWillEnter {
   readonly #store = inject(Store);
-  readonly rxItems$ = this.#store.select(selectListItems);
+  readonly rxState$ = this.#store.select(selectShoppingState);
 
   ionViewWillEnter(): void {
     this.#store.dispatch(ShoppingActions.enterPage());

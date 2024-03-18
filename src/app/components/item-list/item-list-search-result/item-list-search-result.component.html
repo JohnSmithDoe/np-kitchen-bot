@@ -3,6 +3,7 @@
   <app-item-list
     header="{{ 'list-header.global.search' | translate }}"
     headerColor="global"
+    [listHeader]="true"
     [items]="results?.globalItems ?? []"
     [itemTemplate]="globalItem"
   ></app-item-list>
@@ -22,6 +23,7 @@
   <app-item-list
     header="{{ 'list-header.shopping.search' | translate }}"
     headerColor="shopping"
+    [listHeader]="true"
     [items]="results?.shoppingItems ?? []"
     [itemTemplate]="shoppingItem"
   ></app-item-list>
@@ -41,6 +43,7 @@
   <app-item-list
     header="{{ 'list-header.storage.search' | translate }}"
     headerColor="storage"
+    [listHeader]="true"
     [items]="results?.storageItems ?? []"
     [itemTemplate]="storageItem"
   ></app-item-list>

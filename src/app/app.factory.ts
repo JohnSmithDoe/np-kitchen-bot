@@ -19,7 +19,7 @@ export function createBaseItem(
     category: category
       ? Array.isArray(category)
         ? category
-        : [category]
+        : [category.trim()]
       : undefined,
     createdAt: dayjs().format(),
   };

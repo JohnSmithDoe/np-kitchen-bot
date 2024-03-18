@@ -13,7 +13,7 @@ export class MessageEffects {
   #actions$ = inject(Actions);
   #uiService = inject(UiService);
 
-  addItemSussess$ = createEffect(
+  addItemSuccess$ = createEffect(
     () => {
       return this.#actions$.pipe(
         ofType(
@@ -91,6 +91,41 @@ export class MessageEffects {
         ),
         tap(({ item }) => {
           return this.#uiService.showRemoveItemToast(item.name);
+        })
+      );
+    },
+    { dispatch: false }
+  );
+
+  addCategorySuccess$ = createEffect(
+    () => {
+      return this.#actions$.pipe(
+        ofType(
+          StorageActions.addCategory,
+          ShoppingActions.addCategory,
+          GlobalsActions.addCategory,
+          TasksActions.addCategory
+        ),
+        map(({ category }) => {
+          if (!category.length) return;
+          return fromPromise(this.#uiService.showAddItemToast(category));
+        })
+      );
+    },
+    { dispatch: false }
+  );
+  removeCategorySuccess$ = createEffect(
+    () => {
+      return this.#actions$.pipe(
+        ofType(
+          StorageActions.removeCategory,
+          ShoppingActions.removeCategory,
+          GlobalsActions.removeCategory,
+          TasksActions.removeCategory
+        ),
+        map(({ category }) => {
+          if (!category.length) return;
+          return fromPromise(this.#uiService.showRemoveItemToast(category));
         })
       );
     },

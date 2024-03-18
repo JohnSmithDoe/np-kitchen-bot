@@ -51,6 +51,8 @@ export const stateByListId = (
 
 export const searchQueryByListId = (state: IAppState, listId: TItemListId) =>
   stateByListId(state, listId).searchQuery;
+export const filterByByListId = (state: IAppState, listId: TItemListId) =>
+  stateByListId(state, listId).filterBy;
 
 export const updateQuickAddState = (
   state: IAppState,
@@ -61,12 +63,14 @@ export const updateQuickAddState = (
   let listName: string | undefined;
   let color: TColor | undefined;
   let isCategoryMode: boolean | undefined;
+  let categories: TItemListCategory[] | undefined;
   switch (listId) {
     case '_storage':
       searchQuery = state.storage.searchQuery;
       listName = marker('list-header.storage');
       color = 'storage';
       isCategoryMode = state.storage.mode === 'categories';
+      categories = state.storage.categories;
       exactMatchLocal = !!state.storage.items.find((item) =>
         matchesSearchExactly(item, searchQuery)
       );
@@ -76,6 +80,7 @@ export const updateQuickAddState = (
       listName = marker('list-header.globals');
       color = 'global';
       isCategoryMode = state.globals.mode === 'categories';
+      categories = state.globals.categories;
       exactMatchLocal = !!state.globals.items.find((item) =>
         matchesSearchExactly(item, searchQuery)
       );
@@ -85,12 +90,26 @@ export const updateQuickAddState = (
       listName = marker('list-header.shopping');
       color = 'shopping';
       isCategoryMode = state.shopping.mode === 'categories';
+      categories = state.shopping.categories;
       exactMatchLocal = !!state.shopping.items.find((item) =>
+        matchesSearchExactly(item, searchQuery)
+      );
+      break;
+    case '_tasks':
+      searchQuery = state.tasks.searchQuery;
+      listName = marker('list-header.tasks');
+      color = 'task';
+      isCategoryMode = state.tasks.mode === 'categories';
+      categories = state.tasks.categories;
+      exactMatchLocal = !!state.tasks.items.find((item) =>
         matchesSearchExactly(item, searchQuery)
       );
       break;
   }
   const doShow = matchingTxtIsNotEmpty(searchQuery);
+  const exactMatchCategory =
+    !!categories &&
+    categories.find((cat) => matchesSearchExactly(cat, searchQuery));
   return {
     searchQuery,
     canAddLocal: !isCategoryMode && doShow && !exactMatchLocal,
@@ -98,9 +117,11 @@ export const updateQuickAddState = (
       !isCategoryMode &&
       doShow &&
       listId !== '_globals' && // dont show in globals
+      listId !== '_tasks' && // dont show in tasks
       !state.globals.items.find((item) =>
         matchesSearchExactly(item, searchQuery)
       ),
+    canAddCategory: doShow && isCategoryMode && !exactMatchCategory,
     listName,
     color,
   };
@@ -395,18 +416,29 @@ export const categoriesFromList = (items: IBaseItem[]): TItemListCategory[] => {
   return [...new Set(items.flatMap((item) => item.category ?? []))];
 };
 
-export const addListCategory = (
-  categories: TItemListCategory[],
+export const addListCategory = <T extends IListState<any>>(
+  state: T,
   category?: TItemListCategory
-): TItemListCategory[] => {
-  return !category?.length || categories.includes(category)
-    ? categories
-    : [category, ...categories];
+): T => {
+  return !category?.length || state.categories.includes(category)
+    ? state
+    : {
+        ...state,
+        categories: [category, ...state.categories],
+      };
 };
 
-export const removeListCategory = (
-  categories: TItemListCategory[],
+export const removeListCategory = <T extends IListState<TAllItemTypes>>(
+  state: T,
   category?: TItemListCategory
-): TItemListCategory[] => {
-  return categories.filter((cat) => cat !== category);
+): T => {
+  const items = state.items.map((item) => ({
+    ...item,
+    category: item.category?.filter((cat) => cat !== category),
+  }));
+  return {
+    ...state,
+    items,
+    categories: state.categories.filter((cat) => cat !== category),
+  };
 };

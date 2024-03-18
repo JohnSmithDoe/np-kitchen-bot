@@ -79,8 +79,12 @@ export class ListPageComponent<T extends TAllItemTypes> {
     addIcons({ add, remove, clipboard, bagAdd });
   }
 
-  async addItemFromSearch() {
+  addItemFromSearch() {
     this.#store.dispatch(ItemListActions.addItemFromSearch(this.listId));
+  }
+
+  addCategoryFromSearch() {
+    this.#store.dispatch(ItemListActions.addCategoryFromSearch(this.listId));
   }
 
   searchFor(searchTerm: string) {
@@ -99,6 +103,14 @@ export class ListPageComponent<T extends TAllItemTypes> {
 
   selectCategory(category: TItemListCategory) {
     this.#store.dispatch(ItemListActions.updateFilter(this.listId, category));
+  }
+
+  deleteCategory(category: TItemListCategory) {
+    this.#store.dispatch(ItemListActions.removeCategory(this.listId, category));
+  }
+
+  addCategory(category: TItemListCategory) {
+    this.#store.dispatch(ItemListActions.addCategory(this.listId, category));
   }
 
   addGlobalItem(item: IGlobalItem) {

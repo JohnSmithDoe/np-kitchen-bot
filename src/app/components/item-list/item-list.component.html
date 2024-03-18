@@ -1,9 +1,17 @@
 <ion-list #ionList>
   @if (header) {
-    <ion-toolbar [color]="headerColor">
-      <ion-title>{{ header }}</ion-title>
-      <ng-content></ng-content>
-    </ion-toolbar>
+    @if (listHeader) {
+      <ion-list-header [color]="headerColor">
+        <ion-label>{{ header }}</ion-label>
+      </ion-list-header>
+    } @else {
+      <ion-toolbar [color]="headerColor">
+        <ion-label class="ion-padding-start">
+          {{ header }}
+        </ion-label>
+        <ng-content></ng-content>
+      </ion-toolbar>
+    }
   }
   @if (mode === 'alphabetical') {
     <ng-container *ngTemplateOutlet="listMode"></ng-container>
@@ -13,12 +21,14 @@
 </ion-list>
 
 <ng-template #categoryMode>
-  @for (category of categories; track category) {
-    <app-text-item
-      color="category"
-      [label]="category"
-      (selectItem)="selectCategory.emit(category)"
-    ></app-text-item>
+  @for (cat of categories; track cat.category) {
+    <app-category-item
+      [category]="cat.category"
+      [count]="cat.count"
+      [ionList]="ionList"
+      (selectCategory)="selectCategory.emit(cat.category)"
+      (deleteCategory)="deleteCategory.emit(cat.category)"
+    ></app-category-item>
   }
 </ng-template>
 

@@ -28,3 +28,18 @@
     (selectItem)="quickCreateGlobal.emit()"
   ></app-text-item>
 }
+@if ((rxShowCategoy$ | async) === true) {
+  <app-text-item
+    color="category"
+    helper="{{
+      'item-list.quickadd.add.category'
+        | translate
+          : {
+              value: (rxState$ | async)?.searchQuery,
+              list: (rxState$ | async)?.listName
+            }
+    }}"
+    [label]="(rxState$ | async)?.searchQuery"
+    (selectItem)="quickCreateCategory.emit()"
+  ></app-text-item>
+}

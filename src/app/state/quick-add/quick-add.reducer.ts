@@ -5,6 +5,7 @@ import { QuickAddActions } from './quick-add.actions';
 export const initialSettings: IQuickAddState = {
   canAddLocal: false,
   canAddGlobal: false,
+  canAddCategory: false,
   searchQuery: undefined,
 };
 export const quickAddReducer = createReducer(

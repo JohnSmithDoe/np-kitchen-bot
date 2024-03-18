@@ -6,7 +6,7 @@ import {
   IShoppingItem,
   TItemListCategory,
 } from '../../@types/types';
-import { matchingTxt } from '../../app.utils';
+import { matchesCategoryExactly, matchesSearch } from '../../app.utils';
 
 import {
   filterAndSortItemList,
@@ -28,12 +28,16 @@ export const selectListState = createSelector(
 
 export const selectListCategories = createSelector(
   selectListState,
-  (state): TItemListCategory[] => {
+  (state): { category: TItemListCategory; count: number }[] => {
     return [...state.categories]
       .sort(sortCategoriesFn(state.sort))
-      .filter((cat) =>
-        matchingTxt(cat).includes(matchingTxt(state.searchQuery ?? ''))
-      );
+      .filter((cat) => matchesSearch(cat, state.searchQuery ?? ''))
+      .map((catgory) => ({
+        category: catgory,
+        count: state.items.reduce((count, cur) => {
+          return matchesCategoryExactly(cur, catgory) ? count + 1 : count;
+        }, 0),
+      }));
   }
 );
 
@@ -57,7 +61,9 @@ export const selectListSearchResult = createSelector(
   selectListState,
   (state: IAppState) => state,
   (state, appState): ISearchResult<IShoppingItem> | undefined => {
-    return filterBySearchQuery(appState, state);
+    return state.mode !== 'categories'
+      ? filterBySearchQuery(appState, state)
+      : undefined;
   }
 );
 

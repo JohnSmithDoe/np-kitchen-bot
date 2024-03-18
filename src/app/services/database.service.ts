@@ -31,6 +31,7 @@ export class DatabaseService {
         await this.save('settings', initialData.settings);
       }
     }
+    initialData.settings.showQuickAddCategory = true;
     return initialData;
   }
 

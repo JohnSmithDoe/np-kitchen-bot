@@ -44,8 +44,8 @@ export const shoppingReducer = createReducer(
   on(ShoppingActions.updateSort, (state, { sortBy, sortDir }) => ({ ...state, sort: updateListSort(sortBy, sortDir, state.sort?.sortDir),})),
   on(ShoppingActions.showActionSheet, (state):IShoppingState =>  ({...state, showActionSheet: true})),
   on(ShoppingActions.hideActionSheet, (state):IShoppingState =>  ({...state, showActionSheet: false})),
-  on(ShoppingActions.addCategory, (state, { category }) => ({ ...state, categories: addListCategory(state.categories, category),})),
-  on(ShoppingActions.removeCategory, (state, { category }) => ({ ...state, categories: removeListCategory(state.categories, category),})),
+  on(ShoppingActions.addCategory, (state, { category }) =>  addListCategory(state, category)),
+  on(ShoppingActions.removeCategory, (state, { category }) => removeListCategory(state, category)),
 
   on(ApplicationActions.loadedSuccessfully,(_state, { datastore }): IShoppingState => {
     return {...(datastore.shopping ?? _state), searchQuery:undefined,mode:'alphabetical',filterBy: undefined, showActionSheet: false};

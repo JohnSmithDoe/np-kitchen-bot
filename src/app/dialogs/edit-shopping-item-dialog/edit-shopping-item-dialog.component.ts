@@ -25,7 +25,7 @@ import { ItemNameInputComponent } from '../../components/forms/item-name-input/i
 import { NumberInputComponent } from '../../components/forms/number-input/number-input.component';
 import { DialogsActions } from '../../state/dialogs/dialogs.actions';
 import { selectEditShoppingItem } from '../../state/dialogs/dialogs.selector';
-import { selectShoppingItems } from '../../state/shopping/shopping.selector';
+import { selectShoppingState } from '../../state/shopping/shopping.selector';
 
 @Component({
   selector: 'app-edit-shopping-item-dialog',
@@ -61,7 +61,7 @@ export class EditShoppingItemDialogComponent {
   readonly #store = inject(Store);
 
   rxItem$ = this.#store.select(selectEditShoppingItem);
-  rxShoppingItems$ = this.#store.select(selectShoppingItems);
+  rxState$ = this.#store.select(selectShoppingState);
 
   constructor() {
     addIcons({ closeCircle });

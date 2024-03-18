@@ -8,7 +8,7 @@
 >
   <ion-buttons slot="end" listActions>
     <ion-button
-      [hidden]="!(rxItems$ | async)?.length"
+      [hidden]="!(rxState$ | async)?.items?.length"
       (click)="openActionSheet()"
     >
       <ion-icon name="bag-add" slot="icon-only"></ion-icon>

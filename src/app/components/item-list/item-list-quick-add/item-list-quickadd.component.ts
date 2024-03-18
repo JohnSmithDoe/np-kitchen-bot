@@ -11,6 +11,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { add, cart, list, remove } from 'ionicons/icons';
 import {
+  selectQuickAddCanAddCategory,
   selectQuickAddCanAddGlobal,
   selectQuickAddCanAddLocal,
   selectQuickAddState,
@@ -30,9 +31,11 @@ export class ItemListQuickaddComponent {
   rxState$ = this.#store.select(selectQuickAddState);
   rxShowLocal$ = this.#store.select(selectQuickAddCanAddLocal);
   rxShowGlobal$ = this.#store.select(selectQuickAddCanAddGlobal);
+  rxShowCategoy$ = this.#store.select(selectQuickAddCanAddCategory);
 
   @Output() quickAddItem = new EventEmitter<void>();
   @Output() quickCreateGlobal = new EventEmitter<void>();
+  @Output() quickCreateCategory = new EventEmitter<void>();
 
   constructor() {
     addIcons({ add, remove, cart, list });

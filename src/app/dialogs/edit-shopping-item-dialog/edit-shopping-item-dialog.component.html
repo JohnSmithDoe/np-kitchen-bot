@@ -1,4 +1,4 @@
-<app-item-edit-modal listId="_shopping" [listItems]="rxShoppingItems$ | async">
+<app-item-edit-modal listId="_shopping" [listItems]="(rxState$ | async)?.items">
   <app-number-input
     [label]="'Menge'"
     [value]="(rxItem$ | async)?.quantity ?? 1"

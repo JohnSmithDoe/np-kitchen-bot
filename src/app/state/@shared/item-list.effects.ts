@@ -1,13 +1,14 @@
 import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { map } from 'rxjs';
+import { map, withLatestFrom } from 'rxjs';
 import { IAppState, TItemListId } from '../../@types/types';
 import { GlobalsActions } from '../globals/globals.actions';
 import { ShoppingActions } from '../shopping/shopping.actions';
 import { StorageActions } from '../storage/storage.actions';
 import { TasksActions } from '../tasks/tasks.actions';
 import { ItemListActions } from './item-list.actions';
+import { stateByListId } from './item-list.utils';
 
 export const getActionsFromListId = (listId: TItemListId) => {
   //prettier-ignore
@@ -31,7 +32,31 @@ export class ItemListEffects {
   addItemFromSearch = createEffect(() => {
     return this.#actions$.pipe(
       ofType(ItemListActions.addItemFromSearch),
-      map(({ listId }) => getActionsFromListId(listId).addItemFromSearch())
+      withLatestFrom(this.#store, (action, state: IAppState) => ({
+        action,
+        state,
+      })),
+      map(({ action, state }) => {
+        const isCategoryMode =
+          stateByListId(state, action.listId).mode === 'categories';
+        return isCategoryMode
+          ? ItemListActions.addCategoryFromSearch(action.listId)
+          : getActionsFromListId(action.listId).addItemFromSearch();
+      })
+    );
+  });
+  // 'Add Category From Search': (listId:TItemListId) => ({ listId }),
+  addCategoryFromSearch = createEffect(() => {
+    return this.#actions$.pipe(
+      ofType(ItemListActions.addCategoryFromSearch),
+      withLatestFrom(this.#store, (action, state: IAppState) => ({
+        action,
+        state,
+      })),
+      map(({ action, state }) => {
+        const category = stateByListId(state, action.listId).searchQuery ?? '';
+        return getActionsFromListId(action.listId).addCategory(category);
+      })
     );
   });
 
@@ -41,6 +66,16 @@ export class ItemListEffects {
       ofType(ItemListActions.addCategory),
       map(({ listId, category }) =>
         getActionsFromListId(listId).addCategory(category)
+      )
+    );
+  });
+
+  //  'Remove Category': (listId:TItemListId, category: TItemListCategory) => ({ listId, category }),
+  removeCategory = createEffect(() => {
+    return this.#actions$.pipe(
+      ofType(ItemListActions.removeCategory),
+      map(({ listId, category }) =>
+        getActionsFromListId(listId).removeCategory(category)
       )
     );
   });

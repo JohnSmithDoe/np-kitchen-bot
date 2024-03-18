@@ -34,7 +34,10 @@ function updatedSearchQuery(item: IBaseItem, searchQuery: string | undefined) {
 }
 
 function addStorageItemFromSearch(state: IAppState) {
-  const storageItem = createStorageItem(state.storage.searchQuery ?? '');
+  const storageItem = createStorageItem(
+    state.storage.searchQuery ?? '',
+    state.storage.filterBy
+  );
   const foundStorageItem = matchesItemExactly(storageItem, state.storage.items);
   return foundStorageItem
     ? StorageActions.addItemFailure(foundStorageItem)
@@ -42,7 +45,10 @@ function addStorageItemFromSearch(state: IAppState) {
 }
 
 function addShoppingItemFromSearch(state: IAppState) {
-  const shoppingItem = createShoppingItem(state.shopping.searchQuery ?? '');
+  const shoppingItem = createShoppingItem(
+    state.shopping.searchQuery ?? '',
+    state.shopping.filterBy
+  );
   const foundShoppingItem = matchesItemExactly(
     shoppingItem,
     state.shopping.items
@@ -53,14 +59,20 @@ function addShoppingItemFromSearch(state: IAppState) {
 }
 
 function addGlobalItemFromSearch(state: IAppState) {
-  const item = createGlobalItem(state.globals.searchQuery ?? '');
+  const item = createGlobalItem(
+    state.globals.searchQuery ?? '',
+    state.globals.filterBy
+  );
   const found = matchesItemExactly(item, state.globals.items);
   return found
     ? GlobalsActions.addItemFailure(found)
     : GlobalsActions.addItem(item);
 }
 function addTaskItemFromSearch(state: IAppState) {
-  const item = createTaskItem(state.tasks.searchQuery ?? '');
+  const item = createTaskItem(
+    state.tasks.searchQuery ?? '',
+    state.tasks.filterBy
+  );
   const found = matchesItemExactly(item, state.tasks.items);
   return found
     ? TasksActions.addItemFailure(found)
@@ -216,34 +228,35 @@ export class ApplicationEffects {
         StorageActions.addItem,
         StorageActions.updateFilter,
         StorageActions.updateMode,
+        StorageActions.addCategory,
+        StorageActions.removeCategory,
         GlobalsActions.addItem,
         GlobalsActions.updateFilter,
         GlobalsActions.updateMode,
+        GlobalsActions.addCategory,
+        GlobalsActions.removeCategory,
         ShoppingActions.addItem,
         ShoppingActions.updateFilter,
         ShoppingActions.updateMode,
+        ShoppingActions.addCategory,
+        ShoppingActions.removeCategory,
         TasksActions.addItem,
         TasksActions.updateFilter,
-        TasksActions.updateMode
+        TasksActions.updateMode,
+        TasksActions.addCategory,
+        TasksActions.removeCategory
       ),
       map(({ type }) => {
-        switch (type) {
-          case '[Storage] Add Item':
-          case '[Storage] Update Filter':
-          case '[Storage] Update Mode':
-            return StorageActions.updateSearch('');
-          case '[Globals] Add Item':
-          case '[Globals] Update Filter':
-          case '[Globals] Update Mode':
-            return GlobalsActions.updateSearch('');
-          case '[Shopping] Add Item':
-          case '[Shopping] Update Filter':
-          case '[Shopping] Update Mode':
-            return ShoppingActions.updateSearch('');
-          case '[Tasks] Add Item':
-          case '[Tasks] Update Filter':
-          case '[Tasks] Update Mode':
-            return TasksActions.updateSearch('');
+        if (type.startsWith('[Storage]')) {
+          return StorageActions.updateSearch('');
+        } else if (type.startsWith('[Shopping]')) {
+          return ShoppingActions.updateSearch('');
+        } else if (type.startsWith('[Globals]')) {
+          return GlobalsActions.updateSearch('');
+        } else if (type.startsWith('[Tasks]')) {
+          return TasksActions.updateSearch('');
+        } else {
+          throw Error('should not happen');
         }
       })
     );

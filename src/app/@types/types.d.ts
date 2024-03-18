@@ -135,6 +135,7 @@ export type IListState<T extends TAllItemTypes> = IItemList<T>;
 export interface ISettings {
   showQuickAdd: boolean;
   showQuickAddGlobal: boolean;
+  showQuickAddCategory: boolean;
   showGlobalsInStorage: boolean;
   showShoppingInStorage: boolean;
 
@@ -195,6 +196,7 @@ export type IQuickAddState = Readonly<{
   searchQuery?: string;
   canAddLocal?: boolean;
   canAddGlobal?: boolean;
+  canAddCategory: boolean;
 }>;
 
 export interface IAppState {
