@@ -6,6 +6,7 @@ import {
   addShoppinglistToStorage,
   removeListCategory,
   removeListItem,
+  updateListCategory,
   updateListItem,
   updateListMode,
   updateListSort,
@@ -34,6 +35,7 @@ export const storageReducer = createReducer(
   on(StorageActions.addShoppingList, (state, { items }) => addShoppinglistToStorage(state, items)),
   on(StorageActions.addCategory, (state, { category }) =>  addListCategory(state, category)),
   on(StorageActions.removeCategory, (state, { category }) => removeListCategory(state, category)),
+  on(StorageActions.updateCategory, (state, { original, newName }) => updateListCategory(state, original, newName)),
 
   on(ApplicationActions.loadedSuccessfully,(_state, { datastore }): IStorageState => {
     return {...(datastore.storage ?? _state), searchQuery:undefined,mode:'alphabetical',filterBy: undefined};

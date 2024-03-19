@@ -35,6 +35,13 @@ export class UiService {
     return this.showToast(msg);
   }
 
+  showAddCategoryToast(name: string) {
+    const msg = this.translate.instant('toast.add.category', {
+      name,
+    });
+    return this.showToast(msg);
+  }
+
   showUpdateItemToast(item: TUpdateDTO<TAllItemTypes>) {
     const msg = hasQuantity(item)
       ? this.translate.instant('toast.update.item.with.quantity', {

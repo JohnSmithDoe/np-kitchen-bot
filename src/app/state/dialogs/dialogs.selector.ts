@@ -15,14 +15,14 @@ import {
 } from '../../@types/types';
 import { matchesSearchString } from '../../app.utils';
 
+export const selectEditState =
+  createFeatureSelector<IEditItemState<TAllItemTypes>>('dialogs');
+
 export const selectEditGlobalState =
   createFeatureSelector<IEditGlobalItemState>('dialogs');
 
 export const selectEditShoppingState =
   createFeatureSelector<IEditShoppingItemState>('dialogs');
-
-export const selectEditState =
-  createFeatureSelector<IEditItemState<TAllItemTypes>>('dialogs');
 
 export const selectEditStorageState =
   createFeatureSelector<IEditStorageItemState>('dialogs');
@@ -34,11 +34,11 @@ export const selectEditStorageItem = createSelector(
   selectEditStorageState,
   (state): IStorageItem | undefined => state.item
 );
+
 export const selectEditTaskItem = createSelector(
   selectEditTaskState,
   (state): ITaskItem | undefined => state.item
 );
-
 export const selectEditGlobalItem = createSelector(
   selectEditGlobalState,
   (state): IGlobalItem | undefined => state.item
@@ -48,15 +48,16 @@ export const selectEditShoppingItem = createSelector(
   selectEditShoppingState,
   (state): IShoppingItem | undefined => state.item
 );
+
 export const selectEditItem = createSelector(
   selectEditState,
   (state): IBaseItem | undefined => state.item
 );
-
 export const selectCategoriesState = createSelector(
   selectEditState,
   (state): ICategoriesState => state.category
 );
+
 export const selectAllCategories = createSelector(
   selectEditState,
   (state) => state.category.categories

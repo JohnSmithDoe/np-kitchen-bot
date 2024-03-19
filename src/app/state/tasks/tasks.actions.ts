@@ -20,6 +20,10 @@ export const TasksActions = createActionGroup({
     'Add Item Failure': (item: ITaskItem) => ({ item }),
     'Add Category': (category: TItemListCategory) => ({ category }),
     'Remove Category': (category: TItemListCategory) => ({ category }),
+    'Update Category': (
+      original: TItemListCategory,
+      newName: TItemListCategory
+    ) => ({ original, newName }),
 
     'Remove Item': (item: ITaskItem) => ({ item }),
     'Update Item': (item: TUpdateDTO<ITaskItem>) => ({ item }),

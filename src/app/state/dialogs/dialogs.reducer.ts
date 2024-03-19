@@ -5,9 +5,11 @@ import {
   IEditItemState,
   TDialogsState,
   TEditItemMode,
+  TItemListCategory,
   TItemListId,
 } from '../../@types/types';
 import { createStorageItem } from '../../app.factory';
+import { matchingTxt } from '../../app.utils';
 import { ApplicationActions } from '../application.actions';
 import { CategoriesActions, DialogsActions } from './dialogs.actions';
 
@@ -18,6 +20,8 @@ export const initialSettings: TDialogsState = {
   category: {
     categories: [],
     selection: [],
+    isSelecting: false,
+    isEditing: false,
   },
   addToAdditionalList: undefined,
 };
@@ -166,6 +170,43 @@ export const dialogsReducer = createReducer(
     };
   }),
 
+  on(
+    CategoriesActions.showEditDialog,
+    (state, { category, listId }): TDialogsState => {
+      return showEditCategoryDialog(state, category, listId);
+    }
+  ),
+  on(CategoriesActions.confirmEditChanges, (state): TDialogsState => {
+    return {
+      ...state,
+      category: {
+        ...state.category,
+        isEditing: false,
+      },
+    };
+  }),
+  on(CategoriesActions.abortEditChanges, (state): TDialogsState => {
+    return {
+      ...state,
+      category: {
+        ...state.category,
+        editItem: undefined,
+        original: undefined,
+        isEditing: false,
+      },
+    };
+  }),
+
+  on(CategoriesActions.updateCategory, (state, { category }): TDialogsState => {
+    return {
+      ...state,
+      category: {
+        ...state.category,
+        editItem: category,
+      },
+    };
+  }),
+
   on(ApplicationActions.loadedSuccessfully, (_state): TDialogsState => {
     return _state;
   })
@@ -195,5 +236,37 @@ const showEditDialog = <R extends IBaseItem>(
     dialogTitle,
     listId,
     addToAdditionalList: additional,
+  };
+};
+const showEditCategoryDialog = <R extends IBaseItem>(
+  state: IEditItemState<R>,
+  original: TItemListCategory,
+  listId: TItemListId
+): IEditItemState<R> => {
+  const editMode: TEditItemMode = !!matchingTxt(original).length
+    ? 'update'
+    : 'create';
+  const saveButtonText =
+    editMode === 'update'
+      ? marker('edit.item.dialog.button.update')
+      : marker('edit.item.dialog.button.create');
+
+  const dialogTitle =
+    editMode === 'update'
+      ? marker('edit.category.dialog.title.update')
+      : marker('edit.category.dialog.title.create');
+
+  return {
+    ...state,
+    editMode,
+    saveButtonText,
+    dialogTitle,
+    listId,
+    category: {
+      ...state.category,
+      original,
+      editItem: original,
+      isEditing: true,
+    },
   };
 };

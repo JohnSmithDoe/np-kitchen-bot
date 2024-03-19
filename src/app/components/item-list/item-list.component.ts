@@ -35,6 +35,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { add, cart, list, remove } from 'ionicons/icons';
 import { IBaseItem, TColor, TItemListCategory } from '../../@types/types';
+import { EditCategoryDialogComponent } from '../../dialogs/edit-category-dialog/edit-category-dialog.component';
 import { CategoryItemComponent } from '../item-list-items/category-item/category-item.component';
 import { GlobalItemComponent } from '../item-list-items/global-item/global-item.component';
 import { TextItemComponent } from '../item-list-items/text-item/text-item.component';
@@ -71,6 +72,7 @@ import { TextItemComponent } from '../item-list-items/text-item/text-item.compon
     TextItemComponent,
     IonTitle,
     CategoryItemComponent,
+    EditCategoryDialogComponent,
   ],
 })
 export class ItemListComponent {

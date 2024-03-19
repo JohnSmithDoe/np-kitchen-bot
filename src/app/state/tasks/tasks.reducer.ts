@@ -5,6 +5,7 @@ import {
   addListItem,
   removeListCategory,
   removeListItem,
+  updateListCategory,
   updateListItem,
   updateListMode,
   updateListSort,
@@ -38,6 +39,7 @@ export const tasksReducer = createReducer(
   on(TasksActions.updateSort, (state, { sortBy, sortDir }) => ({ ...state, sort: updateListSort(sortBy, sortDir, state.sort?.sortDir),})),
   on(TasksActions.addCategory, (state, { category }) =>  addListCategory(state, category)),
   on(TasksActions.removeCategory, (state, { category }) => removeListCategory(state, category)),
+  on(TasksActions.updateCategory, (state, { original, newName }) => updateListCategory(state, original, newName)),
 
   on(ApplicationActions.loadedSuccessfully,(_state, { datastore }): ITasksState => {
     return {...(datastore.tasks ?? _state), searchQuery:undefined,mode:'alphabetical',filterBy: undefined};

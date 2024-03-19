@@ -39,5 +39,13 @@ export const CategoriesActions = createActionGroup({
     'Show Dialog': emptyProps(),
     'Confirm Changes': emptyProps(),
     'Abort Changes': emptyProps(),
+
+    'Show Edit Dialog': (category: TItemListCategory, listId: TItemListId) => ({
+      category,
+      listId,
+    }),
+    'Update Category': (category: TItemListCategory) => ({ category }),
+    'Confirm Edit Changes': emptyProps(),
+    'Abort Edit Changes': emptyProps(),
   },
 });

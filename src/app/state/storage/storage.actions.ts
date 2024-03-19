@@ -32,6 +32,10 @@ export const StorageActions = createActionGroup({
     'Add Item Failure': (item: IStorageItem) => ({ item }),
     'Add Category': (category: TItemListCategory) => ({ category }),
     'Remove Category': (category: TItemListCategory) => ({ category }),
+    'Update Category': (
+      original: TItemListCategory,
+      newName: TItemListCategory
+    ) => ({ original, newName }),
 
     'Remove Item': (item: IStorageItem) => ({ item }),
     'Update Item': (item: TUpdateDTO<IStorageItem>) => ({ item }),

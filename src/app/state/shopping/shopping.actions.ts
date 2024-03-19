@@ -35,6 +35,10 @@ export const ShoppingActions = createActionGroup({
     'Add Item Failure': (item: IShoppingItem) => ({ item }),
     'Add Category': (category: TItemListCategory) => ({ category }),
     'Remove Category': (category: TItemListCategory) => ({ category }),
+    'Update Category': (
+      original: TItemListCategory,
+      newName: TItemListCategory
+    ) => ({ original, newName }),
 
     'Remove Item': (item: IShoppingItem) => ({ item }),
     'Remove Items': (items: IShoppingItem[]) => ({ items }),

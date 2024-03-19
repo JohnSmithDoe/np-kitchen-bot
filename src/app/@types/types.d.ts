@@ -169,8 +169,11 @@ export interface ISearchResult<T extends IBaseItem> {
 export type ICategoriesState = Readonly<{
   categories: TItemListCategory[];
   selection: TItemListCategory[];
+  editItem?: TItemListCategory;
+  original?: TItemListCategory;
   searchQuery?: string;
   isSelecting?: boolean;
+  isEditing?: boolean;
 }>;
 
 export type TEditItemMode = 'update' | 'create';

@@ -6,6 +6,7 @@ import {
   removeListCategory,
   removeListItem,
   removeListItems,
+  updateListCategory,
   updateListItem,
   updateListMode,
   updateListSort,
@@ -46,6 +47,7 @@ export const shoppingReducer = createReducer(
   on(ShoppingActions.hideActionSheet, (state):IShoppingState =>  ({...state, showActionSheet: false})),
   on(ShoppingActions.addCategory, (state, { category }) =>  addListCategory(state, category)),
   on(ShoppingActions.removeCategory, (state, { category }) => removeListCategory(state, category)),
+  on(ShoppingActions.updateCategory, (state, { original, newName }) => updateListCategory(state, original, newName)),
 
   on(ApplicationActions.loadedSuccessfully,(_state, { datastore }): IShoppingState => {
     return {...(datastore.shopping ?? _state), searchQuery:undefined,mode:'alphabetical',filterBy: undefined, showActionSheet: false};

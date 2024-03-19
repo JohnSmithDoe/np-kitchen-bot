@@ -2,12 +2,12 @@
   <app-text-item
     [label]="'item-list.empty.notfound' | translate: { value: searchTerm }"
     [note]="'item-list.empty.notfound.note' | translate"
-    (selectItem)="emptyItem.emit()"
+    (selectItem)="emptySearch.emit()"
   ></app-text-item>
 } @else if (isEmptyList) {
   <app-text-item
     [label]="'item-list.empty.isempty' | translate"
     [note]="'item-list.empty.isempty.note' | translate"
-    (selectItem)="emptyItem.emit()"
+    (selectItem)="emptyList.emit()"
   ></app-text-item>
 }

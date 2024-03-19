@@ -24,7 +24,8 @@ export class ItemListEmptyComponent {
   @Input({ transform: booleanAttribute }) isSearching = false;
   @Input() searchTerm?: string;
 
-  @Output() emptyItem = new EventEmitter<void>();
+  @Output() emptyList = new EventEmitter<void>();
+  @Output() emptySearch = new EventEmitter<void>();
 
   constructor() {
     addIcons({ add, remove, cart, list });

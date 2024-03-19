@@ -22,6 +22,14 @@
         >"{{'item-list.quickadd.add.global'|translate}}" anzeigen
       </ion-toggle>
     </ion-item>
+    <ion-item>
+      <ion-toggle
+        [checked]="(settings$ |async)?.showQuickAddCategory"
+        (ionChange)="toggleFlag('showQuickAddCategory')"
+        >"{{ 'item-list.quickadd.add.category'|translate }}"
+        anzeigen</ion-toggle
+      >
+    </ion-item>
     <ion-list-header color="storage">Suchergebnisse Vorräte</ion-list-header>
     <ion-item>
       <ion-toggle

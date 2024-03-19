@@ -8,7 +8,7 @@ import {
 import {
   filterAndSortItemList,
   filterBySearchQuery,
-} from '../@shared/item-list.utils';
+} from '../@shared/item-list.selector';
 
 export const selectTasksState = createFeatureSelector<ITasksState>('tasks');
 

@@ -5,6 +5,7 @@ import {
   addListItem,
   removeListCategory,
   removeListItem,
+  updateListCategory,
   updateListItem,
   updateListMode,
   updateListSort,
@@ -41,6 +42,7 @@ export const globalsReducer = createReducer(
   on(GlobalsActions.updateSort, (state, { sortBy, sortDir }) => ({ ...state, sort: updateListSort(sortBy, sortDir, state.sort?.sortDir),})),
   on(GlobalsActions.addCategory, (state, { category }) =>  addListCategory(state, category)),
   on(GlobalsActions.removeCategory, (state, { category }) => removeListCategory(state, category)),
+  on(GlobalsActions.updateCategory, (state, { original, newName }) => updateListCategory(state, original, newName)),
 
   on(ApplicationActions.loadedSuccessfully,(_state, { datastore }): IGlobalsState => {
     return {...(datastore.globals ?? _state), searchQuery:undefined,mode:'alphabetical',filterBy: undefined};

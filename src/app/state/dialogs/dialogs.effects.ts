@@ -9,8 +9,7 @@ import {
   createStorageItem,
   createTaskItem,
 } from '../../app.factory';
-import { matchingTxt } from '../../app.utils';
-import { getActionsFromListId } from '../@shared/item-list.effects';
+import { actionsByListId } from '../@shared/item-list.effects';
 
 import {
   filterByByListId,
@@ -20,14 +19,31 @@ import {
 import { GlobalsActions } from '../globals/globals.actions';
 import { ShoppingActions } from '../shopping/shopping.actions';
 import { StorageActions } from '../storage/storage.actions';
-import { TasksActions } from '../tasks/tasks.actions';
 import { CategoriesActions, DialogsActions } from './dialogs.actions';
-import {
-  selectEditGlobalState,
-  selectEditShoppingState,
-  selectEditStorageState,
-  selectEditTaskState,
-} from './dialogs.selector';
+import { selectEditGlobalState, selectEditState } from './dialogs.selector';
+
+function createItemByListId(
+  listId: TItemListId,
+  name: string,
+  category: string | undefined
+) {
+  let item: IBaseItem;
+  switch (listId) {
+    case '_storage':
+      item = createStorageItem(name, category);
+      break;
+    case '_globals':
+      item = createGlobalItem(name, category);
+      break;
+    case '_shopping':
+      item = createShoppingItem(name, category);
+      break;
+    case '_tasks':
+      item = createTaskItem(name, category);
+      break;
+  }
+  return item;
+}
 
 @Injectable({ providedIn: 'root' })
 export class DialogsEffects {
@@ -79,14 +95,13 @@ export class DialogsEffects {
       ofType(CategoriesActions.addCategory),
       withLatestFrom(this.#store, (action, state) => ({ action, state })),
       map(({ state, action }) => {
-        return getActionsFromListId(state.dialogs.listId).addCategory(
+        return actionsByListId(state.dialogs.listId).addCategory(
           action.category
         );
       })
     );
   });
 
-  //TODO: by listid with less effects... why one effect for each list...
   showCreateGlobalDialogWithSearch$ = createEffect(() => {
     return this.#actions$.pipe(
       ofType(DialogsActions.showCreateAndAddGlobalDialog),
@@ -98,21 +113,39 @@ export class DialogsEffects {
         const searchQuery = searchQueryByListId(state, action.listId);
         const filterBy = filterByByListId(state, action.listId);
         return DialogsActions.showEditDialog(
-          createGlobalItem(matchingTxt(searchQuery ?? ''), filterBy),
+          createGlobalItem(searchQuery ?? '', filterBy),
           '_globals',
           action.listId
         );
       })
     );
   });
-  confirmGlobalItemChanges$ = createEffect(() => {
+
+  confirmItemChanges$ = createEffect(() => {
     return this.#actions$.pipe(
       ofType(DialogsActions.confirmChanges),
-      concatLatestFrom(() => this.#store.select(selectEditGlobalState)),
-      filter(([_, state]) => state.listId === '_globals'),
-      map(([_, state]) => GlobalsActions.addOrUpdateItem(state.item))
+      concatLatestFrom(() => this.#store.select(selectEditState)),
+      map(([_, state]) => {
+        const localActions = actionsByListId(state.listId);
+        return localActions.addOrUpdateItem(<any>state.item);
+      })
     );
   });
+
+  confirmEditCategoryChanges$ = createEffect(() => {
+    return this.#actions$.pipe(
+      ofType(CategoriesActions.confirmEditChanges),
+      concatLatestFrom(() => this.#store.select(selectEditState)),
+      map(([_, state]) => {
+        const localActions = actionsByListId(state.listId);
+        return localActions.updateCategory(
+          state.category.original ?? '',
+          state.category.editItem ?? ''
+        );
+      })
+    );
+  });
+
   confirmGlobalItemChangesAndAddToList$ = createEffect(() => {
     return this.#actions$.pipe(
       ofType(DialogsActions.confirmChanges),
@@ -142,65 +175,16 @@ export class DialogsEffects {
         state,
       })),
       map(({ action, state }) => {
-        switch (<TItemListId>action.listId) {
-          case '_storage':
-            return DialogsActions.showEditDialog(
-              createStorageItem(
-                matchingTxt(state.storage.searchQuery ?? ''),
-                state.storage.filterBy
-              ),
-              '_storage'
-            );
-          case '_globals':
-            return DialogsActions.showEditDialog(
-              createGlobalItem(
-                matchingTxt(state.globals.searchQuery ?? ''),
-                state.globals.filterBy
-              ),
-              '_globals'
-            );
-          case '_shopping':
-            return DialogsActions.showEditDialog(
-              createShoppingItem(
-                matchingTxt(state.shopping.searchQuery ?? ''),
-                state.shopping.filterBy
-              ),
-              '_shopping'
-            );
-          case '_tasks':
-            return DialogsActions.showEditDialog(
-              createTaskItem(
-                matchingTxt(state.tasks.searchQuery ?? ''),
-                state.tasks.filterBy
-              ),
-              '_tasks'
-            );
+        const localState = stateByListId(state, action.listId);
+        const name = localState.searchQuery ?? '';
+        if (localState.mode === 'categories') {
+          return CategoriesActions.showEditDialog(name, action.listId);
+        } else {
+          const category = localState.filterBy;
+          const item = createItemByListId(action.listId, name, category);
+          return DialogsActions.showEditDialog(item, action.listId);
         }
       })
-    );
-  });
-  confirmStorageItemChanges$ = createEffect(() => {
-    return this.#actions$.pipe(
-      ofType(DialogsActions.confirmChanges),
-      concatLatestFrom(() => this.#store.select(selectEditStorageState)),
-      filter(([_, state]) => state.listId === '_storage'),
-      map(([_, state]) => StorageActions.addOrUpdateItem(state.item))
-    );
-  });
-  confirmShoppingItemChanges$ = createEffect(() => {
-    return this.#actions$.pipe(
-      ofType(DialogsActions.confirmChanges),
-      concatLatestFrom(() => this.#store.select(selectEditShoppingState)),
-      filter(([_, state]) => state.listId === '_shopping'),
-      map(([_, state]) => ShoppingActions.addOrUpdateItem(state.item))
-    );
-  });
-  confirmTaskItemChanges$ = createEffect(() => {
-    return this.#actions$.pipe(
-      ofType(DialogsActions.confirmChanges),
-      concatLatestFrom(() => this.#store.select(selectEditTaskState)),
-      filter(([_, state]) => state.listId === '_tasks'),
-      map(([_, state]) => TasksActions.addOrUpdateItem(state.item))
     );
   });
 }

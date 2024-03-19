@@ -3,6 +3,13 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { map, withLatestFrom } from 'rxjs';
 import { IAppState, TItemListId } from '../../@types/types';
+import {
+  createGlobalItem,
+  createShoppingItem,
+  createStorageItem,
+  createTaskItem,
+} from '../../app.factory';
+import { matchesItemExactly } from '../../app.utils';
 import { GlobalsActions } from '../globals/globals.actions';
 import { ShoppingActions } from '../shopping/shopping.actions';
 import { StorageActions } from '../storage/storage.actions';
@@ -10,7 +17,7 @@ import { TasksActions } from '../tasks/tasks.actions';
 import { ItemListActions } from './item-list.actions';
 import { stateByListId } from './item-list.utils';
 
-export const getActionsFromListId = (listId: TItemListId) => {
+export const actionsByListId = (listId: TItemListId) => {
   //prettier-ignore
   switch (listId) {
     case '_storage':
@@ -41,7 +48,7 @@ export class ItemListEffects {
           stateByListId(state, action.listId).mode === 'categories';
         return isCategoryMode
           ? ItemListActions.addCategoryFromSearch(action.listId)
-          : getActionsFromListId(action.listId).addItemFromSearch();
+          : actionsByListId(action.listId).addItemFromSearch();
       })
     );
   });
@@ -55,7 +62,7 @@ export class ItemListEffects {
       })),
       map(({ action, state }) => {
         const category = stateByListId(state, action.listId).searchQuery ?? '';
-        return getActionsFromListId(action.listId).addCategory(category);
+        return actionsByListId(action.listId).addCategory(category);
       })
     );
   });
@@ -65,7 +72,7 @@ export class ItemListEffects {
     return this.#actions$.pipe(
       ofType(ItemListActions.addCategory),
       map(({ listId, category }) =>
-        getActionsFromListId(listId).addCategory(category)
+        actionsByListId(listId).addCategory(category)
       )
     );
   });
@@ -75,7 +82,7 @@ export class ItemListEffects {
     return this.#actions$.pipe(
       ofType(ItemListActions.removeCategory),
       map(({ listId, category }) =>
-        getActionsFromListId(listId).removeCategory(category)
+        actionsByListId(listId).removeCategory(category)
       )
     );
   });
@@ -85,7 +92,7 @@ export class ItemListEffects {
     return this.#actions$.pipe(
       ofType(ItemListActions.updateFilter),
       map(({ listId, filterBy }) =>
-        getActionsFromListId(listId).updateFilter(filterBy)
+        actionsByListId(listId).updateFilter(filterBy)
       )
     );
   });
@@ -93,7 +100,7 @@ export class ItemListEffects {
   updateMode = createEffect(() => {
     return this.#actions$.pipe(
       ofType(ItemListActions.updateMode),
-      map(({ listId, mode }) => getActionsFromListId(listId).updateMode(mode))
+      map(({ listId, mode }) => actionsByListId(listId).updateMode(mode))
     );
   });
   // 'Update Sort': (listId:TItemListId, sortBy?:
@@ -101,7 +108,7 @@ export class ItemListEffects {
     return this.#actions$.pipe(
       ofType(ItemListActions.updateSort),
       map(({ listId, sortBy, sortDir }) =>
-        getActionsFromListId(listId).updateSort(sortBy, sortDir)
+        actionsByListId(listId).updateSort(sortBy, sortDir)
       )
     );
   });
@@ -110,7 +117,7 @@ export class ItemListEffects {
     return this.#actions$.pipe(
       ofType(ItemListActions.updateSearch),
       map(({ searchQuery, listId }) =>
-        getActionsFromListId(listId).updateSearch(searchQuery)
+        actionsByListId(listId).updateSearch(searchQuery)
       )
     );
   });
@@ -169,3 +176,47 @@ export class ItemListEffects {
     );
   });
 }
+
+export const addStorageItemFromSearch = (state: IAppState) => {
+  const storageItem = createStorageItem(
+    state.storage.searchQuery ?? '',
+    state.storage.filterBy
+  );
+  const foundStorageItem = matchesItemExactly(storageItem, state.storage.items);
+  return foundStorageItem
+    ? StorageActions.addItemFailure(foundStorageItem)
+    : StorageActions.addItem(storageItem);
+};
+export const addShoppingItemFromSearch = (state: IAppState) => {
+  const shoppingItem = createShoppingItem(
+    state.shopping.searchQuery ?? '',
+    state.shopping.filterBy
+  );
+  const foundShoppingItem = matchesItemExactly(
+    shoppingItem,
+    state.shopping.items
+  );
+  return foundShoppingItem
+    ? ShoppingActions.addItemFailure(foundShoppingItem)
+    : ShoppingActions.addItem(shoppingItem);
+};
+export const addGlobalItemFromSearch = (state: IAppState) => {
+  const item = createGlobalItem(
+    state.globals.searchQuery ?? '',
+    state.globals.filterBy
+  );
+  const found = matchesItemExactly(item, state.globals.items);
+  return found
+    ? GlobalsActions.addItemFailure(found)
+    : GlobalsActions.addItem(item);
+};
+export const addTaskItemFromSearch = (state: IAppState) => {
+  const item = createTaskItem(
+    state.tasks.searchQuery ?? '',
+    state.tasks.filterBy
+  );
+  const found = matchesItemExactly(item, state.tasks.items);
+  return found
+    ? TasksActions.addItemFailure(found)
+    : TasksActions.addItem(item);
+};

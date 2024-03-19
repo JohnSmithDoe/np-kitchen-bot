@@ -5,7 +5,7 @@ import {
   IShoppingItem,
   IShoppingState,
 } from '../../@types/types';
-import { filterBySearchQuery } from '../@shared/item-list.utils';
+import { filterBySearchQuery } from '../@shared/item-list.selector';
 
 export const selectShoppingState =
   createFeatureSelector<IShoppingState>('shopping');

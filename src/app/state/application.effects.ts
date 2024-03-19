@@ -3,81 +3,37 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { combineLatestWith, filter, map, withLatestFrom } from 'rxjs';
 import { fromPromise } from 'rxjs/internal/observable/innerFrom';
-import { IAppState, IBaseItem, TItemListId } from '../@types/types';
+import { IAppState } from '../@types/types';
 import {
-  createGlobalItem,
   createGlobalItemFrom,
-  createShoppingItem,
   createShoppingItemFromGlobal,
   createShoppingItemFromStorage,
-  createStorageItem,
   createStorageItemFromGlobal,
   createStorageItemFromShopping,
-  createTaskItem,
 } from '../app.factory';
 import { matchesItemExactly } from '../app.utils';
 import { DatabaseService } from '../services/database.service';
+import {
+  actionsByListId,
+  addGlobalItemFromSearch,
+  addShoppingItemFromSearch,
+  addStorageItemFromSearch,
+  addTaskItemFromSearch,
+} from './@shared/item-list.effects';
 
-import { updateQuickAddState } from './@shared/item-list.utils';
+import {
+  listIdByPrefix,
+  searchQueryByListId,
+  stateByListId,
+  updatedSearchQuery,
+  updateQuickAddState,
+} from './@shared/item-list.utils';
 import { ApplicationActions } from './application.actions';
 import { GlobalsActions } from './globals/globals.actions';
 import { QuickAddActions } from './quick-add/quick-add.actions';
 import { ShoppingActions } from './shopping/shopping.actions';
 import { StorageActions } from './storage/storage.actions';
 import { TasksActions } from './tasks/tasks.actions';
-
-function updatedSearchQuery(item: IBaseItem, searchQuery: string | undefined) {
-  if (!!item.name && !item.name.includes(searchQuery ?? '')) {
-    searchQuery = undefined;
-  }
-  return searchQuery;
-}
-
-function addStorageItemFromSearch(state: IAppState) {
-  const storageItem = createStorageItem(
-    state.storage.searchQuery ?? '',
-    state.storage.filterBy
-  );
-  const foundStorageItem = matchesItemExactly(storageItem, state.storage.items);
-  return foundStorageItem
-    ? StorageActions.addItemFailure(foundStorageItem)
-    : StorageActions.addItem(storageItem);
-}
-
-function addShoppingItemFromSearch(state: IAppState) {
-  const shoppingItem = createShoppingItem(
-    state.shopping.searchQuery ?? '',
-    state.shopping.filterBy
-  );
-  const foundShoppingItem = matchesItemExactly(
-    shoppingItem,
-    state.shopping.items
-  );
-  return foundShoppingItem
-    ? ShoppingActions.addItemFailure(foundShoppingItem)
-    : ShoppingActions.addItem(shoppingItem);
-}
-
-function addGlobalItemFromSearch(state: IAppState) {
-  const item = createGlobalItem(
-    state.globals.searchQuery ?? '',
-    state.globals.filterBy
-  );
-  const found = matchesItemExactly(item, state.globals.items);
-  return found
-    ? GlobalsActions.addItemFailure(found)
-    : GlobalsActions.addItem(item);
-}
-function addTaskItemFromSearch(state: IAppState) {
-  const item = createTaskItem(
-    state.tasks.searchQuery ?? '',
-    state.tasks.filterBy
-  );
-  const found = matchesItemExactly(item, state.tasks.items);
-  return found
-    ? TasksActions.addItemFailure(found)
-    : TasksActions.addItem(item);
-}
 
 @Injectable({ providedIn: 'root' })
 export class ApplicationEffects {
@@ -132,24 +88,12 @@ export class ApplicationEffects {
         state,
       })),
       map(({ action, state }) => {
-        switch (action.type) {
-          case '[Storage] Add Or Update Item':
-            return matchesItemExactly(action.item, state.storage.items)
-              ? StorageActions.updateItem(action.item)
-              : StorageActions.addItem(action.item);
-          case '[Globals] Add Or Update Item':
-            return matchesItemExactly(action.item, state.globals.items)
-              ? GlobalsActions.updateItem(action.item)
-              : GlobalsActions.addItem(action.item);
-          case '[Shopping] Add Or Update Item':
-            return matchesItemExactly(action.item, state.shopping.items)
-              ? ShoppingActions.updateItem(action.item)
-              : ShoppingActions.addItem(action.item);
-          case '[Tasks] Add Or Update Item':
-            return matchesItemExactly(action.item, state.tasks.items)
-              ? TasksActions.updateItem(action.item)
-              : TasksActions.addItem(action.item);
-        }
+        const listId = listIdByPrefix(action.type);
+        const localState = stateByListId(state, listId);
+        const actions = actionsByListId(listId);
+        return matchesItemExactly(action.item, localState.items)
+          ? actions.updateItem(action.item)
+          : actions.addItem(<any>action.item);
       })
     );
   });
@@ -209,16 +153,8 @@ export class ApplicationEffects {
       ),
       filter(({ mode }) => mode !== 'categories'),
       map(({ mode, type }) => {
-        switch (type) {
-          case '[Storage] Update Mode':
-            return StorageActions.updateFilter();
-          case '[Tasks] Update Mode':
-            return TasksActions.updateFilter();
-          case '[Globals] Update Mode':
-            return GlobalsActions.updateFilter();
-          case '[Shopping] Update Mode':
-            return ShoppingActions.updateFilter();
-        }
+        const listId = listIdByPrefix(type);
+        return actionsByListId(listId).updateFilter();
       })
     );
   });
@@ -247,17 +183,8 @@ export class ApplicationEffects {
         TasksActions.removeCategory
       ),
       map(({ type }) => {
-        if (type.startsWith('[Storage]')) {
-          return StorageActions.updateSearch('');
-        } else if (type.startsWith('[Shopping]')) {
-          return ShoppingActions.updateSearch('');
-        } else if (type.startsWith('[Globals]')) {
-          return GlobalsActions.updateSearch('');
-        } else if (type.startsWith('[Tasks]')) {
-          return TasksActions.updateSearch('');
-        } else {
-          throw Error('should not happen');
-        }
+        const listId = listIdByPrefix(type);
+        return actionsByListId(listId).updateSearch('');
       })
     );
   });
@@ -274,24 +201,11 @@ export class ApplicationEffects {
         state,
       })),
       map(({ action, state }) => {
-        switch (action.type) {
-          case '[Storage] Update Item':
-            return StorageActions.updateSearch(
-              updatedSearchQuery(action.item, state.storage.searchQuery)
-            );
-          case '[Shopping] Update Item':
-            return ShoppingActions.updateSearch(
-              updatedSearchQuery(action.item, state.shopping.searchQuery)
-            );
-          case '[Globals] Update Item':
-            return GlobalsActions.updateSearch(
-              updatedSearchQuery(action.item, state.globals.searchQuery)
-            );
-          case '[Tasks] Update Item':
-            return TasksActions.updateSearch(
-              updatedSearchQuery(action.item, state.tasks.searchQuery)
-            );
-        }
+        const listId = listIdByPrefix(action.type);
+        const searchQuery = searchQueryByListId(state, listId);
+        return actionsByListId(listId).updateSearch(
+          updatedSearchQuery(action.item, searchQuery)
+        );
       })
     );
   });
@@ -313,29 +227,7 @@ export class ApplicationEffects {
       ),
       withLatestFrom(this.#store, (action, state) => ({ action, state })),
       map(({ action, state }) => {
-        let listId: TItemListId;
-        switch (action.type) {
-          case '[Globals] Update Search':
-          case '[Globals] Update Mode':
-          case '[Globals] Enter Page':
-            listId = '_globals';
-            break;
-          case '[Shopping] Update Search':
-          case '[Shopping] Update Mode':
-          case '[Shopping] Enter Page':
-            listId = '_shopping';
-            break;
-          case '[Storage] Update Search':
-          case '[Storage] Update Mode':
-          case '[Storage] Enter Page':
-            listId = '_storage';
-            break;
-          case '[Tasks] Update Search':
-          case '[Tasks] Update Mode':
-          case '[Tasks] Enter Page':
-            listId = '_tasks';
-            break;
-        }
+        const listId = listIdByPrefix(action.type);
         const newState = updateQuickAddState(state, listId);
         return QuickAddActions.updateState(newState);
       })
@@ -347,43 +239,44 @@ export class ApplicationEffects {
       return this.#actions$.pipe(
         ofType(
           ShoppingActions.addItem,
-          ShoppingActions.addCategory,
           ShoppingActions.removeItem,
-          ShoppingActions.removeCategory,
           ShoppingActions.updateItem,
           ShoppingActions.removeItems,
+          ShoppingActions.addCategory,
+          ShoppingActions.removeCategory,
 
           StorageActions.addItem,
-          StorageActions.addCategory,
           StorageActions.removeItem,
-          StorageActions.removeCategory,
           StorageActions.updateItem,
           StorageActions.addShoppingList,
+          StorageActions.addCategory,
+          StorageActions.removeCategory,
 
           GlobalsActions.addItem,
-          GlobalsActions.addCategory,
           GlobalsActions.removeItem,
-          GlobalsActions.removeCategory,
           GlobalsActions.updateItem,
+          GlobalsActions.addCategory,
+          GlobalsActions.removeCategory,
 
           TasksActions.addItem,
-          TasksActions.addCategory,
           TasksActions.removeItem,
-          TasksActions.removeCategory,
-          TasksActions.updateItem
+          TasksActions.updateItem,
+          TasksActions.addCategory,
+          TasksActions.removeCategory
         ),
         withLatestFrom(this.#store, (action, state: IAppState) => ({
           action,
           state,
         })),
         map(({ action, state }) => {
-          if (action.type.startsWith('[Storage]')) {
+          const type = action.type;
+          if (type.startsWith('[Storage]')) {
             return fromPromise(this.#database.save('storage', state.storage));
-          } else if (action.type.startsWith('[Shopping]')) {
+          } else if (type.startsWith('[Shopping]')) {
             return fromPromise(this.#database.save('shopping', state.shopping));
-          } else if (action.type.startsWith('[Globals]')) {
+          } else if (type.startsWith('[Globals]')) {
             return fromPromise(this.#database.save('globals', state.globals));
-          } else if (action.type.startsWith('[Tasks]')) {
+          } else if (type.startsWith('[Tasks]')) {
             return fromPromise(this.#database.save('tasks', state.tasks));
           } else {
             throw Error('should not happen');

@@ -1,11 +1,9 @@
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
-import * as dayjs from 'dayjs';
 import {
   IAppState,
   IBaseItem,
   IListState,
   IQuickAddState,
-  ISearchResult,
   IShoppingItem,
   IStorageItem,
   IStorageState,
@@ -21,39 +19,15 @@ import {
 } from '../../@types/types';
 import { createStorageItemFromShopping } from '../../app.factory';
 import {
-  isStorageItem,
-  isTaskItem,
-  matchesCategory,
+  matchesCategoryExactly,
   matchesItemExactly,
   matchesItemExactlyIdx,
-  matchesNameExactly,
-  matchesSearch,
   matchesSearchExactly,
+  matchingTxt,
   matchingTxtIsNotEmpty,
 } from '../../app.utils';
 
-export const stateByListId = (
-  state: IAppState,
-  listId: TItemListId
-): IListState<any> => {
-  //prettier-ignore
-  switch (listId) {
-    case '_storage':
-      return state.storage;
-    case '_globals':
-      return state.globals;
-    case '_shopping':
-      return state.shopping;
-    case '_tasks':
-      return state.tasks;
-  }
-};
-
-export const searchQueryByListId = (state: IAppState, listId: TItemListId) =>
-  stateByListId(state, listId).searchQuery;
-export const filterByByListId = (state: IAppState, listId: TItemListId) =>
-  stateByListId(state, listId).filterBy;
-
+// hmmm this is a bit much...
 export const updateQuickAddState = (
   state: IAppState,
   listId: TItemListId
@@ -127,18 +101,17 @@ export const updateQuickAddState = (
   };
 };
 
-export const addListItem = <T extends IListState<R>, R extends TAllItemTypes>(
-  state: T,
-  item: R
+export const updateCategories = <
+  T extends IListState<R>,
+  R extends TAllItemTypes,
+>(
+  state: T
 ): T => {
-  // do not add an empty item
-  const name = item.name.trim();
-  if (!name.length) {
-    return state;
-  }
   return {
     ...state,
-    items: [item, ...state.items],
+    categories: [
+      ...new Set(categoriesFromList(state.items).concat(state.categories)),
+    ],
   };
 };
 
@@ -154,25 +127,22 @@ export const addShoppinglistToStorage = (
     );
     newState = addListItemOrIncreaseQuantity(newState, storageItem, false);
   }
-  return newState;
+  return updateCategories(newState);
 };
 
-export const addListItemOrIncreaseQuantity = <
-  T extends IListState<R>,
-  R extends IStorageItem | IShoppingItem,
->(
+export const addListItem = <T extends IListState<R>, R extends TAllItemTypes>(
   state: T,
-  item: R,
-  byOne = true
+  item: R
 ): T => {
-  const found = matchesItemExactly(item, state.items);
-  if (found) {
-    return updateListItem<T, R>(state, {
-      ...found,
-      quantity: found.quantity + (byOne ? 1 : item.quantity),
-    });
+  // do not add an empty item
+  const name = item.name.trim();
+  if (!name.length) {
+    return state;
   }
-  return addListItem<T, R>(state, item);
+  return updateCategories({
+    ...state,
+    items: [item, ...state.items],
+  });
 };
 
 export const removeListItem = <
@@ -181,10 +151,11 @@ export const removeListItem = <
 >(
   state: T,
   item: R
-): T => ({
-  ...state,
-  items: state.items.filter((listItem) => listItem.id !== item.id),
-});
+): T =>
+  updateCategories({
+    ...state,
+    items: state.items.filter((listItem) => listItem.id !== item.id),
+  });
 
 export const removeListItems = <
   T extends IListState<R>,
@@ -194,10 +165,10 @@ export const removeListItems = <
   items: R[]
 ): T => {
   const toRemove = items.map((item) => item.id);
-  return {
+  return updateCategories({
     ...state,
     items: state.items.filter((listItem) => !toRemove.includes(listItem.id)),
-  };
+  });
 };
 
 export const updateListItem = <
@@ -218,7 +189,25 @@ export const updateListItem = <
     console.error(item);
     // throw new Error('Dont update an item that is not in the list');
   }
-  return { ...state, items };
+  return updateCategories({ ...state, items });
+};
+
+export const addListItemOrIncreaseQuantity = <
+  T extends IListState<R>,
+  R extends IStorageItem | IShoppingItem,
+>(
+  state: T,
+  item: R,
+  byOne = true
+): T => {
+  const found = matchesItemExactly(item, state.items);
+  if (found) {
+    return updateListItem<T, R>(state, {
+      ...found,
+      quantity: found.quantity + (byOne ? 1 : item.quantity),
+    });
+  }
+  return addListItem<T, R>(state, item);
 };
 
 export const updateListSort = (
@@ -266,151 +255,6 @@ export const updateListMode = <
     filterBy: mode === 'categories' ? undefined : state.filterBy,
   };
 };
-const additionalSearch = <R extends TAllItemTypes, T extends TAllItemTypes>(
-  items: T[],
-  result: ISearchResult<R>,
-  searchQuery: string,
-  others?: IBaseItem[]
-) => {
-  others = others || [];
-  const additionalItemsByName = items.filter(
-    (item) =>
-      !others?.find((litem) => matchesNameExactly(item, litem)) &&
-      !result.listItems.find((litem) => matchesNameExactly(item, litem)) &&
-      matchesSearch(item, searchQuery)
-  );
-  // then by category
-  const additionalItemsByCat = items.filter(
-    (item) =>
-      !others?.find((litem) => matchesNameExactly(item, litem)) &&
-      !result.listItems.find((litem) => matchesNameExactly(item, litem)) &&
-      !additionalItemsByName.includes(item) &&
-      matchesCategory(item, searchQuery)
-  );
-  return [...additionalItemsByName, ...additionalItemsByCat];
-};
-
-export const filterBySearchQuery = <
-  T extends IListState<R>,
-  R extends TAllItemTypes,
->(
-  state: IAppState,
-  listState: T
-): ISearchResult<R> | undefined => {
-  const searchQuery = listState.searchQuery?.trim();
-  if (!searchQuery || !searchQuery.length) return;
-  const result: ISearchResult<R> = {
-    searchTerm: searchQuery,
-    hasSearchTerm: !!searchQuery.length,
-    listItems: [],
-    globalItems: [],
-    storageItems: [],
-    shoppingItems: [],
-  };
-  result.listItems = listState.items.filter((item) =>
-    matchesSearch(item, searchQuery)
-  );
-  //prettier-ignore
-  switch (listState.id) {
-    case '_storage':
-      if (state.settings.showGlobalsInStorage)
-        result.globalItems = additionalSearch(state.globals.items, result, searchQuery);
-      if (state.settings.showShoppingInStorage)
-        result.shoppingItems = additionalSearch(state.shopping.items, result, searchQuery, result.globalItems);
-      break;
-    case '_globals':
-      if (state.settings.showStorageInGlobals)
-        result.storageItems = additionalSearch(state.storage.items, result, searchQuery);
-      if (state.settings.showShoppingInGlobals)
-        result.shoppingItems = additionalSearch(state.shopping.items, result, searchQuery, result.storageItems);
-      break;
-    case '_shopping':
-      if (state.settings.showGlobalsInShopping)
-        result.globalItems = additionalSearch(state.globals.items, result, searchQuery);
-      if (state.settings.showStorageInShopping)
-        result.storageItems = additionalSearch(state.storage.items, result, searchQuery, result.globalItems);
-      break;
-  }
-
-  result.exactMatch = result.listItems.find((base) =>
-    matchesSearchExactly(base, searchQuery)
-  );
-  return result;
-};
-
-export const sortItemListFn = <T extends TAllItemTypes>(
-  sort?: TItemListSort
-) => {
-  const MAXPRIO = Number.MAX_SAFE_INTEGER;
-  const MINPRIO = Number.MIN_SAFE_INTEGER;
-  const MAXDATE = '5000-1-1';
-  const MINDATE = '1970-1-1';
-  return (a: T, b: T): number => {
-    switch (sort?.sortBy) {
-      case 'name':
-        return sort.sortDir === 'asc'
-          ? a.name.localeCompare(b.name)
-          : b.name.localeCompare(a.name);
-      case 'bestBefore':
-        if (isStorageItem(a) && isStorageItem(b)) {
-          return !a.bestBefore && !b.bestBefore
-            ? sortItemListFn<T>({ ...sort, sortBy: 'name' })(a, b)
-            : sort.sortDir === 'asc'
-              ? dayjs(a.bestBefore ?? MAXDATE).unix() -
-                dayjs(b.bestBefore ?? MAXDATE).unix()
-              : dayjs(b.bestBefore ?? MINDATE).unix() -
-                dayjs(a.bestBefore ?? MINDATE).unix();
-        } else {
-          return 0;
-        }
-      case 'prio':
-        if (isTaskItem(a) && isTaskItem(b)) {
-          return !a.prio && !b.prio
-            ? sortItemListFn<T>({ ...sort, sortBy: 'name' })(a, b)
-            : sort.sortDir === 'asc'
-              ? (a.prio ?? MAXPRIO) - (b.prio ?? MAXPRIO)
-              : (b.prio ?? MINPRIO) - (a.prio ?? MINPRIO);
-        } else {
-          return 0;
-        }
-      case 'dueAt':
-        if (isTaskItem(a) && isTaskItem(b)) {
-          return !a.dueAt && !b.dueAt
-            ? sortItemListFn<T>({ ...sort, sortBy: 'name' })(a, b)
-            : sort.sortDir === 'asc'
-              ? dayjs(a.dueAt ?? MAXDATE).unix() -
-                dayjs(b.dueAt ?? MAXDATE).unix()
-              : dayjs(b.dueAt ?? MINDATE).unix() -
-                dayjs(a.dueAt ?? MINDATE).unix();
-        } else {
-          return 0;
-        }
-
-      default:
-        return 0;
-    }
-  };
-};
-
-export const filterAndSortItemList = <
-  T extends IListState<R>,
-  R extends TAllItemTypes,
->(
-  state: T,
-  result?: ISearchResult<R>
-): R[] => {
-  return (result?.listItems ?? [...state.items])
-    .filter(
-      (item) => !state.filterBy || item.category?.includes(state.filterBy)
-    )
-    .sort(sortItemListFn<R>(state.sort));
-};
-
-export const sortCategoriesFn = (sort?: TItemListSort) => {
-  return (a: TItemListCategory, b: TItemListCategory) => {
-    return sort?.sortDir === 'desc' ? b.localeCompare(a) : a.localeCompare(b);
-  };
-};
 
 export const categoriesFromList = (items: IBaseItem[]): TItemListCategory[] => {
   return [...new Set(items.flatMap((item) => item.category ?? []))];
@@ -442,3 +286,93 @@ export const removeListCategory = <T extends IListState<TAllItemTypes>>(
     categories: state.categories.filter((cat) => cat !== category),
   };
 };
+
+export const updateListCategory = <
+  T extends IListState<R>,
+  R extends IBaseItem,
+>(
+  state: T,
+  original: TItemListCategory,
+  category: TItemListCategory
+): T => {
+  if (!matchingTxt(category).length) return state;
+  // if there was an original one we need to replace the category in the items
+  const originalName = matchingTxt(original);
+  original = original.trim();
+  category = category.trim();
+  let categories: TItemListCategory[];
+  let items: R[];
+  if (!!originalName.length) {
+    items = state.items.map((item) =>
+      item.category && matchesCategoryExactly(item, original)
+        ? {
+            ...item,
+            category: [...item.category].splice(
+              item.category?.indexOf(originalName),
+              1,
+              category
+            ),
+          }
+        : item
+    );
+    categories = [...state.categories].splice(
+      state.categories.indexOf(original),
+      1,
+      category
+    );
+  } else {
+    items = state.items;
+    categories = [...new Set([category, ...state.categories])];
+  }
+  return {
+    ...state,
+    items,
+    categories,
+  };
+};
+
+export const updatedSearchQuery = (
+  item: IBaseItem,
+  searchQuery: string | undefined
+) => {
+  if (!!item.name && !item.name.includes(searchQuery ?? '')) {
+    searchQuery = undefined;
+  }
+  return searchQuery;
+};
+
+export const listIdByPrefix = (type: string): TItemListId => {
+  if (type.startsWith('[Storage]')) {
+    return '_storage';
+  } else if (type.startsWith('[Shopping]')) {
+    return '_shopping';
+  } else if (type.startsWith('[Globals]')) {
+    return '_globals';
+  } else if (type.startsWith('[Tasks]')) {
+    return '_tasks';
+  } else {
+    throw Error('should not happen');
+  }
+};
+
+export const stateByListId = (
+  state: IAppState,
+  listId: TItemListId
+): IListState<any> => {
+  //prettier-ignore
+  switch (listId) {
+    case '_storage':
+      return state.storage;
+    case '_globals':
+      return state.globals;
+    case '_shopping':
+      return state.shopping;
+    case '_tasks':
+      return state.tasks;
+  }
+};
+
+export const searchQueryByListId = (state: IAppState, listId: TItemListId) =>
+  stateByListId(state, listId).searchQuery?.trim();
+export const filterByByListId = (state: IAppState, listId: TItemListId) =>
+  stateByListId(state, listId).filterBy?.trim();

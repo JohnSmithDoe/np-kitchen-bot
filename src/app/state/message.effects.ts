@@ -114,6 +114,24 @@ export class MessageEffects {
     },
     { dispatch: false }
   );
+  updateCategorySuccess$ = createEffect(
+    () => {
+      return this.#actions$.pipe(
+        ofType(
+          StorageActions.updateCategory,
+          ShoppingActions.updateCategory,
+          GlobalsActions.updateCategory,
+          TasksActions.updateCategory
+        ),
+        map(({ newName, original }) => {
+          if (!newName.length) return;
+
+          return fromPromise(this.#uiService.showAddCategoryToast(newName));
+        })
+      );
+    },
+    { dispatch: false }
+  );
   removeCategorySuccess$ = createEffect(
     () => {
       return this.#actions$.pipe(

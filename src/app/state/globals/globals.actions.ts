@@ -26,6 +26,10 @@ export const GlobalsActions = createActionGroup({
     'Add Item Failure': (item: IGlobalItem) => ({ item }),
     'Add Category': (category: TItemListCategory) => ({ category }),
     'Remove Category': (category: TItemListCategory) => ({ category }),
+    'Update Category': (
+      original: TItemListCategory,
+      newName: TItemListCategory
+    ) => ({ original, newName }),
 
     'Remove Item': (item: IGlobalItem) => ({ item }),
     'Update Item': (item: TUpdateDTO<IGlobalItem>) => ({ item }),

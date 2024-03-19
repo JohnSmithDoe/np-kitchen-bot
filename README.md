@@ -4,6 +4,19 @@
 
 ## Todo rxStore
 * Think about: create edit; success fail
+* Is it feasable to have one feature for each list
+  * globalState with a map of lists could get rid of a lot of code (action + listid)
+    * one reducer, one action and effects instead of 4
+    * different types? storage and shopping
+
+globalState = {
+lists: Record<string, Itemlist<any>>
+}
+
+storageList(itemList<any>): itemList is ItemList<IStorageItem>
+=> itemList.type === 'storage'
+
+     
 ## Todos:
 * Kalender mit wiederkehrenden Aufgaben
 * Rezept hinzufügen, vorschlagen

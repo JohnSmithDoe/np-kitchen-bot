@@ -8,7 +8,7 @@ export const VERSION: string = '1';
 export const initialSettings: ISettings = {
   showQuickAdd: false,
   showQuickAddGlobal: false,
-  showQuickAddCategory: true,
+  showQuickAddCategory: false,
   showGlobalsInShopping: false,
   showGlobalsInStorage: false,
   showShoppingInGlobals: false,
